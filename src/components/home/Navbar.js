@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { auth } from '../firebase';
-import { signInWithGoogle, logoutUser } from '../services/authService';
+import { signInWithGoogle, logoutUser } from '../../services/authService';
 
 function Navbar({ currentUser }) {
   const [imageError, setImageError] = useState(false);
