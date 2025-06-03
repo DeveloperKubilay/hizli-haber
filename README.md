@@ -2,6 +2,25 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Google OAuth Kurulumu
+
+Bu projeyi çalıştırmak için Google OAuth yapılandırması gereklidir:
+
+1. [Google Cloud Console](https://console.cloud.google.com/)'a gidin
+2. Yeni bir proje oluşturun veya mevcut projenizi seçin
+3. "API ve Hizmetler" kısmından "Kimlik Bilgileri" bölümüne gidin
+4. "Kimlik Bilgileri Oluştur" > "OAuth istemci kimliği" seçeneğini tıklayın
+5. Uygulama türü olarak "Web uygulaması" seçin
+6. İzin verilen JavaScript Kökenleri kısmına: `http://localhost:3000` ekleyin
+7. İzin verilen yönlendirme URI'leri kısmına: `http://localhost:3000/auth/google/callback` ekleyin
+8. Oluşturulan Client ID ve Client Secret'ı `.env` dosyasına ekleyin:
+   ```
+   GOOGLE_CLIENT_ID=your_client_id_here
+   GOOGLE_CLIENT_SECRET=your_client_secret_here
+   ```
+
+Unutmayın: Client ID'nizi tüm yapılandırma dosyalarında aynı şekilde kullanın.
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -68,4 +87,4 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-"# hizli-haber" 
+"# hizli-haber"
