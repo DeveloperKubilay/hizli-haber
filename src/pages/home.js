@@ -1,25 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 
 function Home() {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const isMounted = useRef(true);
+  const fetchedOnce = useRef(false);
+  
+  useEffect(() => {
+    // Set up cleanup
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
   
   useEffect(() => {
     const fetchBlogs = async () => {
+      // Prevent duplicate fetches
+      if (fetchedOnce.current) return;
+      fetchedOnce.current = true;
+      
       try {
+        console.log('Fetching blogs from Firestore...');
         const blogsCollection = collection(db, 'blogs');
         const blogsSnapshot = await getDocs(blogsCollection);
         const blogsList = blogsSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
-        setBlogs(blogsList);
-        setLoading(false);
+        
+        // Only update state if component is still mounted
+        if (isMounted.current) {
+          console.log('Setting blogs:', blogsList.length);
+          setBlogs(blogsList);
+          setLoading(false);
+        }
       } catch (error) {
         console.error("Error fetching blogs: ", error);
-        setLoading(false);
+        if (isMounted.current) {
+          setLoading(false);
+        }
       }
     };
     
