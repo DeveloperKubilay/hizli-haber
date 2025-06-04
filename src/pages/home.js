@@ -1,19 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { db, auth } from '../services/firebase';
+import { db } from '../services/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import Navbar from '../components/Navbar';
 
 function Home() {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentUser, setCurrentUser] = useState(null);
-  
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      setCurrentUser(user);
-    });
-    return unsubscribe;
-  }, []);
   
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -36,7 +28,7 @@ function Home() {
 
   return (
     <>
-      <Navbar currentUser={currentUser} />
+      <Navbar />
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="space-y-8">
           <div>
