@@ -1,11 +1,20 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { signInWithGoogle, logoutUser } from '../services/authService';
+import { auth } from '../services/firebase';
 
-function Navbar({ currentUser }) {
+function Navbar() {
+  const [currentUser, setCurrentUser] = useState(null);
   const [imageError, setImageError] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      setCurrentUser(user);
+    });
+    return unsubscribe;
+  }, []);
+
   const handleSignIn = useCallback(async () => {
     if (isProcessing) return;
     
