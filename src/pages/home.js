@@ -29,9 +29,12 @@ function Home() {
   return (
     <>
       <Navbar />
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <div className="Welcome_container"></div>
+      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 relative">
         <div className="space-y-8">
           <div>
+
+
             <h2 className="text-2xl font-semibold mb-4">All Blog Posts</h2>
             
             {loading ? (
