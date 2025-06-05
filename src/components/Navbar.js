@@ -48,10 +48,15 @@ function Navbar() {
   };
 
   return (
-    <header className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-white ">
+    <header className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex justify-between items-center">
-          <Link to="/">
-            <h1 className="text-2xl font-bold">My Blog</h1>
+          <Link to="/" className="flex items-center space-x-2">
+            <img
+              src="/imgs/logo.png"
+              alt="Logo"
+              className="h-10 w-auto"
+            />
+            <h1 className="text-2xl font-bold text-opacity-100 text-shadow text-[#ecf9fb]">hızlı haber</h1>
           </Link>
           
           <div>
@@ -71,13 +76,13 @@ function Navbar() {
                       {currentUser.displayName ? currentUser.displayName[0].toUpperCase() : 'U'}
                     </div>
                   )}
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-opacity-100">
                     {currentUser.displayName || currentUser.email}
                   </span>
                 </div>
                 <button
                   onClick={handleSignOut}
-                  className="text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-1 px-3 rounded"
+                  className="text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-1 px-3 rounded shadow-md"
                 >
                   Çıkış Yap
                 </button>
