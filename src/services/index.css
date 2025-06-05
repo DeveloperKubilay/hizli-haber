@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "../../node_modules/bootstrap-icons/font/bootstrap-icons.css";
+
 /*
 https://uiverse.io/marsella_3472/clever-puma-91
 */
@@ -13,8 +15,6 @@ https://uiverse.io/marsella_3472/clever-puma-91
   height: 500px;
   overflow: hidden;
   opacity: 0.8;
-  pointer-events: none; /* Bu özellik fare etkileşimlerini engellemeyi kaldırır */
-  /* z-index: -1 özelliğini kaldırdık */
 }
 
 .Welcome_container::before {
@@ -230,4 +230,9 @@ https://uiverse.io/marsella_3472/clever-puma-91
       278px 6375px,
       426.5px 6480px;
   }
+}
+
+/* Text shadow utility */
+.text-shadow {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
