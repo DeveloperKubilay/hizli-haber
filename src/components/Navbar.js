@@ -48,11 +48,10 @@ function Navbar() {
   };
 
   return (
-    <header className="bg-white shadow-sm">
-      <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+    <header className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-white ">
         <div className="flex justify-between items-center">
           <Link to="/">
-            <h1 className="text-2xl font-bold text-gray-900">My Blog</h1>
+            <h1 className="text-2xl font-bold">My Blog</h1>
           </Link>
           
           <div>
@@ -113,7 +112,6 @@ function Navbar() {
             )}
           </div>
         </div>
-      </div>
     </header>
   );
 }
