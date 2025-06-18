@@ -1,6 +1,19 @@
-haberler, son haberler, indir
+son haberler, haberler katagori, haber ara
 
 Burası aradığın haberlerin
 en hızlısı, en detaylısı,
 birçok haberi bi anda burada bulabilirsin
 son haber tüm haberler
+
+haberler;
+baslık
+kısa açıklama
+açıklama
+okunma sayısı
+yapay zekaya sor
+tarih
+yorumlar
+özet
+foto
+anahtar kelimeler
+katagori
