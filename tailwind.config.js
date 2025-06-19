@@ -18,7 +18,7 @@ module.exports = {
         textPrimary: '#b0bac5', //yazı
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif']
+        sans: ['Inter Variable', 'sans-serif']
       },
 
 
