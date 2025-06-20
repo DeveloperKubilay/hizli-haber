@@ -11,9 +11,12 @@ module.exports = {
         secondary: '#1bd96a', //yeşil
         secondaryHover: '#22ff84', //yeşil hover
         secondaryBG: '#23553e', //yeşil bg
-        selectBox: '#1a9f52', //seçim kutusu
+        selectBox: '#1a9f52', //seçim 
 
-
+        blackSelectBg:"#292a2d",
+        blackSelectHover:"#40434c",
+        
+        textHover:"#dce8f6",
         textHeading: '#ecf9fb', //başlık
         textPrimary: '#b0bac5', //yazı
       },

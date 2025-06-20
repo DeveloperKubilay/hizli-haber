@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { signInWithGoogle, logoutUser } from '../services/authService';
 import { auth } from '../services/firebase';
@@ -9,6 +9,8 @@ function Navbar() {
   const [imageError, setImageError] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
+  const dropdownRef = useRef(null);
+  const timeoutRef = useRef(null);
 
   // Kategori listesi - istediğin gibi değiştirebilirsin 💯
   const categories = [
@@ -22,6 +24,28 @@ function Navbar() {
     });
     return unsubscribe;
   }, []);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setShowCategories(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setShowCategories(false);
+    }, 300); // 300ms delay before hiding the menu
+  };
 
   const handleSignIn = useCallback(async () => {
     if (isProcessing) return;
@@ -73,8 +97,9 @@ function Navbar() {
           </Link>
           <div 
             className="relative group"
-            onMouseEnter={() => setShowCategories(true)}
-            onMouseLeave={() => setShowCategories(false)}
+            ref={dropdownRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
           >
             <Link to="/about" className="text-sm text-opacity-100 hover:text-opacity-80 font-medium">
               Haberler
@@ -82,10 +107,13 @@ function Navbar() {
             
             {/* Kategoriler dropdown menüsü 🔥 */}
             {showCategories && (
-              <div className="absolute top-full left-0 mt-0.5 bg-gray-800/95 backdrop-blur-sm shadow-xl rounded-lg py-3 px-4 z-20 border border-gray-700 w-[320px] h-auto overflow-auto">
+              <div 
+                className="absolute top-full left-0 mt-0.5 bg-gray-800/95 backdrop-blur-sm shadow-xl rounded-lg py-3 px-4 z-20 border border-gray-700 w-[320px] h-auto overflow-auto"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
                 <h3 className="font-bold text-gray-200 mb-2 text-sm border-b border-gray-700 pb-1">KATEGORİLER 📚</h3>
                 
-                {/* Tek liste halinde yatay gösterim - belli genişlikte 👇 */}
                 <div className="flex flex-wrap gap-2">
                   {categories.map((category, index) => (
                     <Link 
@@ -137,9 +165,9 @@ function Navbar() {
             <div>
               <button
                 onClick={handleSignIn}
-                className="flex items-center gap-2 bg-secondary text-black rounded-lg shadow-sm px-3 py-2 text-xl hover:bg-secondaryHover font-bold"
+                className="flex items-center gap-2 bg-secondary text-black rounded-lg shadow-sm px-[10px] py-[6px] text-lg hover:bg-secondaryHover font-bold"
               >
-                <LogIn size={28} strokeWidth={3} />
+                <LogIn size={28} strokeWidth={2.5} />
                 Giriş yap
               </button>
             </div>
