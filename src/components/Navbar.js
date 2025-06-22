@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { signInWithGoogle, logoutUser } from '../services/authService';
 import { auth } from '../services/firebase';
-import { LogIn } from "lucide-react";
+import { LogIn, Newspaper } from "lucide-react";
 
 function Navbar() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -86,7 +86,7 @@ function Navbar() {
           <img
             src="/imgs/logo.png"
             alt="Logo"
-            className="h-10 w-auto"
+            className="h-8 w-auto"
           />
           <h1 className="text-2xl font-bold text-opacity-100 text-shadow text-[#ecf9fb]">hızlı haber</h1>
         </Link>
@@ -102,7 +102,7 @@ function Navbar() {
             onMouseLeave={handleMouseLeave}
           >
             <Link to="/about" className="text-sm text-opacity-100 hover:text-opacity-80 font-medium">
-              Haberler
+              <Newspaper /> Haberler
             </Link>
             
             {/* Kategoriler dropdown menüsü 🔥 */}
@@ -165,9 +165,9 @@ function Navbar() {
             <div>
               <button
                 onClick={handleSignIn}
-                className="flex items-center gap-2 bg-secondary text-black rounded-lg shadow-sm px-[10px] py-[6px] text-lg hover:bg-secondaryHover font-bold"
+                className="flex items-center gap-2 bg-secondary text-black rounded-lg shadow-sm px-[10px] py-[6px] hover:bg-secondaryHover font-bold"
               >
-                <LogIn size={28} strokeWidth={2.5} />
+                <LogIn size={18} strokeWidth={2} />
                 Giriş yap
               </button>
             </div>
