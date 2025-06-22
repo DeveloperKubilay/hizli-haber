@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { signInWithGoogle, logoutUser } from '../services/authService';
 import { auth } from '../services/firebase';
-import { LogIn, Newspaper } from "lucide-react";
+import { LogIn, Newspaper, Search, BookMarked } from "lucide-react";
 
 function Navbar() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -79,6 +79,15 @@ function Navbar() {
     setImageError(true);
   };
 
+  const aGroup = function(name, href, icon) {
+    return (
+      <Link to={href} className="flex items-center gap-1 text-sm text-opacity-100 hover:text-textHover hover:bg-blackSelectHover font-medium py-2 px-3 rounded-lg">
+        {icon}
+        {name}
+      </Link>
+    );
+  };
+
   return (
     <header className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 relative z-10">
       <div className="flex justify-between items-center">
@@ -92,34 +101,28 @@ function Navbar() {
         </Link>
 
         <nav className="flex space-x-3 items-center">
-          <Link to="/haberler" className="text-sm text-opacity-100 hover:text-opacity-80 font-medium">
-            Son Haberler
-          </Link>
+          {aGroup("Son Haberler", "/haberler", <BookMarked size={16} />)}
           <div 
             className="relative group"
             ref={dropdownRef}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
-            <Link to="/about" className="text-sm text-opacity-100 hover:text-opacity-80 font-medium">
-              <Newspaper /> Haberler
-            </Link>
+            {aGroup("Haberler", "/about", <Newspaper size={16} />)}
             
             {/* Kategoriler dropdown menüsü 🔥 */}
             {showCategories && (
               <div 
-                className="absolute top-full left-0 mt-0.5 bg-gray-800/95 backdrop-blur-sm shadow-xl rounded-lg py-3 px-4 z-20 border border-gray-700 w-[320px] h-auto overflow-auto"
+                className="absolute top-full left-0 mt-0.5 bg-blackSelectBg backdrop-blur-sm shadow-xl rounded-lg py-3 px-4 z-20 border-2 border-blackSelectHover w-[320px] h-auto overflow-auto"
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
-                <h3 className="font-bold text-gray-200 mb-2 text-sm border-b border-gray-700 pb-1">KATEGORİLER 📚</h3>
-                
                 <div className="flex flex-wrap gap-2">
                   {categories.map((category, index) => (
                     <Link 
                       key={index}
                       to={`/kategori/${category.toLowerCase()}`}
-                      className="bg-gray-700 hover:bg-gray-600 text-gray-200 text-xs rounded-full px-3 py-1.5 transition-all"
+                      className="bg-secondary text-black hover:bg-secondaryHover text-xs rounded-full px-3 py-1.5 transition-all"
                     >
                       {category}
                     </Link>
@@ -128,9 +131,7 @@ function Navbar() {
               </div>
             )}
           </div>
-          <Link to="/about" className="text-sm text-opacity-100 hover:text-opacity-80 font-medium">
-            Bir Haber ara
-          </Link>
+          {aGroup("Bir Haber ara", "/about", <Search size={16} />)}
         </nav>
 
         <div>
