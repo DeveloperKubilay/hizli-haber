@@ -17,3 +17,7 @@ yorumlar
 foto
 anahtar kelimeler
 katagori
+
+
+
+hover yaptığımda dursun knka ve bittiğinde tekrar başa sarsın demek istediğim sonsuz döngü olsun ve hover yaptığımda durdurabileyim bir tanesini
