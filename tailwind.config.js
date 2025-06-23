@@ -22,9 +22,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ['Inter Variable', 'sans-serif']
-      },
-
-
+      }
     },
   },
   plugins: [],
