@@ -4,6 +4,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import Navbar from '../components/Navbar';
 import { Compass, Newspaper } from "lucide-react";
 import { motion } from "motion/react";
+import { ProductTicker } from '../components/home/showCase';
 
 function Home() {
   const [blogs, setBlogs] = useState([]);
@@ -107,15 +108,11 @@ function Home() {
                   </motion.a>
                 </div>
               </motion.h1>
-
-
-
-
-
             </div>
           </div>
         </div>
       </div>
+      <ProductTicker />
     </>
   );
 }
