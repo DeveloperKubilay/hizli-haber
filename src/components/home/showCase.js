@@ -13,7 +13,7 @@ export function ProductTicker() {
   const containerStyle = {
     position: 'relative',
     width: '100%',
-    height: '80px',
+    height: '100px', // 🔥 Yüksekliği artırdım
     overflow: 'hidden',
     backgroundColor: '#f5f5f5',
   };
@@ -25,29 +25,29 @@ export function ProductTicker() {
   };
   const tickerStyle = {
     display: 'flex',
-    gap: '20px',
+    gap: '25px', // 🔥 Gap artırıldı
     whiteSpace: 'nowrap',
     position: 'absolute',
     top: '50%',
     transform: 'translateY(-50%)',
     willChange: 'transform',
-    height: '60px',
+    height: '75px', // 🔥 Yükseklik artırıldı
   };
   const productStyle = {
     display: 'flex',
     alignItems: 'center',
     border: '1px solid #ddd',
-    borderRadius: '8px',
-    padding: '10px 15px',
-    minWidth: '180px',
-    height: '60px',
+    borderRadius: '10px', // 🔥 Border radius artırıldı
+    padding: '12px 18px', // 🔥 Padding artırıldı
+    minWidth: '220px', // 🔥 Genişlik artırıldı
+    height: '75px', // 🔥 Yükseklik artırıldı
     backgroundColor: '#fff',
-    boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+    boxShadow: '0 3px 7px rgba(0,0,0,0.15)', // 🔥 Gölge güçlendirildi
     userSelect: 'none',
     transition: 'transform 0.3s, box-shadow 0.3s',
   };
   const imageStyle = {
-    width: '30px',
+    width: '40px', // 🔥 İmaj boyutu artırıldı
     height: '30px',
     marginRight: '15px',
     objectFit: 'contain'

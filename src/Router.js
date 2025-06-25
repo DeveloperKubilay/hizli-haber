@@ -6,7 +6,7 @@ import './services/index.css';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-background text-textPrimary font-sans">
+      <div className="min-h-screen bg-background text-textPrimary font-sans text-base"> {/* Text base sınıfı eklendi - tüm metin boyutlarını büyütecek */}
         <Routes>
           <Route path="/" element={<Home />} />
           {/* <Route path="/test" element={<Test />} /> */}
