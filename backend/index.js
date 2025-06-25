@@ -1,8 +1,6 @@
-const { S3Client, ListObjectsV2Command, PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const fs = require("fs");
 require("dotenv").config();
-
-//https://pub-85e7961b073c49cd8e8af1e0eff7a3c7.r2.dev/Ads%C4%B1z.png
 
 const s3Client = new S3Client({
     region: "auto",
