@@ -2,11 +2,11 @@ import React from 'react';
 import { motion } from 'motion/react';
 
 const products = [
-  { id: 1, icon: '🍎', name: 'Elma', description: 'Taze ve lezzetli elma' },
-  { id: 2, icon: '🍌', name: 'Muz', description: 'Sarı muzlar burada' },
-  { id: 3, icon: '🥑', name: 'Avokado', description: 'Sağlıklı yağ kaynağı' },
-  { id: 4, icon: '🍓', name: 'Çilek', description: 'Tatlı kırmızı meyve' },
-  { id: 5, icon: '🍇', name: 'Üzüm', description: 'Salkım salkım üzüm' },
+  { id: 1, image: 'https://i.imgur.com/1GnhM3T.png', name: 'Elma', description: 'Taze ve lezzetli elma' },
+  { id: 2, image: 'https://i.imgur.com/bXYHGBL.png', name: 'Muz', description: 'Sarı muzlar burada' },
+  { id: 3, image: 'https://i.imgur.com/HlVXEZK.png', name: 'Avokado', description: 'Sağlıklı yağ kaynağı' },
+  { id: 4, image: 'https://i.imgur.com/SRt4Kj7.png', name: 'Çilek', description: 'Tatlı kırmızı meyve' },
+  { id: 5, image: 'https://i.imgur.com/vpYY5YO.png', name: 'Üzüm', description: 'Salkım salkım üzüm' },
 ];
 
 const containerStyle = {
@@ -26,13 +26,13 @@ const tickerContainerStyle = {
 
 const tickerStyle = {
   display: 'flex',
-  gap: '20px',
+  gap: '20px', 
   whiteSpace: 'nowrap',
   position: 'absolute',
-  animation: 'ticker 40s linear infinite',
   top: '50%',
   transform: 'translateY(-50%)',
-  willChange: 'right',
+  willChange: 'transform',
+  height: '60px',
 };
 
 const productStyle = {
@@ -42,15 +42,18 @@ const productStyle = {
   borderRadius: '8px',
   padding: '10px 15px',
   minWidth: '180px',
+  height: '60px',
   backgroundColor: '#fff',
   boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
   userSelect: 'none',
   transition: 'transform 0.3s, box-shadow 0.3s',
 };
 
-const iconStyle = {
-  fontSize: '30px',
+const imageStyle = {
+  width: '30px',
+  height: '30px',
   marginRight: '15px',
+  objectFit: 'contain'
 };
 
 const textContainerStyle = {
@@ -87,11 +90,21 @@ const descStyle = {
 const styleSheet = `
 @keyframes ticker {
   0% {
-    right: -100%;
+    transform: translate3d(0, -50%, 0);
   }
   100% {
-    right: 100%;
+    transform: translate3d(calc(-100% / 2), -50%, 0);
   }
+}
+
+.ticker {
+  display: flex;
+  animation: ticker 30s linear infinite;
+  width: fit-content;
+}
+
+.ticker > div {
+  flex-shrink: 0;
 }
 
 .ticker-container:hover .ticker {
@@ -106,40 +119,34 @@ const styleSheet = `
 `;
 
 export default function ProductTicker() {
+  const duplicatedProducts = [...products, ...products, ...products];
+  
   return (
     <>
       <style>{styleSheet}</style>
 
       <div style={containerStyle} className="ticker-container">
         <div style={tickerContainerStyle}>
-          <motion.div 
-            className="ticker" 
+          <div
+            className="ticker"
             style={tickerStyle}
-            initial={{ right: "-100%" }}
-            animate={{ right: "100%" }}
-            transition={{ 
-              duration: 40, 
-              ease: "linear", 
-              repeat: Infinity,
-              repeatType: "loop"
-            }}
           >
-            {products.map(({ id, icon, name, description }) => (
-              <motion.div 
-                key={id} 
+            {duplicatedProducts.map(({ id, image, name, description }, index) => (
+              <motion.div
+                key={`${id}-${index}`}
                 className="product-card"
                 style={productStyle}
-                whileHover={{ 
-                  scale: 1.05, 
+                whileHover={{
+                  scale: 1.05,
                   boxShadow: "0 5px 15px rgba(0,0,0,0.2)",
                   y: -5
                 }}
               >
-                <motion.div 
-                  style={iconStyle}
-                  whileHover={{ rotate: [0, 10, -10, 0] }}
-                  transition={{ duration: 0.5 }}
-                >{icon}</motion.div>
+                <img
+                  src={image}
+                  alt={name}
+                  style={imageStyle}
+                />
                 <div style={textContainerStyle}>
                   <div style={nameStyle} title={name}>
                     {name.length > 10 ? name.slice(0, 10) + '…' : name}
@@ -150,33 +157,7 @@ export default function ProductTicker() {
                 </div>
               </motion.div>
             ))}
-            {products.map(({ id, icon, name, description }) => (
-              <motion.div 
-                key={'dup-' + id} 
-                className="product-card"
-                style={productStyle}
-                whileHover={{ 
-                  scale: 1.05, 
-                  boxShadow: "0 5px 15px rgba(0,0,0,0.2)",
-                  y: -5
-                }}
-              >
-                <motion.div 
-                  style={iconStyle}
-                  whileHover={{ rotate: [0, 10, -10, 0] }}
-                  transition={{ duration: 0.5 }}
-                >{icon}</motion.div>
-                <div style={textContainerStyle}>
-                  <div style={nameStyle} title={name}>
-                    {name.length > 10 ? name.slice(0, 10) + '…' : name}
-                  </div>
-                  <div style={descStyle} title={description}>
-                    {description.length > 20 ? description.slice(0, 20) + '…' : description}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+          </div>
         </div>
       </div>
     </>
