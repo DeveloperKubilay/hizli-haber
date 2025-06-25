@@ -144,8 +144,8 @@ function Navbar() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: delay, ease: "easeOut" }}
       >
-        <Link to={href} className="flex items-center gap-1 text-sm text-opacity-100 hover:text-textHover hover:bg-blackSelectHover font-medium py-2 px-3 rounded-lg">
-          {icon}
+        <Link to={href} className="flex items-center gap-2 text-base text-opacity-100 hover:text-textHover hover:bg-blackSelectHover font-medium py-3 px-4 rounded-lg">
+          {React.cloneElement(icon, { size: 20 })} {/* 🔥 İkon boyutunu büyüttüm */}
           {name}
         </Link>
       </motion.div>
@@ -165,13 +165,13 @@ function Navbar() {
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
         >
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-3">
             <img
               src="/imgs/logo.png"
               alt="Logo"
-              className="h-8 w-auto"
+              className="h-10 w-auto" // 🔥 Logo boyutunu büyüttüm
             />
-            <h1 className="text-2xl font-bold text-opacity-100 text-shadow text-[#ecf9fb]">hızlı haber</h1>
+            <h1 className="text-3xl font-bold text-opacity-100 text-shadow text-[#ecf9fb]">hızlı haber</h1>
           </Link>
         </motion.div>
 
@@ -191,7 +191,7 @@ function Navbar() {
             {/* Kategoriler dropdown menüsü 🔥 */}
             {showCategories && (
               <motion.div 
-                className="absolute top-full left-0 mt-0.5 bg-blackSelectBg backdrop-blur-sm shadow-xl rounded-lg py-3 px-4 z-20 border-2 border-blackSelectHover w-[320px] h-auto overflow-auto scrollbar-none origin-top-left"
+                className="absolute top-full left-0 mt-0.5 bg-blackSelectBg backdrop-blur-sm shadow-xl rounded-lg py-4 px-5 z-20 border-2 border-blackSelectHover w-[380px] h-auto overflow-auto scrollbar-none origin-top-left" // 🔥 Boyutları büyüttüm
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
                 initial={{ opacity: 0, scale: 0.95 }}

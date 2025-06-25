@@ -4,6 +4,21 @@
 
 @import "../../node_modules/bootstrap-icons/font/bootstrap-icons.css";
 
+/* Genel boyutlandırma artırma - daha büyük elementler için 🔥 */
+@layer base {
+  html {
+    font-size: 110%; /* Temel font boyutunu %10 büyüttük */
+  }
+  
+  .bigger-element {
+    transform: scale(1.1);
+  }
+  
+  .container {
+    max-width: 85% !important; /* Container genişliği arttırıldı */
+  }
+}
+
 /*
 https://uiverse.io/marsella_3472/clever-puma-91
 */
