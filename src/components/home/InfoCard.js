@@ -5,23 +5,23 @@ import { motion } from 'framer-motion';
 export function InfoCard({ title, description, image, index }) {
   return (
     <motion.div 
-      className="flex items-center justify-between bg-white rounded-xl shadow-lg p-6 mb-6 mx-4"
+      className="flex items-stretch bg-transparent rounded-xl mb-36 mx-4 overflow-hidden h-[500px] gap-6"
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: index * 0.2 }}
     >
-      {/* Sol taraf - Yazı */}
-      <div className="flex-1 pr-6">
-        <h3 className="text-2xl font-bold text-gray-800 mb-3">{title}</h3>
-        <p className="text-gray-600 text-lg leading-relaxed">{description}</p>
+      {/* Sol taraf - Yazı (50%) */}
+      <div className="w-1/2 p-8 flex flex-col justify-center">
+        <h3 className="text-6xl font-bold text-white mb-4 leading-tight">{title}</h3>
+        <p className="text-white text-xl leading-relaxed">{description}</p>
       </div>
       
-      {/* Sağ taraf - Fotoğraf */}
-      <div className="flex-shrink-0">
+      {/* Sağ taraf - Fotoğraf (45%) */}
+      <div className="w-[45%]">
         <img 
           src={image} 
           alt={title}
-          className="w-48 h-32 object-cover rounded-lg shadow-md"
+          className="w-full h-full object-cover rounded-lg"
         />
       </div>
     </motion.div>
@@ -32,24 +32,24 @@ export function InfoCard({ title, description, image, index }) {
 export function InfoCardReverse({ title, description, image, index }) {
   return (
     <motion.div 
-      className="flex items-center justify-between bg-white rounded-xl shadow-lg p-6 mb-6 mx-4"
+      className="flex items-stretch bg-transparent rounded-xl mb-36 mx-4 overflow-hidden h-[500px] gap-6"
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: index * 0.2 }}
     >
-      {/* Sol taraf - Fotoğraf */}
-      <div className="flex-shrink-0">
+      {/* Sol taraf - Fotoğraf (45%) */}
+      <div className="w-[45%]">
         <img 
           src={image} 
           alt={title}
-          className="w-48 h-32 object-cover rounded-lg shadow-md"
+          className="w-full h-full object-cover rounded-lg"
         />
       </div>
       
-      {/* Sağ taraf - Yazı */}
-      <div className="flex-1 pl-6">
-        <h3 className="text-2xl font-bold text-gray-800 mb-3">{title}</h3>
-        <p className="text-gray-600 text-lg leading-relaxed">{description}</p>
+      {/* Sağ taraf - Yazı (50%) */}
+      <div className="w-1/2 p-8 flex flex-col justify-center">
+        <h3 className="text-6xl font-bold text-white mb-4 leading-tight">{title}</h3>
+        <p className="text-white text-xl leading-relaxed">{description}</p>
       </div>
     </motion.div>
   );
