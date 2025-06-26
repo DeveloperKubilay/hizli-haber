@@ -6,6 +6,7 @@ import { Compass, Newspaper } from "lucide-react";
 import { motion } from "framer-motion";
 import { ProductTicker, ProductTickerReverse } from '../components/home/showCase';
 import { InfoCard, InfoCardReverse } from '../components/home/InfoCard';
+import Footer from '../components/Footer';
 
 function Home() {
   const [blogs, setBlogs] = useState([]);
@@ -191,6 +192,55 @@ function Home() {
       
       {/* Alt boşluk */}
       <div className="h-20 bg-transparent"></div>
+      
+      {/* Siyah Section */}
+      <div className="w-full h-[600px] bg-black flex flex-col items-center justify-center relative overflow-hidden">
+        {/* Arka plan resmi */}
+        <img 
+          src="https://upload.wikimedia.org/wikipedia/commons/6/6a/PNG_Test.png" 
+          alt="Test"
+          className="absolute inset-0 w-full h-full object-contain opacity-30"
+          style={{
+            maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)'
+          }}
+        />
+        
+        {/* Yazılar ve buton - resimin üzerinde */}
+        <div className="relative z-10 text-center px-8 max-w-4xl">
+          <motion.p 
+            className="text-white text-6xl font-bold mb-4"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            Daha fazlası için
+          </motion.p>
+          <motion.p 
+            className="text-green-400 text-7xl font-bold mb-8"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          >
+            Hızlı Haber
+          </motion.p>
+          
+          {/* Buton */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
+            className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-base transition-colors duration-300 shadow-lg"
+          >
+            Siteyi Ziyaret Et
+          </motion.button>
+        </div>
+      </div>
+      
+      {/* Footer */}
+      <Footer />
     </>
   );
 }
