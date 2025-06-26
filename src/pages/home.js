@@ -146,34 +146,37 @@ function Home() {
       <div className="py-2">
         <ProductTicker />
       </div>
-      <div className="text-center py-8">
+      <div className="text-center py-8 mb-20">
         <h2 className="text-4xl font-bold text-textHeading">Merhaba</h2>
         <p className="text-lg text-gray-500 mt-3">evet burası bir merhaba mesajıdır</p>
       </div>
       
       {/* Info Cards Section */}
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-6 bg-transparent">
         <InfoCard 
           title="İlk Başlık"
           description="Bu ilk kartın açıklama metnidir. Burada güzel bir açıklama yazısı bulunmakta."
-          image="https://via.placeholder.com/300x200/4A90E2/ffffff?text=Resim+1"
+          image="https://upload.wikimedia.org/wikipedia/commons/6/6a/PNG_Test.png"
           index={0}
         />
         
         <InfoCardReverse 
           title="İkinci Başlık"
           description="Bu ikinci kartın açıklama metnidir ve ters yönde görünmektedir. Solda resim sağda yazı."
-          image="https://via.placeholder.com/300x200/50C878/ffffff?text=Resim+2"
+          image="https://upload.wikimedia.org/wikipedia/commons/6/6a/PNG_Test.png"
           index={1}
         />
         
         <InfoCard 
           title="Üçüncü Başlık"
           description="Bu üçüncü ve son kartın açıklama metnidir. Yine normal düzende sağda resim solda yazı."
-          image="https://via.placeholder.com/300x200/FF6B6B/ffffff?text=Resim+3"
+          image="https://upload.wikimedia.org/wikipedia/commons/6/6a/PNG_Test.png"
           index={2}
         />
       </div>
+      
+      {/* Alt boşluk */}
+      <div className="h-20 bg-transparent"></div>
     </>
   );
 }
