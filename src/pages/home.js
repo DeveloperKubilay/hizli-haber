@@ -147,8 +147,22 @@ function Home() {
         <ProductTicker />
       </div>
       <div className="text-center py-8 mb-20">
-        <h2 className="text-4xl font-bold text-textHeading">Merhaba</h2>
-        <p className="text-lg text-gray-500 mt-3">evet burası bir merhaba mesajıdır</p>
+        <motion.h2 
+          className="text-4xl font-bold text-textHeading"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          Merhaba
+        </motion.h2>
+        <motion.p 
+          className="text-lg text-gray-500 mt-3"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+        >
+          evet burası bir merhaba mesajıdır
+        </motion.p>
       </div>
       
       {/* Info Cards Section */}
