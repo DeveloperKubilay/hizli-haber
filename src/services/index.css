@@ -29,7 +29,7 @@ https://uiverse.io/marsella_3472/clever-puma-91
   top: 0;
   left: 0;
   width: 100%;
-  height: 90%;
+  height: 100vh; /* Başlangıçta full height, JavaScript ile ayarlanacak */
   overflow: hidden;
   opacity: 0.68;
 }

@@ -13,9 +13,9 @@ export function ProductTicker() {
   const containerStyle = {
     position: 'relative',
     width: '100%',
-    height: '100px', // 🔥 Yüksekliği artırdım
+    height: '120px', // 🔥 Yüksekliği daha da artırdım
     overflow: 'hidden',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'transparent',
   };
   const tickerContainerStyle = {
     position: 'relative',
@@ -25,31 +25,31 @@ export function ProductTicker() {
   };
   const tickerStyle = {
     display: 'flex',
-    gap: '25px', // 🔥 Gap artırıldı
+    gap: '30px', // 🔥 Gap biraz daha artırıldı
     whiteSpace: 'nowrap',
     position: 'absolute',
     top: '50%',
     transform: 'translateY(-50%)',
     willChange: 'transform',
-    height: '75px', // 🔥 Yükseklik artırıldı
+    height: '90px', // 🔥 Yükseklik artırıldı
   };
   const productStyle = {
     display: 'flex',
     alignItems: 'center',
-    border: '1px solid #ddd',
-    borderRadius: '10px', // 🔥 Border radius artırıldı
-    padding: '12px 18px', // 🔥 Padding artırıldı
-    minWidth: '220px', // 🔥 Genişlik artırıldı
-    height: '75px', // 🔥 Yükseklik artırıldı
-    backgroundColor: '#fff',
-    boxShadow: '0 3px 7px rgba(0,0,0,0.15)', // 🔥 Gölge güçlendirildi
+    border: '2px solid #ddd',
+    borderRadius: '12px', // 🔥 Border radius biraz artırıldı
+    padding: '15px 25px', // 🔥 Padding artırıldı, özellikle yatay padding
+    minWidth: '300px', // 🔥 Genişlik daha da artırıldı
+    height: '90px', // 🔥 Yükseklik artırıldı
+    backgroundColor: 'transparent', // 🔥 Arka plan kaldırıldı
+    boxShadow: 'none', // 🔥 Gölge kaldırıldı
     userSelect: 'none',
-    transition: 'transform 0.3s, box-shadow 0.3s',
+    transition: 'transform 0.3s, border-color 0.3s',
   };
   const imageStyle = {
-    width: '40px', // 🔥 İmaj boyutu artırıldı
-    height: '30px',
-    marginRight: '15px',
+    width: '45px', // 🔥 İmaj boyutu artırıldı
+    height: '35px',
+    marginRight: '18px',
     objectFit: 'contain'
   };
   const textContainerStyle = {
@@ -57,23 +57,24 @@ export function ProductTicker() {
     flexDirection: 'column',
     justifyContent: 'center',
     flexShrink: 0,
-    width: '120px',
+    width: '180px', // 🔥 Genişlik artırıldı
+    textAlign: 'left', // 🔥 Sol hizalama
   };
   const nameStyle = {
     fontWeight: '600',
-    fontSize: '16px',
-    textAlign: 'center',
+    fontSize: '20px', // 🔥 18px'den 20px'e artırıldı
+    textAlign: 'left', // 🔥 Sol hizalama
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
     maxWidth: '100%',
     letterSpacing: '0.05em',
+    marginBottom: '4px', // 🔥 Alt margin eklendi
   };
   const descStyle = {
-    fontSize: '12px',
-    color: '#666',
-    marginTop: '5px',
-    textAlign: 'center',
+    fontSize: '16px', // 🔥 14px'den 16px'e artırıldı
+    color: '#f0f0f0', // 🔥 Beyazın kapalı tonu
+    textAlign: 'left', // 🔥 Sol hizalama
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
@@ -89,20 +90,34 @@ export function ProductTicker() {
     transform: translate3d(calc(-100% / 2), -50%, 0);
   }
 }
+@keyframes tickerReverse {
+  0% {
+    transform: translate3d(calc(-100% / 2), -50%, 0);
+  }
+  100% {
+    transform: translate3d(0, -50%, 0);
+  }
+}
 .ticker {
   display: flex;
-  animation: ticker 30s linear infinite;
+  animation: ticker 20s linear infinite;
   width: fit-content;
 }
-.ticker > div {
+.ticker-reverse {
+  display: flex;
+  animation: tickerReverse 20s linear infinite;
+  width: fit-content;
+}
+.ticker > div, .ticker-reverse > div {
   flex-shrink: 0;
 }
-.ticker-container:hover .ticker {
+.ticker-container:hover .ticker,
+.ticker-container:hover .ticker-reverse {
   animation-play-state: paused;
 }
 .product-card:hover {
   transform: scale(1.05);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  border-color: #999;
   z-index: 10;
 }
 `;
@@ -120,7 +135,7 @@ export function ProductTicker() {
                 style={productStyle}
                 whileHover={{
                   scale: 1.05,
-                  boxShadow: "0 5px 15px rgba(0,0,0,0.2)",
+                  borderColor: "#999",
                   y: -5
                 }}
               >
@@ -131,10 +146,10 @@ export function ProductTicker() {
                 />
                 <div style={textContainerStyle}>
                   <div style={nameStyle} title={name}>
-                    {name.length > 10 ? name.slice(0, 10) + '…' : name}
+                    {name.length > 18 ? name.slice(0, 18) + '…' : name}
                   </div>
                   <div style={descStyle} title={description}>
-                    {description.length > 20 ? description.slice(0, 20) + '…' : description}
+                    {description.length > 25 ? description.slice(0, 25) + '…' : description}
                   </div>
                 </div>
               </motion.div>
@@ -142,6 +157,161 @@ export function ProductTicker() {
           </div>
         </div>
       </div>
+    </>
+  );
+}
+
+export function ProductTickerReverse() {
+  const containerStyle = {
+    position: 'relative',
+    width: '100%',
+    height: '120px',
+    overflow: 'hidden',
+    backgroundColor: 'transparent',
+  };
+  const tickerContainerStyle = {
+    position: 'relative',
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
+  };
+  const tickerStyle = {
+    display: 'flex',
+    gap: '30px',
+    whiteSpace: 'nowrap',
+    position: 'absolute',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    willChange: 'transform',
+    height: '90px',
+  };
+  const productStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    border: '2px solid #ddd',
+    borderRadius: '12px',
+    padding: '15px 25px',
+    minWidth: '300px',
+    height: '90px',
+    backgroundColor: 'transparent',
+    boxShadow: 'none',
+    userSelect: 'none',
+    transition: 'transform 0.3s, border-color 0.3s',
+  };
+  const imageStyle = {
+    width: '45px',
+    height: '35px',
+    marginRight: '18px',
+    objectFit: 'contain'
+  };
+  const textContainerStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    flexShrink: 0,
+    width: '180px',
+    textAlign: 'left',
+  };
+  const nameStyle = {
+    fontWeight: '600',
+    fontSize: '20px', // 🔥 Font boyutu artırıldı
+    textAlign: 'left',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+    maxWidth: '100%',
+    letterSpacing: '0.05em',
+    marginBottom: '4px',
+  };
+  const descStyle = {
+    fontSize: '16px', // 🔥 Font boyutu artırıldı
+    color: '#f0f0f0', // 🔥 Beyazın kapalı tonu
+    textAlign: 'left',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+    maxWidth: '100%',
+    letterSpacing: '0.02em',
+  };
+
+  const styleSheet = `
+@keyframes ticker {
+  0% {
+    transform: translate3d(0, -50%, 0);
+  }
+  100% {
+    transform: translate3d(calc(-100% / 2), -50%, 0);
+  }
+}
+@keyframes tickerReverse {
+  0% {
+    transform: translate3d(calc(-100% / 2), -50%, 0);
+  }
+  100% {
+    transform: translate3d(0, -50%, 0);
+  }
+}
+.ticker {
+  display: flex;
+  animation: ticker 20s linear infinite;
+  width: fit-content;
+}
+.ticker-reverse {
+  display: flex;
+  animation: tickerReverse 20s linear infinite;
+  width: fit-content;
+}
+.ticker > div, .ticker-reverse > div {
+  flex-shrink: 0;
+}
+.ticker-container:hover .ticker,
+.ticker-container:hover .ticker-reverse {
+  animation-play-state: paused;
+}
+.product-card:hover {
+  transform: scale(1.05);
+  border-color: #999;
+  z-index: 10;
+}
+`;
+
+  const duplicatedProducts = [...products, ...products, ...products];
+  
+  return (
+    <>
+      <style>{styleSheet}</style>
+      <div style={containerStyle} className="ticker-container">
+      <div style={tickerContainerStyle}>
+        <div className="ticker-reverse" style={tickerStyle}>
+          {duplicatedProducts.map(({ id, image, name, description }, index) => (
+            <motion.div
+              key={`${id}-${index}`}
+              className="product-card"
+              style={productStyle}
+              whileHover={{
+                scale: 1.05,
+                borderColor: "#999",
+                y: -5
+              }}
+            >
+              <img
+                src={image}
+                alt={name}
+                style={imageStyle}
+              />
+              <div style={textContainerStyle}>
+                <div style={nameStyle} title={name}>
+                  {name.length > 18 ? name.slice(0, 18) + '…' : name}
+                </div>
+                <div style={descStyle} title={description}>
+                  {description.length > 25 ? description.slice(0, 25) + '…' : description}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </div>
     </>
   );
 }
