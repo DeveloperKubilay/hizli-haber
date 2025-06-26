@@ -5,7 +5,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: '#16181c', // White
+        tbackground: '#16181c', // Dark background
+        background: '#0c0e19', // White
         primary: '#26292f', //divler
         primaryBG: '#33363d', //arama kısmı alternatif div
         secondary: '#1bd96a', //yeşil
