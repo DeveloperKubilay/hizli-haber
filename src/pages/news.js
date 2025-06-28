@@ -9,10 +9,6 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(APP_CONFIG.DEFAULT_CATEGORY);
   
-  const handleCategoryChange = (event) => {
-    setSelectedCategory(event.target.value);
-  };
-  
   const filteredBlogs = selectedCategory === CATEGORIES.ALL 
     ? blogs 
     : blogs.filter(blog => blog.kategori === selectedCategory);
@@ -41,21 +37,28 @@ function Home() {
       <Navbar />
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="space-y-8">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900">📰 Haberler</h1>
-            <div className="flex items-center gap-3">
-              <span className="text-gray-700 font-medium">Kategori:</span>
-              <select
-                value={selectedCategory}
-                onChange={handleCategoryChange}
-                className="block px-4 py-2 text-gray-700 bg-white border-2 border-blue-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-colors"
-              >
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-gray-900 mb-6">📰 Haberler</h1>
+            
+            {/* Kategori Butonları - Yatay Sıralı */}
+            <div className="mb-6">
+              <h2 className="text-lg font-semibold text-gray-700 mb-4">Kategoriler:</h2>
+              <div className="flex flex-wrap gap-3">
                 {CATEGORY_LIST.map(category => (
-                  <option key={category} value={category}>
-                    {CATEGORY_ICONS[category]} {category}
-                  </option>
+                  <button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 border-2 ${
+                      selectedCategory === category
+                        ? 'bg-blue-500 text-white border-blue-500 shadow-lg transform scale-105'
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700'
+                    }`}
+                  >
+                    <span className="mr-2">{CATEGORY_ICONS[category]}</span>
+                    {category}
+                  </button>
                 ))}
-              </select>
+              </div>
             </div>
           </div>
           
