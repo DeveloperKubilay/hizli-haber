@@ -33,11 +33,11 @@ function Footer() {
           >
             <h4 className="text-xl font-bold mb-4 text-green-400">Hızlı Linkler</h4>
             <ul className="space-y-2">
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Ana Sayfa</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Haberler</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Kategoriler</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Hakkımızda</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">İletişim</a></li>
+              <li><button className="text-gray-400 hover:text-white transition-colors text-left">Ana Sayfa</button></li>
+              <li><button className="text-gray-400 hover:text-white transition-colors text-left">Haberler</button></li>
+              <li><button className="text-gray-400 hover:text-white transition-colors text-left">Kategoriler</button></li>
+              <li><button className="text-gray-400 hover:text-white transition-colors text-left">Hakkımızda</button></li>
+              <li><button className="text-gray-400 hover:text-white transition-colors text-left">İletişim</button></li>
             </ul>
           </motion.div>
 
