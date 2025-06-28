@@ -18,9 +18,7 @@ foto
 anahtar kelimeler
 katagori
 
-
-
-hover yaptığımda dursun knka ve bittiğinde tekrar başa sarsın demek istediğim sonsuz döngü olsun ve hover yaptığımda durdurabileyim bir tanesini
-knka çoğu şeyde animasyon var ama showCase için animasyon yamamışızona animasyon ypaarmısın
-
 https://v3.tailwindcss.com/
+
+
+şimdi moruk news.js de sende editlemeler yapmanı isticem
