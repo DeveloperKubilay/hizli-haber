@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { db } from '../services/firebase';
-import { collection, getDocs } from 'firebase/firestore';
 import Navbar from '../components/Navbar';
 import { Compass, Newspaper } from "lucide-react";
 import { motion } from "framer-motion";
@@ -9,30 +7,9 @@ import { InfoCard, InfoCardReverse } from '../components/home/InfoCard';
 import Footer from '../components/Footer';
 
 function Home() {
-  const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [currentMsgIndex, setCurrentMsgIndex] = useState(0);
   const productTickerRef = useRef(null);
   const welcomeContainerRef = useRef(null);
-
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        const blogsCollection = collection(db, 'blogs');
-        const blogsSnapshot = await getDocs(blogsCollection);
-        setBlogs(blogsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })));
-      } catch (error) {
-        console.error("Error fetching blogs:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBlogs();
-  }, []);
 
   // Welcome container yüksekliğini ayarlama
   useEffect(() => {
@@ -53,7 +30,7 @@ function Home() {
       clearTimeout(timer);
       window.removeEventListener('resize', adjustWelcomeContainerHeight);
     };
-  }, [loading]); // loading değiştiğinde yeniden hesapla
+  }, []);
 
   const msgs = [{
     text: "en hızlısı",
