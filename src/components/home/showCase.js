@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 
 const products = [
   { id: 1, image: 'https://i.imgur.com/1GnhM3T.png', name: 'Elma', description: 'Taze ve lezzetli elma' },
@@ -100,12 +99,12 @@ export function ProductTicker() {
 }
 .ticker {
   display: flex;
-  animation: ticker 20s linear infinite;
+  animation: ticker 40s linear infinite;
   width: fit-content;
 }
 .ticker-reverse {
   display: flex;
-  animation: tickerReverse 20s linear infinite;
+  animation: tickerReverse 40s linear infinite;
   width: fit-content;
 }
 .ticker > div, .ticker-reverse > div {
@@ -116,9 +115,8 @@ export function ProductTicker() {
   animation-play-state: paused;
 }
 .product-card:hover {
-  transform: scale(1.05);
+  transform: scale(1.02);
   border-color: #999;
-  z-index: 10;
 }
 `;
   const duplicatedProducts = [...products, ...products, ...products];
@@ -129,15 +127,10 @@ export function ProductTicker() {
         <div style={tickerContainerStyle}>
           <div className="ticker" style={tickerStyle}>
             {duplicatedProducts.map(({ id, image, name, description }, index) => (
-              <motion.div
+              <div
                 key={`${id}-${index}`}
                 className="product-card"
                 style={productStyle}
-                whileHover={{
-                  scale: 1.05,
-                  borderColor: "#999",
-                  y: -5
-                }}
               >
                 <img
                   src={image}
@@ -152,7 +145,7 @@ export function ProductTicker() {
                     {description.length > 25 ? description.slice(0, 25) + '…' : description}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -253,12 +246,12 @@ export function ProductTickerReverse() {
 }
 .ticker {
   display: flex;
-  animation: ticker 20s linear infinite;
+  animation: ticker 40s linear infinite;
   width: fit-content;
 }
 .ticker-reverse {
   display: flex;
-  animation: tickerReverse 20s linear infinite;
+  animation: tickerReverse 40s linear infinite;
   width: fit-content;
 }
 .ticker > div, .ticker-reverse > div {
@@ -269,9 +262,8 @@ export function ProductTickerReverse() {
   animation-play-state: paused;
 }
 .product-card:hover {
-  transform: scale(1.05);
+  transform: scale(1.02);
   border-color: #999;
-  z-index: 10;
 }
 `;
 
@@ -284,15 +276,10 @@ export function ProductTickerReverse() {
       <div style={tickerContainerStyle}>
         <div className="ticker-reverse" style={tickerStyle}>
           {duplicatedProducts.map(({ id, image, name, description }, index) => (
-            <motion.div
+            <div
               key={`${id}-${index}`}
               className="product-card"
               style={productStyle}
-              whileHover={{
-                scale: 1.05,
-                borderColor: "#999",
-                y: -5
-              }}
             >
               <img
                 src={image}
@@ -307,7 +294,7 @@ export function ProductTickerReverse() {
                   {description.length > 25 ? description.slice(0, 25) + '…' : description}
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
