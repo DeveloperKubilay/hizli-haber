@@ -2,10 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../services/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import Navbar from '../components/Navbar';
+import { CATEGORY_LIST, CATEGORIES, CATEGORY_ICONS, CATEGORY_COLORS, APP_CONFIG } from '../services/categories';
 
 function Home() {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState(APP_CONFIG.DEFAULT_CATEGORY);
+  
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+  };
+  
+  const filteredBlogs = selectedCategory === CATEGORIES.ALL 
+    ? blogs 
+    : blogs.filter(blog => blog.kategori === selectedCategory);
   
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -29,40 +39,62 @@ function Home() {
   return (
     <>
       <Navbar />
-      <div className="Welcome_container"></div>
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 relative">
+      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="space-y-8">
-          <div>
-
-
-            <h2 className="text-2xl font-semibold mb-4">All Blog Posts</h2>
-            
-            {loading ? (
-              <p>Loading blogs...</p>
-            ) : blogs.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {blogs.map(blog => (
-                  <div key={blog.id} className="bg-white p-6 rounded shadow-md">
-                    <h3 className="text-xl font-semibold mb-2">{blog.baslik}</h3>
-                    <p className="text-gray-600 mb-2">{blog.kisaAciklama}</p>
-                    <div className="flex flex-wrap mb-2">
-                      {blog.etiketler && blog.etiketler.map((tag, index) => (
-                        <span key={index} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded mr-2 mb-2">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <p className="text-sm text-gray-500">Okunma: {blog.okunmaSayisi}</p>
-                  </div>
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-4xl font-bold text-gray-900">📰 Haberler</h1>
+            <div className="flex items-center gap-3">
+              <span className="text-gray-700 font-medium">Kategori:</span>
+              <select
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+                className="block px-4 py-2 text-gray-700 bg-white border-2 border-blue-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-colors"
+              >
+                {CATEGORY_LIST.map(category => (
+                  <option key={category} value={category}>
+                    {CATEGORY_ICONS[category]} {category}
+                  </option>
                 ))}
-              </div>
-            ) : (
-              <p>No blogs found.</p>
-            )}
-
-
-            
+              </select>
+            </div>
           </div>
+          
+          {loading ? (
+            <div className="flex justify-center items-center py-20">
+              <div className="text-xl text-gray-500">⏳ Haberler yükleniyor...</div>
+            </div>
+          ) : filteredBlogs.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredBlogs.map(blog => (
+                <div key={blog.id} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-gray-200">
+                  <h3 className="text-xl font-bold mb-3 text-gray-800">{blog.baslik}</h3>
+                  <p className="text-gray-600 mb-4 line-clamp-3">{blog.kisaAciklama}</p>
+                  {blog.kategori && (
+                    <span className={`text-sm px-3 py-1 rounded-full mb-3 inline-block ${CATEGORY_COLORS[blog.kategori] || 'bg-gray-100 text-gray-800'}`}>
+                      {CATEGORY_ICONS[blog.kategori]} {blog.kategori}
+                    </span>
+                  )}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {blog.etiketler && blog.etiketler.map((tag, index) => (
+                      <span key={index} className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex justify-between items-center text-sm text-gray-500">
+                    <span>👁️ {blog.okunmaSayisi || 0} okunma</span>
+                    <span>📅 {blog.tarih || 'Bilinmiyor'}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20">
+              <div className="text-xl text-gray-500">
+                {selectedCategory === CATEGORIES.ALL ? '📭 Henüz haber yok' : `📭 ${selectedCategory} kategorisinde haber bulunamadı`}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>
