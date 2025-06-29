@@ -66,7 +66,7 @@ export const NAVBAR_CATEGORIES = Object.entries(CATEGORIES)
   .filter(([key]) => key !== 'ALL') // Tümü kategorisini hariç tut
   .map(([key, value]) => ({
     name: value,
-    href: `/kategori/${key.toLowerCase()}`,
+    href: `/haberler#${key.toLowerCase()}`,
     bgColor: getNavbarCategoryColor(key)
   }));
 

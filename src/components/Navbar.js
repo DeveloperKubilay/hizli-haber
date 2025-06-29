@@ -134,7 +134,16 @@ function Navbar() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
           >
-            {aGroup("Haberler", "/about", <Newspaper size={16} />, 0)}
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
+            >
+              <Link to="/haberler" className="flex items-center gap-2 text-sm text-opacity-100 font-medium py-2 px-4 rounded-lg transition-all duration-200 hover:text-white hover:bg-blackSelectHover">
+                <Newspaper size={18} />
+                Haberler
+              </Link>
+            </motion.div>
             
             {/* Kategoriler dropdown menüsü 🔥 */}
             {showCategories && (
@@ -173,7 +182,7 @@ function Navbar() {
               </motion.div>
             )}
           </motion.div>
-          {aGroup("Bir Haber ara", "/about", <Search size={16} />, 0.5)}
+          {aGroup("Bir Haber ara", "/haberler?focus=search", <Search size={16} />, 0.5)}
         </nav>
 
         <motion.div

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../services/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import Navbar from '../components/Navbar';
 import { CATEGORY_LIST, CATEGORIES, CATEGORY_ICONS, CATEGORY_COLORS, APP_CONFIG } from '../services/categories';
+import { useLocation } from 'react-router-dom';
 import { 
   Search, 
   X, 
@@ -29,6 +30,9 @@ function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [showViewDropdown, setShowViewDropdown] = useState(false);
+  
+  const location = useLocation();
+  const searchInputRef = useRef(null);
   
   // Filtreleme ve arama
   const filteredBlogs = blogs.filter(blog => {
@@ -77,6 +81,32 @@ function Home() {
     fetchBlogs();
   }, []);
 
+  // URL hash ve query parametrelerini handle et
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const hash = location.hash.replace('#', '');
+    
+    // Eğer focus=search parametresi varsa arama kutusuna focus yap
+    if (urlParams.get('focus') === 'search') {
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 100);
+    }
+    
+    // Hash'tan kategori belirle
+    if (hash) {
+      const categoryKey = hash.toLowerCase();
+      const categoryName = Object.entries(CATEGORIES).find(
+        ([key]) => key.toLowerCase() === categoryKey
+      )?.[1];
+      
+      if (categoryName) {
+        setSelectedCategory(categoryName);
+        setCurrentPage(1);
+      }
+    }
+  }, [location]);
+
   // Arama değiştiğinde sayfa numarasını sıfırla
   useEffect(() => {
     setCurrentPage(1);
@@ -124,7 +154,7 @@ function Home() {
                     }}
                     className={`px-3 py-2 rounded-2xl text-sm font-medium transition-all duration-200 ${
                       selectedCategory === category
-                        ? 'bg-secondaryBG text-secondary border border-secondary shadow-md'
+                        ? 'bg-secondaryBG text-secondary border border-secondary shadow-md hover:bg-selectBox hover:text-white'
                         : 'bg-transparent text-textPrimary hover:bg-primaryBG hover:text-textHeading border border-transparent'
                     }`}
                   >
@@ -156,19 +186,20 @@ function Home() {
             </div>
 
             {/* Sağ haberler alanı */}
-            <div className="flex-1">
+            <div className="flex-1 mt-1">
               {/* Arama ve Kontrol Paneli */}
-              <div className="bg-transparent px-0 py-4 mb-6">
+              <div className="bg-transparent px-0 pt-0 pb-4 mb-6">
                 {/* Arama Kutusu */}
                 <div className="mb-4">
                   <div className="relative w-full">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-textPrimary" size={20} />
                     <input
+                      ref={searchInputRef}
                       type="text"
                       placeholder="Haber ara... (başlık, açıklama veya etiket)"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-10 py-3 bg-primaryBG text-textPrimary placeholder-textPrimary border border-primaryBG rounded-lg focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-opacity-50 transition-all"
+                      className="w-full pl-10 pr-10 py-3 bg-primaryBG text-textPrimary placeholder-textPrimary border border-primaryBG rounded-lg focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-opacity-50 hover:border-selectBox transition-all duration-200"
                     />
                     {searchTerm && (
                       <button
@@ -217,10 +248,10 @@ function Home() {
                                   setSortBy(option.value);
                                   setShowSortDropdown(false);
                                 }}
-                                className={`w-full text-left px-3 py-2.5 rounded-lg transition-all hover:bg-primaryBG ${
+                                className={`w-full text-left px-3 py-2.5 rounded-lg transition-all ${
                                   sortBy === option.value 
-                                    ? 'bg-secondaryBG text-secondary border border-secondary' 
-                                    : 'text-textPrimary hover:text-textHeading'
+                                    ? 'bg-secondaryBG text-secondary border border-secondary hover:text-secondaryHover hover:bg-selectBox' 
+                                    : 'text-textPrimary hover:text-textHeading hover:bg-primaryBG'
                                 }`}
                               >
                                 <div className="flex items-center gap-2">
@@ -265,10 +296,10 @@ function Home() {
                                   setCurrentPage(1);
                                   setShowViewDropdown(false);
                                 }}
-                                className={`w-full text-left px-3 py-2.5 rounded-lg transition-all hover:bg-primaryBG ${
+                                className={`w-full text-left px-3 py-2.5 rounded-lg transition-all ${
                                   itemsPerPage === option.value 
-                                    ? 'bg-secondaryBG text-secondary border border-secondary' 
-                                    : 'text-textPrimary hover:text-textHeading'
+                                    ? 'bg-secondaryBG text-secondary border border-secondary hover:text-secondaryHover hover:bg-selectBox' 
+                                    : 'text-textPrimary hover:text-textHeading hover:bg-primaryBG'
                                 }`}
                               >
                                 <span className="text-sm font-medium">{option.label}</span>
@@ -299,7 +330,7 @@ function Home() {
                           <>
                             <button
                               onClick={() => setCurrentPage(1)}
-                              className="px-3 py-1 text-sm rounded border transition-all bg-primaryBG text-textPrimary border-primaryBG hover:bg-blackSelectBg hover:border-secondary"
+                              className="px-3 py-1 text-sm rounded-full border transition-all bg-selectBox text-black border-selectBox hover:bg-secondary hover:border-secondary"
                             >
                               1
                             </button>
@@ -328,10 +359,10 @@ function Home() {
                             <button
                               key={pageNum}
                               onClick={() => setCurrentPage(pageNum)}
-                              className={`px-3 py-1 text-sm rounded border transition-all ${
+                              className={`px-3 py-1 text-sm rounded-full border transition-all ${
                                 currentPage === pageNum
-                                  ? 'bg-secondary text-white border-secondary font-semibold'
-                                  : 'bg-primaryBG text-textPrimary border-primaryBG hover:bg-blackSelectBg hover:border-secondary'
+                                  ? 'bg-secondary text-black border-secondary font-semibold hover:bg-secondaryHover hover:text-black'
+                                  : 'bg-selectBox text-black border-selectBox hover:bg-secondary hover:border-secondary'
                               }`}
                             >
                               {pageNum}
@@ -347,7 +378,7 @@ function Home() {
                             )}
                             <button
                               onClick={() => setCurrentPage(totalPages)}
-                              className="px-3 py-1 text-sm rounded border transition-all bg-primaryBG text-textPrimary border-primaryBG hover:bg-blackSelectBg hover:border-secondary"
+                              className="px-3 py-1 text-sm rounded-full border transition-all bg-selectBox text-black border-selectBox hover:bg-secondary hover:border-secondary"
                             >
                               {totalPages}
                             </button>
