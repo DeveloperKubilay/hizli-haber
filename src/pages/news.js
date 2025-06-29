@@ -4,6 +4,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import Navbar from '../components/Navbar';
 import { CATEGORY_LIST, CATEGORIES, CATEGORY_ICONS, CATEGORY_COLORS, APP_CONFIG } from '../services/categories';
 import { useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { 
   Search, 
   X, 
@@ -142,12 +143,20 @@ function Home() {
       <div className="max-w-6xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="space-y-8">
           {/* Kategoriler */}
-          <div className="mb-6">
+          <motion.div 
+            className="mb-6"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
             <div className="bg-primary p-1 rounded-3xl shadow-lg w-fit mx-auto">
               <div className="flex flex-wrap justify-center">
-                {CATEGORY_LIST.map(category => (
-                  <button
+                {CATEGORY_LIST.map((category, index) => (
+                  <motion.button
                     key={category}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.4, delay: index * 0.1, ease: "easeOut" }}
                     onClick={() => {
                       setSelectedCategory(category);
                       setCurrentPage(1);
@@ -162,16 +171,21 @@ function Home() {
                       {CATEGORY_ICONS[category]}
                       <span>{category}</span>
                     </div>
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Ana içerik - Sol reklam, Sağ haberler */}
           <div className="flex gap-6">
             {/* Sol reklam alanı 300px */}
-            <div className="w-[300px] flex-shrink-0">
+            <motion.div 
+              className="w-[300px] flex-shrink-0"
+              initial={{ x: -100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.7, ease: "easeOut", delay: 0.3 }}
+            >
               <div className="bg-primary p-6 rounded-2xl shadow-lg sticky top-6">
                 <div className="text-center text-textPrimary">
                   <div className="flex items-center justify-center gap-2 mb-4">
@@ -183,10 +197,15 @@ function Home() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Sağ haberler alanı */}
-            <div className="flex-1 mt-1">
+            <motion.div 
+              className="flex-1 mt-1"
+              initial={{ x: 100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.7, ease: "easeOut", delay: 0.5 }}
+            >
               {/* Arama ve Kontrol Paneli */}
               <div className="bg-transparent px-0 pt-0 pb-4 mb-6">
                 {/* Arama Kutusu */}
@@ -406,9 +425,28 @@ function Home() {
                   </div>
                 </div>
               ) : paginatedBlogs.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {paginatedBlogs.map(blog => (
-                    <div key={blog.id} className="bg-primary p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-primaryBG">
+                <motion.div 
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                  {paginatedBlogs.map((blog, index) => (
+                    <motion.div 
+                      key={blog.id} 
+                      className="bg-primary p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-primaryBG"
+                      initial={{ y: 50, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ 
+                        duration: 0.5, 
+                        delay: index * 0.1,
+                        ease: "easeOut" 
+                      }}
+                      whileHover={{ 
+                        scale: 1.02,
+                        transition: { duration: 0.2 }
+                      }}
+                    >
                       <h3 className="text-xl font-bold mb-3 text-textHeading">{blog.baslik}</h3>
                       <p className="text-textPrimary mb-4 line-clamp-3">{blog.kisaAciklama}</p>
                       {blog.kategori && (
@@ -433,9 +471,9 @@ function Home() {
                           <span>{blog.tarih || 'Bilinmiyor'}</span>
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
-                </div>
+                </motion.div>
               ) : (
                 <div className="text-center py-20">
                   <div className="text-xl text-textPrimary">
@@ -466,7 +504,7 @@ function Home() {
                   )}
                 </div>
               )}
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>
