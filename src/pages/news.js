@@ -199,7 +199,7 @@ function Home() {
                       placeholder="Haber ara... (başlık, açıklama veya etiket)"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-10 py-3 bg-primaryBG text-textPrimary placeholder-textPrimary border border-primaryBG rounded-lg focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-opacity-50 hover:border-selectBox transition-all duration-200"
+                      className="w-full pl-10 pr-10 py-3 bg-primaryBG text-textPrimary placeholder-textPrimary border border-primaryBG rounded-2xl focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-opacity-50 hover:border-selectBox transition-all duration-200"
                     />
                     {searchTerm && (
                       <button

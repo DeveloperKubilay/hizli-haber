@@ -6,7 +6,7 @@ module.exports = {
     extend: {
       colors: {
         tbackground: '#16181c', // Dark background
-        background: '#0c0e19', // White
+        background: '#1a1a1c', // Ana sayfa
         primary: '#26292f', //divler
         primaryBG: '#33363d', //arama kısmı alternatif div
         secondary: '#1bd96a', //yeşil

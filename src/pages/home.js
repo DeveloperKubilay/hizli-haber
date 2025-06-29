@@ -71,7 +71,7 @@ function Home() {
               <motion.img
                 src="/imgs/logo.png"
                 alt="Blog Header"
-                className="rounded-xl shadow-xl max-h-72 object-cover mb-6"
+                className="rounded-xl max-h-72 object-cover mb-6"
                 initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
