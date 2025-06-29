@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Mail, Phone, MapPin } from 'lucide-react';
 
 function Footer() {
   return (
@@ -50,15 +51,15 @@ function Footer() {
             <h4 className="text-xl font-bold mb-4 text-green-400">İletişim</h4>
             <div className="space-y-3">
               <p className="text-gray-400 flex items-center">
-                <span className="mr-2">📧</span>
+                <Mail size={16} className="mr-2" />
                 info@hizlihaber.com
               </p>
               <p className="text-gray-400 flex items-center">
-                <span className="mr-2">📞</span>
+                <Phone size={16} className="mr-2" />
                 +90 555 123 4567
               </p>
               <p className="text-gray-400 flex items-center">
-                <span className="mr-2">📍</span>
+                <MapPin size={16} className="mr-2" />
                 İstanbul, Türkiye
               </p>
             </div>
