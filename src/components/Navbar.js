@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { signInWithGoogle, logoutUser } from '../services/authService';
 import { auth } from '../services/firebase';
 import { LogIn, Newspaper, Search, BookMarked, Cpu, Utensils, Trophy, BarChart2, Building, Heart, Atom, Globe, Palette, GraduationCap } from "lucide-react";
@@ -12,6 +12,7 @@ function Navbar() {
   const [showCategories, setShowCategories] = useState(false);
   const dropdownRef = useRef(null);
   const timeoutRef = useRef(null);
+  const location = useLocation();
 
   const categories = [
     {
@@ -138,14 +139,20 @@ function Navbar() {
   };
 
   const aGroup = function(name, href, icon, delay = 0) {
+    const isActive = location.pathname === href;
+    const baseClasses = "flex items-center gap-2 text-base text-opacity-100 font-medium py-3 px-4 rounded-lg transition-all duration-200";
+    const activeClasses = isActive 
+      ? "bg-secondaryBG text-textHeading hover:bg-selectBox hover:text-white" 
+      : "hover:text-white hover:bg-blackSelectHover";
+    
     return (
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: delay, ease: "easeOut" }}
       >
-        <Link to={href} className="flex items-center gap-2 text-base text-opacity-100 hover:text-textHover hover:bg-blackSelectHover font-medium py-3 px-4 rounded-lg">
-          {React.cloneElement(icon, { size: 20 })} {/* 🔥 İkon boyutunu büyüttüm */}
+        <Link to={href} className={`${baseClasses} ${activeClasses}`}>
+          {React.cloneElement(icon, { size: 20 })}
           {name}
         </Link>
       </motion.div>

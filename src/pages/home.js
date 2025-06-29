@@ -61,7 +61,7 @@ function Home() {
   }, []);
 
   return (
-    <>
+    <div className="bg-background min-h-screen">
       <Navbar />
       <div ref={welcomeContainerRef} className="Welcome_container"></div>
       <div className="max-w-6xl mx-auto py-8 sm:px-6 lg:px-8 relative"> {/* 🔥 Container'ı daralttım ama padding'i arttırdım */}
@@ -196,7 +196,7 @@ function Home() {
       
       {/* Footer */}
       <Footer />
-    </>
+    </div>
   );
 }
 
