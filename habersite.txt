@@ -24,3 +24,6 @@ https://v3.tailwindcss.com/
 anasayfanın animasyon sürelerini arttır
 firebase entegrasyonunu sağla
 yorumlar için ne kullanıcak onu ayarla
+like dislike için ne kullanıcak
+
+blogs yazarları news die değiştir
