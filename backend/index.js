@@ -1,4 +1,4 @@
-require("dotenv").config();
+if (process.env.GITHUB_ACTIONS !== "true") require("dotenv").config();
 const s3 = require("./modules/s3");
 const getNews = require("./modules/getNews");
 const ai = require("./modules/ai");
