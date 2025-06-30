@@ -37,11 +37,6 @@ async function main() {
             image: "https://via.placeholder.com/150"
         });
 
-        /*
-            likes: 0,
-            dislikes: 0,
-        */
-
         console.log(`🔥 Haber Admin SDK ile veritabanına eklendi! ID: ${newsId}`);
     } catch (error) {
         console.error(`💥 Firebase işlemi sırasında hata: ${error}`);
