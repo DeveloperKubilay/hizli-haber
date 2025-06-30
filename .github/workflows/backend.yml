@@ -18,4 +18,5 @@ jobs:
         with:
           node-version: 20
       - name: Build Project
-        run: cd backend && npm install && node index.js
+        working-directory: backend
+        run: npm install && node index.js
