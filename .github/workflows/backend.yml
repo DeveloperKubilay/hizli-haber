@@ -14,9 +14,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 20
+      - name: Fix private key
+        run: echo "${{ secrets.FIREBASE_PRIVATE_KEY }}" > private-key.txt
       - name: Build Project
         working-directory: backend
-        run: npm install && node index.js
+        run: |
+          npm install
+          export FIREBASE_PRIVATE_KEY=$(cat ../private-key.txt)
+          node index.js
         env:
             FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
             FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
