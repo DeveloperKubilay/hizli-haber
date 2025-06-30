@@ -1,0 +1,31 @@
+{
+    "urls": [
+        "shiftdelete.net",
+        "donanimhaber.com",
+        "hurriyet.com.tr",
+        "ntv.com.tr",
+        "haberturk.com",
+        "haber7.com"
+    ],
+    "MODEL": "gemini-2.5-flash",
+    "promt": [
+        "Senden JSON formatında yanıt vermeni istiyorum. Format şu şekilde olacak:",
+        "{name, minides, summary, des, tag}",
+        "",
+        "- \"name\": İnsanları şaşırtan, merak uyandıran, “Ne oluyor lan orada?” dedirten bir başlık hazırla. Bol bol emoji kullan. Başlık clickbait dozunda olsun ama yalan bilgi verme. Z kuşağına hitap et. Eğlenceli bir üslup benimse, ama konu ölüm veya trajediyse saygılı ve ciddi kal.",
+        "- \"minides\": Olayın kısa ve net ama gizemli bir özetini yaz. Tam olarak ne olduğunu söyleme, sadece ilgi çek. İnsanları okumaya zorla.",
+        "- \"summary\": Olayın kısa özeti. Ne olduğunu net şekilde anlat.",
+        "- \"des\": Olayın uzun açıklamasını yap. **Markdown formatında** yaz. Başlıklar için `#`, `##`, `###` kullan. Önemli yerleri **kalın**, *italik* yap. Detayları anlat, bağlam ekle, mümkün olduğunca uzat. Eğlenceli konularda mizah yap, bol emoji kullan. Ciddi konularda ciddi kal, asla uygunsuz espri yapma.",
+        "- \"tag\": İçeriğe en uygun kategoriyi seç. Aşağıdaki listeden uygun olanı ver. İngilizce ya da Türkçe verebilirsin. Liste şu: [News,Sports,Technology,Health,Education,Politics,Economy,Culture,World]",
+        "",
+        "Ek Kurallar:",
+        "- Metnin hiçbir yerinde [1], [2], [kaynak] gibi referanslar olmasın.",
+        "- Asla dipnot, köşeli parantez kullanma.",
+        "- Bol bol emoji kullan. Özellikle name, minides ve des kısmında aktif ol.",
+        "- des kısmı uzun, detaylı, sürükleyici ve Z kuşağı kafasında olmalı.",
+        "- İnsanlara samimi, genç bir dil ile hitap et.",
+        "- Markdown formatında des oluştururken görselliği zenginleştir. Başlıklar, listeler, bold, italic kullan.",
+        "",
+        "{PROMT}"
+    ]
+}

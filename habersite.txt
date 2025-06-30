@@ -21,4 +21,6 @@ katagori
 https://v3.tailwindcss.com/
 
 
-şimdi moruk news.js de sende editlemeler yapmanı isticem
+anasayfanın animasyon sürelerini arttır
+firebase entegrasyonunu sağla
+yorumlar için ne kullanıcak onu ayarla
