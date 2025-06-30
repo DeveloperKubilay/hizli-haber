@@ -1,3 +1,17 @@
+import React from 'react';
+import { 
+  ClipboardList, 
+  Newspaper, 
+  Trophy, 
+  Laptop, 
+  Heart, 
+  GraduationCap, 
+  Building, 
+  DollarSign, 
+  Palette, 
+  Globe 
+} from 'lucide-react';
+
 export const CATEGORIES = {
   ALL: 'Tümü',
   NEWS: 'Haberler', 
@@ -14,16 +28,16 @@ export const CATEGORIES = {
 export const CATEGORY_LIST = Object.values(CATEGORIES);
 
 export const CATEGORY_ICONS = {
-  [CATEGORIES.ALL]: '📋',
-  [CATEGORIES.NEWS]: '📰', 
-  [CATEGORIES.SPORTS]: '⚽',
-  [CATEGORIES.TECHNOLOGY]: '💻',
-  [CATEGORIES.HEALTH]: '🏥',
-  [CATEGORIES.EDUCATION]: '📚',
-  [CATEGORIES.POLITICS]: '🏛️',
-  [CATEGORIES.ECONOMY]: '💰',
-  [CATEGORIES.CULTURE]: '🎭',
-  [CATEGORIES.WORLD]: '🌍'
+  [CATEGORIES.ALL]: <ClipboardList size={16} />,
+  [CATEGORIES.NEWS]: <Newspaper size={16} />, 
+  [CATEGORIES.SPORTS]: <Trophy size={16} />,
+  [CATEGORIES.TECHNOLOGY]: <Laptop size={16} />,
+  [CATEGORIES.HEALTH]: <Heart size={16} />,
+  [CATEGORIES.EDUCATION]: <GraduationCap size={16} />,
+  [CATEGORIES.POLITICS]: <Building size={16} />,
+  [CATEGORIES.ECONOMY]: <DollarSign size={16} />,
+  [CATEGORIES.CULTURE]: <Palette size={16} />,
+  [CATEGORIES.WORLD]: <Globe size={16} />
 };
 
 export const CATEGORY_COLORS = {
@@ -46,3 +60,29 @@ export const APP_CONFIG = {
   POSTS_PER_PAGE: 12,
   AUTO_REFRESH_INTERVAL: 30000 
 };
+
+// Navbar dropdown için kategori renkleri (Tümü hariç)
+export const NAVBAR_CATEGORIES = Object.entries(CATEGORIES)
+  .filter(([key]) => key !== 'ALL') // Tümü kategorisini hariç tut
+  .map(([key, value]) => ({
+    name: value,
+    href: `/haberler#${key.toLowerCase()}`,
+    bgColor: getNavbarCategoryColor(key)
+  }));
+
+// Navbar kategori renklerini belirle
+function getNavbarCategoryColor(categoryKey) {
+  const colorMap = {
+    'NEWS': 'bg-blue-600',
+    'SPORTS': 'bg-red-600', 
+    'TECHNOLOGY': 'bg-purple-600',
+    'HEALTH': 'bg-pink-600',
+    'EDUCATION': 'bg-cyan-600',
+    'POLITICS': 'bg-indigo-600',
+    'ECONOMY': 'bg-amber-600',
+    'CULTURE': 'bg-orange-600',
+    'WORLD': 'bg-teal-600',
+    'WORLD2': 'bg-green-600'
+  };
+  return colorMap[categoryKey] || 'bg-gray-600';
+}

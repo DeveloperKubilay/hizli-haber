@@ -2,8 +2,9 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { signInWithGoogle, logoutUser } from '../services/authService';
 import { auth } from '../services/firebase';
-import { LogIn, Newspaper, Search, BookMarked, Cpu, Utensils, Trophy, BarChart2, Building, Heart, Atom, Globe, Palette, GraduationCap } from "lucide-react";
+import { LogIn, Newspaper, Search, BookMarked } from "lucide-react";
 import { motion } from "motion/react";
+import { CATEGORY_ICONS, NAVBAR_CATEGORIES } from '../services/categories';
 
 function Navbar() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -14,68 +15,8 @@ function Navbar() {
   const timeoutRef = useRef(null);
   const location = useLocation();
 
-  const categories = [
-    {
-      name: "Teknoloji",
-      href: "/kategori/teknoloji",
-      icon: <Cpu size={16} />,
-      bgColor: "bg-blue-600",
-    },
-    {
-      name: "Yemek", 
-      href: "/kategori/yemek",
-      icon: <Utensils size={16} />,
-      bgColor: "bg-green-600",
-    },
-    {
-      name: "Spor",
-      href: "/kategori/spor", 
-      icon: <Trophy size={16} />,
-      bgColor: "bg-red-600",
-    },
-    {
-      name: "Ekonomi",
-      href: "/kategori/ekonomi",
-      icon: <BarChart2 size={16} />,
-      bgColor: "bg-amber-600", 
-    },
-    {
-      name: "Siyaset",
-      href: "/kategori/siyaset",
-      icon: <Building size={16} />,
-      bgColor: "bg-purple-600",
-    },
-    {
-      name: "Sağlık", 
-      href: "/kategori/saglik",
-      icon: <Heart size={16} />,
-      bgColor: "bg-pink-600",
-    },
-    {
-      name: "Bilim",
-      href: "/kategori/bilim",
-      icon: <Atom size={16} />,
-      bgColor: "bg-indigo-600",
-    },
-    {
-      name: "Kültür",
-      href: "/kategori/kultur", 
-      icon: <Globe size={16} />,
-      bgColor: "bg-orange-600",
-    },
-    {
-      name: "Sanat",
-      href: "/kategori/sanat",
-      icon: <Palette size={16} />,
-      bgColor: "bg-teal-600",
-    },
-    {
-      name: "Eğitim",
-      href: "/kategori/egitim",
-      icon: <GraduationCap size={16} />,
-      bgColor: "bg-cyan-600",
-    }
-  ];
+  // Artık kategoriler tamamen dinamik - categories.js'den geliyor!
+  const categories = NAVBAR_CATEGORIES;
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
@@ -140,7 +81,7 @@ function Navbar() {
 
   const aGroup = function(name, href, icon, delay = 0) {
     const isActive = location.pathname === href;
-    const baseClasses = "flex items-center gap-2 text-base text-opacity-100 font-medium py-3 px-4 rounded-lg transition-all duration-200";
+    const baseClasses = "flex items-center gap-2 text-sm text-opacity-100 font-medium py-2 px-4 rounded-lg transition-all duration-200";
     const activeClasses = isActive 
       ? "bg-secondaryBG text-textHeading hover:bg-selectBox hover:text-white" 
       : "hover:text-white hover:bg-blackSelectHover";
@@ -152,7 +93,7 @@ function Navbar() {
         transition={{ duration: 0.5, delay: delay, ease: "easeOut" }}
       >
         <Link to={href} className={`${baseClasses} ${activeClasses}`}>
-          {React.cloneElement(icon, { size: 20 })}
+          {React.cloneElement(icon, { size: 18 })}
           {name}
         </Link>
       </motion.div>
@@ -193,7 +134,16 @@ function Navbar() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
           >
-            {aGroup("Haberler", "/about", <Newspaper size={16} />, 0)}
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
+            >
+              <Link to="/haberler" className="flex items-center gap-2 text-sm text-opacity-100 font-medium py-2 px-4 rounded-lg transition-all duration-200 hover:text-white hover:bg-blackSelectHover">
+                <Newspaper size={18} />
+                Haberler
+              </Link>
+            </motion.div>
             
             {/* Kategoriler dropdown menüsü 🔥 */}
             {showCategories && (
@@ -223,7 +173,7 @@ function Navbar() {
                         to={category.href}
                         className={`flex items-center gap-1.5 text-white hover:opacity-90 text-xs rounded-full px-3 py-1.5 transition-all duration-200 ${category.bgColor}`}
                       >
-                        {category.icon}
+                        {CATEGORY_ICONS[category.name]}
                         {category.name}
                       </Link>
                     </motion.div>
@@ -232,7 +182,7 @@ function Navbar() {
               </motion.div>
             )}
           </motion.div>
-          {aGroup("Bir Haber ara", "/about", <Search size={16} />, 0.5)}
+          {aGroup("Bir Haber ara", "/haberler?focus=search", <Search size={16} />, 0.5)}
         </nav>
 
         <motion.div
@@ -271,7 +221,7 @@ function Navbar() {
             <div>
               <button
                 onClick={handleSignIn}
-                className="flex items-center gap-2 bg-secondary text-black rounded-lg shadow-sm px-[10px] py-[6px] hover:bg-secondaryHover font-bold"
+                className="flex items-center gap-2 bg-secondary text-black rounded-lg shadow-sm px-4 py-2 hover:bg-secondaryHover font-bold text-sm"
               >
                 <LogIn size={18} strokeWidth={2} />
                 Giriş yap
