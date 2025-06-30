@@ -6,30 +6,30 @@ const { getFirestore, collection, addDoc, doc, setDoc, updateDoc } = require('fi
 const admin = require("firebase-admin");
 require('dotenv').config();
 
-// 🎯 Admin SDK için env'den değerleri alalım
+// 🎯 Admin SDK için config - gizli değerler env'den, sabitler hardcoded
 const adminConfig = {
-  type: process.env.FIREBASE_TYPE,
+  type: "service_account",
   project_id: process.env.FIREBASE_PROJECT_ID,
   private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
   private_key: process.env.FIREBASE_PRIVATE_KEY,
   client_email: process.env.FIREBASE_CLIENT_EMAIL,
-  client_id: process.env.FIREBASE_CLIENT_ID,
-  auth_uri: process.env.FIREBASE_AUTH_URI,
-  token_uri: process.env.FIREBASE_TOKEN_URI,
-  auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
-  client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL,
-  universe_domain: process.env.FIREBASE_UNIVERSE_DOMAIN
+  client_id: "102768340742011797999", // Sabit değer
+  auth_uri: "https://accounts.google.com/o/oauth2/auth",
+  token_uri: "https://oauth2.googleapis.com/token",
+  auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+  client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40hizli-haber-f1210.iam.gserviceaccount.com",
+  universe_domain: "googleapis.com"
 };
 
-// Client konfigürasyonu (env dosyasından alıyoruz)
+// Client konfigürasyonu - API key env'den, diğer değerler sabit
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  authDomain: "hizli-haber-f1210.firebaseapp.com",
   projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID,
-  measurementId: process.env.FIREBASE_MEASUREMENT_ID
+  storageBucket: "hizli-haber-f1210.firebasestorage.app",
+  messagingSenderId: "866369173209",
+  appId: "1:866369173209:web:7d6d33f6227806379370c8",
+  measurementId: "G-68TXK5W44Z"
 };
 
 // 🔑 Admin SDK başlatma
