@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { db } from '../services/firebase';
+import { db, storage } from '../services/firebase'; // storage'ı import ediyorum
 import { collection, getDocs } from 'firebase/firestore';
+import { ref, getDownloadURL } from 'firebase/storage'; // ref ve getDownloadURL import ediyorum
 import Navbar from '../components/Navbar';
 import { CATEGORY_LIST, CATEGORIES, CATEGORY_ICONS, CATEGORY_COLORS, APP_CONFIG } from '../services/categories';
 import { useLocation } from 'react-router-dom';
@@ -18,11 +19,12 @@ import {
   FileText,
   Clock,
   Megaphone,
-  Trash2
+  Trash2,
+  Image
 } from 'lucide-react';
 
 function Home() {
-  const [blogs, setBlogs] = useState([]);
+  const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(APP_CONFIG.DEFAULT_CATEGORY);
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,50 +38,59 @@ function Home() {
   const searchInputRef = useRef(null);
   
   // Filtreleme ve arama
-  const filteredBlogs = blogs.filter(blog => {
-    const categoryMatch = selectedCategory === CATEGORIES.ALL || blog.kategori === selectedCategory;
+  const filteredNews = news.filter(item => {
+    const categoryMatch = selectedCategory === CATEGORIES.ALL || item.tag?.includes(selectedCategory);
     const searchMatch = searchTerm === '' || 
-      blog.baslik?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      blog.kisaAciklama?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      blog.etiketler?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+      item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.minides?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.tag?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     return categoryMatch && searchMatch;
   });
 
   // Sıralama
-  const sortedBlogs = [...filteredBlogs].sort((a, b) => {
+  const sortedNews = [...filteredNews].sort((a, b) => {
     switch (sortBy) {
       case 'baslik':
-        return (a.baslik || '').localeCompare(b.baslik || '');
+        return (a.name || '').localeCompare(b.name || '');
       case 'okunmaSayisi':
-        return (b.okunmaSayisi || 0) - (a.okunmaSayisi || 0);
+        return (b.views || 0) - (a.views || 0);
       case 'tarih':
       default:
-        return new Date(b.tarih || 0) - new Date(a.tarih || 0);
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
     }
   });
 
   // Sayfalama
-  const totalPages = Math.ceil(sortedBlogs.length / itemsPerPage);
+  const totalPages = Math.ceil(sortedNews.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedBlogs = sortedBlogs.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedNews = sortedNews.slice(startIndex, startIndex + itemsPerPage);
   
   useEffect(() => {
-    const fetchBlogs = async () => {
+    const fetchNews = async () => {
       try {
-        const blogsCollection = collection(db, 'blogs');
-        const blogsSnapshot = await getDocs(blogsCollection);
-        setBlogs(blogsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })));
+        const newsCollection = collection(db, 'news');
+        const newsSnapshot = await getDocs(newsCollection);
+        
+        const newsData = newsSnapshot.docs.map(doc => {
+          const data = doc.data();
+          console.log("📰 Haber verisi:", data); // Her haberin tam içeriğini kontrol et
+          console.log("🖼️ Resim alanı:", data.image); // Resim alanını özellikle kontrol et
+          
+          return {
+            id: doc.id,
+            ...data
+          };
+        });
+        
+        setNews(newsData);
       } catch (error) {
-        console.error("Error fetching blogs:", error);
+        console.error("❌ Haber verileri çekilirken hata:", error);
       } finally {
         setLoading(false);
       }
     };
     
-    fetchBlogs();
+    fetchNews();
   }, []);
 
   // URL hash ve query parametrelerini handle et
@@ -136,6 +147,35 @@ function Home() {
     { value: 50, label: '50' },
     { value: 100, label: '100' }
   ];
+
+  // Tarih formatını düzenlemek için yardımcı fonksiyon
+  const formatDate = (dateString) => {
+    if (!dateString) return 'Bilinmiyor';
+    
+    try {
+      console.log("🗓️ Gelen tarih:", dateString); // Tarih formatını kontrol et
+      
+      const date = new Date(dateString);
+      
+      // Geçerli bir tarih değilse orijinal değeri döndür
+      if (isNaN(date)) {
+        console.log("⚠️ Geçersiz tarih formatı:", dateString);
+        return dateString;
+      }
+      
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      
+      const formattedDate = `${day}.${month}.${year}`;
+      console.log("📅 Formatlanmış tarih:", formattedDate);
+      
+      return formattedDate;
+    } catch (error) {
+      console.error("❌ Tarih formatlanırken hata oluştu:", error);
+      return dateString;
+    }
+  };
 
   return (
     <>
@@ -424,17 +464,17 @@ function Home() {
                     Haberler yükleniyor...
                   </div>
                 </div>
-              ) : paginatedBlogs.length > 0 ? (
+              ) : paginatedNews.length > 0 ? (
                 <motion.div 
-                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                  className="grid grid-cols-1 gap-6"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                  {paginatedBlogs.map((blog, index) => (
+                  {paginatedNews.map((item, index) => (
                     <motion.div 
-                      key={blog.id} 
-                      className="bg-primary p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-primaryBG"
+                      key={item.id} 
+                      className="bg-primary p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-primaryBG w-full max-w-[454px] mx-auto"
                       initial={{ y: 50, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       transition={{ 
@@ -447,28 +487,56 @@ function Home() {
                         transition: { duration: 0.2 }
                       }}
                     >
-                      <h3 className="text-xl font-bold mb-3 text-textHeading">{blog.baslik}</h3>
-                      <p className="text-textPrimary mb-4 line-clamp-3">{blog.kisaAciklama}</p>
-                      {blog.kategori && (
-                        <span className={`text-sm px-3 py-1 rounded-full mb-3 inline-flex items-center gap-1 ${CATEGORY_COLORS[blog.kategori] || 'bg-primaryBG text-textPrimary'}`}>
-                          {CATEGORY_ICONS[blog.kategori]} {blog.kategori}
-                        </span>
-                      )}
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        {blog.etiketler && blog.etiketler.map((tag, index) => (
-                          <span key={index} className="bg-primaryBG text-textPrimary text-xs px-2 py-1 rounded">
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-                      <div className="flex justify-between items-center text-sm text-textPrimary">
-                        <div className="flex items-center gap-1">
-                          <Eye size={14} />
-                          <span>{blog.okunmaSayisi || 0} okunma</span>
+                      <div className="flex flex-col h-full">
+                        {/* Görsel kısmı - 160px */}
+                        <div className="w-full h-[160px] bg-primaryBG rounded-lg overflow-hidden mb-3 flex items-center justify-center">
+                          {item.image ? (
+                            <img 
+                              src={item.image} 
+                              alt={item.name} 
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                console.log("Resim yüklenemedi:", e);
+                                e.target.onerror = null; 
+                                e.target.src = "/imgs/logo.png"; // Fallback resim
+                              }} 
+                            />
+                          ) : (
+                            <div className="flex flex-col items-center justify-center text-textPrimary">
+                              <Image size={40} className="opacity-40 mb-2" />
+                              <span className="text-sm opacity-60">Görsel yok</span>
+                            </div>
+                          )}
                         </div>
-                        <div className="flex items-center gap-1">
-                          <Calendar size={14} />
-                          <span>{blog.tarih || 'Bilinmiyor'}</span>
+                        
+                        {/* İçerik kısmı - 213px */}
+                        <div className="h-[213px] flex flex-col">
+                          {/* Başlık */}
+                          <h3 className="text-lg font-bold mb-2 text-textHeading line-clamp-2">{item.name}</h3>
+                          
+                          {/* Açıklama */}
+                          <p className="text-sm text-textPrimary mb-3 line-clamp-3">{item.minides}</p>
+                          
+                          {/* Etiketler - Roundedli */}
+                          <div className="flex flex-wrap gap-2 mb-3">
+                            {item.tag && item.tag.map((category, idx) => (
+                              <span key={idx} className={`text-xs px-2 py-1 rounded-full inline-flex items-center gap-1 ${CATEGORY_COLORS[category] || 'bg-primaryBG text-textPrimary'}`}>
+                                {CATEGORY_ICONS[category]} {category}
+                              </span>
+                            ))}
+                          </div>
+                          
+                          {/* Footer - Görüntülenme ve Tarih */}
+                          <div className="mt-auto flex justify-between items-center text-xs text-textPrimary">
+                            <div className="flex items-center gap-1">
+                              <Eye size={12} />
+                              <span>{item.views || 0} okunma</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Calendar size={12} />
+                              <span>{formatDate(item.createdAt)}</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </motion.div>

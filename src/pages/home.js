@@ -71,7 +71,7 @@ function Home() {
             <div className="flex flex-col justify-center items-center w-full my-6"> {/* 🔥 Margin artırıldı */}
               <motion.img
                 src="/imgs/logo.png"
-                alt="Blog Header"
+                alt="News Header"
                 className="rounded-xl max-h-72 object-cover mb-6"
                 initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}

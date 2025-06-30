@@ -11,7 +11,7 @@ const fs = require("fs")
 async function main() {
 
     console.log("🚀 Haber getirme işlemi başlatılıyor...");
-    const news = (await getNews()).slice(0, 1);
+    const news = (await getNews()).slice(0, 15);
     const texts = []
     for (const article of news) {
         const response = await ai(config.MODEL, config.promt.join("\n").replace("{PROMT}", article.url))
