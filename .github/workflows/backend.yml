@@ -1,0 +1,21 @@
+name: 🔥 Skibidi tuvalet 🔥
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: Build Project
+        run: cd backend && npm install && node index.js
