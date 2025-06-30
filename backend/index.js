@@ -34,11 +34,13 @@ async function main() {
         const newsId = await firebase.addWithAdmin('news', {
             ...parsedNews,
             createdAt: texts[0].time,
-            likes: 0,
-            dislikes: 0,
-            views: 0,
             image: "https://via.placeholder.com/150"
         });
+
+        /*
+            likes: 0,
+            dislikes: 0,
+        */
 
         console.log(`🔥 Haber Admin SDK ile veritabanına eklendi! ID: ${newsId}`);
     } catch (error) {
