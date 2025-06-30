@@ -40,9 +40,22 @@ module.exports = async function (ainame,data, uploadFile) {
             responseMimeType: 'text/plain'
         });
 
-        return response.text.replace(/[()]/g, '');
+        let responseText = response.text.replace(/[()]/g, '');
+        
+        if (data.includes('JSON') || data.includes('json')) {
+            responseText = responseText.replace(/```json|```/g, '').trim();
+            const startIndex = responseText.indexOf('{');
+            const endIndex = responseText.lastIndexOf('}') + 1;
+            
+            if (startIndex >= 0 && endIndex > 0) {
+                responseText = responseText.substring(startIndex, endIndex);
+                console.log("🔄 AI'dan gelen JSON temizlendi");
+            }
+        }
+        
+        return responseText;
     } catch (err) {
-        console.error("AI Error:", err);
+        console.error("🤖 AI Error:", err);
         throw err;
     }
 }
