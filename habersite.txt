@@ -8,4 +8,5 @@ kaydedilenler
 
 [home.js]
 anasaydafa haberler listelensin üzüm fln değil .d
-anasayfada tüm haberler buttonu aynı uzunluk değil
+anasayfanın arka planın height kısmı yetişmio knka
+şöyle şey varya hem sağdan hem soldan cardlar geçiyorya o kısıma kadar otomatik ayarlasın yüksekliği
