@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { CATEGORY_LIST, CATEGORIES, CATEGORY_ICONS } from '../../services/categories';
+import { CATEGORY_LIST, CATEGORY_ICONS } from '../../services/categories';
 
 function CategoryFilter({ selectedCategory, onCategoryChange }) {
   return (

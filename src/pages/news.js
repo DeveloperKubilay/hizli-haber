@@ -1,43 +1,36 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { db } from '../services/firebase';
 import { collection, getDocs } from 'firebase/firestore';
-import Navbar from '../components/Navbar';
-import { CATEGORY_LIST, CATEGORIES, CATEGORY_ICONS, CATEGORY_COLORS, APP_CONFIG } from '../services/categories';
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  Search, 
-  X, 
-  BarChart3, 
-  Heart, 
-  ThumbsDown, 
-  Calendar, 
-  AlignLeft, 
-  ChevronLeft, 
-  ChevronRight,
-  ChevronDown,
-  FileText,
-  Clock,
-  Megaphone,
-  Trash2,
-  Image
-} from 'lucide-react';
+
+// Components
+import Navbar from '../components/Navbar';
+import CategoryFilter from '../components/news/CategoryFilter';
+import SearchBar from '../components/news/SearchBar';
+import ControlPanel from '../components/news/ControlPanel';
+import Pagination from '../components/news/Pagination';
+import NewsGrid from '../components/news/NewsGrid';
+import AdSidebar from '../components/news/AdSidebar';
+
+// Services
+import { CATEGORIES, APP_CONFIG } from '../services/categories';
 
 function Home() {
+  // State management
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(APP_CONFIG.DEFAULT_CATEGORY);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('tarih'); // 'tarih', 'baslik', 'begeniler'
+  const [sortBy, setSortBy] = useState('tarih');
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [showViewDropdown, setShowViewDropdown] = useState(false);
   
   const location = useLocation();
-  const searchInputRef = useRef(null);
   
-  // Filtreleme ve arama
+  // Data filtering and processing
   const filteredNews = news.filter(item => {
     const categoryMatch = selectedCategory === CATEGORIES.ALL || item.tag?.includes(selectedCategory);
     const searchMatch = searchTerm === '' || 
@@ -47,7 +40,6 @@ function Home() {
     return categoryMatch && searchMatch;
   });
 
-  // Sıralama
   const sortedNews = [...filteredNews].sort((a, b) => {
     switch (sortBy) {
       case 'baslik':
@@ -60,11 +52,11 @@ function Home() {
     }
   });
 
-  // Sayfalama
   const totalPages = Math.ceil(sortedNews.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedNews = sortedNews.slice(startIndex, startIndex + itemsPerPage);
   
+  // Data fetching
   useEffect(() => {
     const fetchNews = async () => {
       try {
@@ -73,9 +65,6 @@ function Home() {
         
         const newsData = newsSnapshot.docs.map(doc => {
           const data = doc.data();
-          console.log("📰 Haber verisi:", data); // Her haberin tam içeriğini kontrol et
-          console.log("🖼️ Resim alanı:", data.image); // Resim alanını özellikle kontrol et
-          
           return {
             id: doc.id,
             ...data
@@ -93,19 +82,10 @@ function Home() {
     fetchNews();
   }, []);
 
-  // URL hash ve query parametrelerini handle et
+  // URL handling
   useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
     const hash = location.hash.replace('#', '');
     
-    // Eğer focus=search parametresi varsa arama kutusuna focus yap
-    if (urlParams.get('focus') === 'search') {
-      setTimeout(() => {
-        searchInputRef.current?.focus();
-      }, 100);
-    }
-    
-    // Hash'tan kategori belirle
     if (hash) {
       const categoryKey = hash.toLowerCase();
       const categoryName = Object.entries(CATEGORIES).find(
@@ -119,12 +99,12 @@ function Home() {
     }
   }, [location]);
 
-  // Arama değiştiğinde sayfa numarasını sıfırla
+  // Reset page when search/sort changes
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, sortBy]);
 
-  // Dropdown dışına tıklandığında kapat
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = () => {
       setShowSortDropdown(false);
@@ -135,47 +115,26 @@ function Home() {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  const sortOptions = [
-    { value: 'tarih', label: 'Tarihe göre', icon: <Calendar size={16} /> },
-    { value: 'baslik', label: 'Başlığa göre', icon: <AlignLeft size={16} /> },
-    { value: 'begeniler', label: 'Beğenilere göre', icon: <Heart size={16} /> }
-  ];
-
-  const viewOptions = [
-    { value: 10, label: '10' },
-    { value: 20, label: '20' },
-    { value: 50, label: '50' },
-    { value: 100, label: '100' }
-  ];
-
-  // Tarih formatını düzenlemek için yardımcı fonksiyon
-  const formatDate = (dateString) => {
-    if (!dateString) return 'Bilinmiyor';
-    
-    try {
-      console.log("🗓️ Gelen tarih:", dateString); // Tarih formatını kontrol et
-      
-      const date = new Date(dateString);
-      
-      // Geçerli bir tarih değilse orijinal değeri döndür
-      if (isNaN(date)) {
-        console.log("⚠️ Geçersiz tarih formatı:", dateString);
-        return dateString;
-      }
-      
-      const day = date.getDate().toString().padStart(2, '0');
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const year = date.getFullYear();
-      
-      const formattedDate = `${day}.${month}.${year}`;
-      console.log("📅 Formatlanmış tarih:", formattedDate);
-      
-      return formattedDate;
-    } catch (error) {
-      console.error("❌ Tarih formatlanırken hata oluştu:", error);
-      return dateString;
-    }
+  // Event handlers
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
+    setCurrentPage(1);
   };
+
+  const handleSearchChange = (term) => {
+    setSearchTerm(term);
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handleClearSearch = () => {
+    setSearchTerm('');
+  };
+
+  // Check if should auto focus search
+  const shouldAutoFocusSearch = new URLSearchParams(location.search).get('focus') === 'search';
 
   return (
     <>
@@ -183,61 +142,15 @@ function Home() {
       <div className="max-w-6xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="space-y-8">
           {/* Kategoriler */}
-          <motion.div 
-            className="mb-6"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-          >
-            <div className="bg-primary p-1 rounded-3xl shadow-lg w-fit mx-auto">
-              <div className="flex flex-wrap justify-center">
-                {CATEGORY_LIST.map((category, index) => (
-                  <motion.button
-                    key={category}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.4, delay: index * 0.1, ease: "easeOut" }}
-                    onClick={() => {
-                      setSelectedCategory(category);
-                      setCurrentPage(1);
-                    }}
-                    className={`px-3 py-2 rounded-2xl text-sm font-medium transition-all duration-200 ${
-                      selectedCategory === category
-                        ? 'bg-secondaryBG text-secondary border border-secondary shadow-md hover:bg-selectBox hover:text-white'
-                        : 'bg-transparent text-textPrimary hover:bg-primaryBG hover:text-textHeading border border-transparent'
-                    }`}
-                  >
-                    <div className="flex items-center gap-1.5">
-                      {CATEGORY_ICONS[category]}
-                      <span>{category}</span>
-                    </div>
-                  </motion.button>
-                ))}
-              </div>
-            </div>
-          </motion.div>
+          <CategoryFilter 
+            selectedCategory={selectedCategory}
+            onCategoryChange={handleCategoryChange}
+          />
 
           {/* Ana içerik - Sol reklam, Sağ haberler */}
           <div className="flex gap-6">
-            {/* Sol reklam alanı 300px */}
-            <motion.div 
-              className="w-[300px] flex-shrink-0"
-              initial={{ x: -100, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.7, ease: "easeOut", delay: 0.3 }}
-            >
-              <div className="bg-primary p-6 rounded-2xl shadow-lg sticky top-6">
-                <div className="text-center text-textPrimary">
-                  <div className="flex items-center justify-center gap-2 mb-4">
-                    <Megaphone size={20} className="text-textHeading" />
-                    <h3 className="text-lg font-semibold text-textHeading">Reklam Alanı</h3>
-                  </div>
-                  <div className="bg-primaryBG rounded-xl p-8 min-h-[400px] flex items-center justify-center">
-                    <p className="text-textPrimary">Buraya reklam gelecek!</p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+            {/* Sol reklam alanı */}
+            <AdSidebar />
 
             {/* Sağ haberler alanı */}
             <motion.div 
@@ -248,335 +161,43 @@ function Home() {
             >
               {/* Arama ve Kontrol Paneli */}
               <div className="bg-transparent px-0 pt-0 pb-4 mb-6">
-                {/* Arama Kutusu */}
-                <div className="mb-4">
-                  <div className="relative w-full">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-textPrimary" size={20} />
-                    <input
-                      ref={searchInputRef}
-                      type="text"
-                      placeholder="Haber ara... (başlık, açıklama veya etiket)"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-10 py-3 bg-primaryBG text-textPrimary placeholder-textPrimary border border-primaryBG rounded-2xl focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-opacity-50 hover:border-selectBox transition-all duration-200"
-                    />
-                    {searchTerm && (
-                      <button
-                        onClick={() => setSearchTerm('')}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-textPrimary hover:text-secondary transition-colors"
-                      >
-                        <X size={20} />
-                      </button>
-                    )}
-                  </div>
-                </div>
+                <SearchBar 
+                  searchTerm={searchTerm}
+                  onSearchChange={handleSearchChange}
+                  autoFocus={shouldAutoFocusSearch}
+                />
 
-                {/* Kontrol Paneli */}
                 <div className="flex flex-wrap items-center justify-between gap-4">
-                  {/* Sol taraf - Sort by ve View */}
-                  <div className="flex items-center gap-4">
-                    {/* Sıralama */}
-                    <div className="relative">
-                      <div 
-                        className="bg-primaryBG rounded-full px-4 py-3 border border-primaryBG cursor-pointer hover:border-secondary transition-all"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowSortDropdown(!showSortDropdown);
-                          setShowViewDropdown(false);
-                        }}
-                      >
-                        <div className="flex items-center gap-2">
-                          <BarChart3 size={16} />
-                          <span className="text-textPrimary text-sm font-medium">Sırala:</span>
-                          <span className="text-textPrimary text-sm">
-                            {sortOptions.find(option => option.value === sortBy)?.label}
-                          </span>
-                          <ChevronDown size={14} className={`text-textPrimary transition-transform ${showSortDropdown ? 'rotate-180' : ''}`} />
-                        </div>
-                      </div>
-                      
-                      {/* Custom Dropdown */}
-                      {showSortDropdown && (
-                        <div className="absolute top-full left-0 mt-2 w-48 bg-primary border border-primaryBG rounded-xl shadow-xl z-50 overflow-hidden">
-                          <div className="p-1.5">
-                            {sortOptions.map((option) => (
-                              <button
-                                key={option.value}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSortBy(option.value);
-                                  setShowSortDropdown(false);
-                                }}
-                                className={`w-full text-left px-3 py-2.5 rounded-lg transition-all ${
-                                  sortBy === option.value 
-                                    ? 'bg-secondaryBG text-secondary border border-secondary hover:text-secondaryHover hover:bg-selectBox' 
-                                    : 'text-textPrimary hover:text-textHeading hover:bg-primaryBG'
-                                }`}
-                              >
-                                <div className="flex items-center gap-2">
-                                  {option.icon}
-                                  <span className="text-sm font-medium">{option.label}</span>
-                                </div>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                  <ControlPanel 
+                    sortBy={sortBy}
+                    setSortBy={setSortBy}
+                    itemsPerPage={itemsPerPage}
+                    setItemsPerPage={setItemsPerPage}
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    showSortDropdown={showSortDropdown}
+                    setShowSortDropdown={setShowSortDropdown}
+                    showViewDropdown={showViewDropdown}
+                    setShowViewDropdown={setShowViewDropdown}
+                  />
 
-                    {/* Görüntüleme */}
-                    <div className="relative">                        <div 
-                          className="bg-primaryBG rounded-full px-4 py-3 border border-primaryBG cursor-pointer hover:border-secondary transition-all"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setShowViewDropdown(!showViewDropdown);
-                            setShowSortDropdown(false);
-                          }}
-                        >
-                          <div className="flex items-center gap-2">
-                            <Heart size={16} />
-                            <span className="text-textPrimary text-sm font-medium">Göster:</span>
-                            <span className="text-textPrimary text-sm">{itemsPerPage}</span>
-                            <ChevronDown size={14} className={`text-textPrimary transition-transform ${showViewDropdown ? 'rotate-180' : ''}`} />
-                          </div>
-                        </div>
-                      
-                      {/* Custom Dropdown */}
-                      {showViewDropdown && (
-                        <div className="absolute top-full left-0 mt-2 w-32 bg-primary border border-primaryBG rounded-xl shadow-xl z-50 overflow-hidden">
-                          <div className="p-1.5">
-                            {viewOptions.map((option) => (
-                              <button
-                                key={option.value}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setItemsPerPage(option.value);
-                                  setCurrentPage(1);
-                                  setShowViewDropdown(false);
-                                }}
-                                className={`w-full text-left px-3 py-2.5 rounded-lg transition-all ${
-                                  itemsPerPage === option.value 
-                                    ? 'bg-secondaryBG text-secondary border border-secondary hover:text-secondaryHover hover:bg-selectBox' 
-                                    : 'text-textPrimary hover:text-textHeading hover:bg-primaryBG'
-                                }`}
-                              >
-                                <span className="text-sm font-medium">{option.label}</span>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Sağ taraf - Sayfalama */}
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      {/* Önceki */}
-                      <button
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className="px-2 py-1 text-lg text-textPrimary hover:text-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                      >
-                        <ChevronLeft size={18} />
-                      </button>
-
-                      {/* Sayfa numaraları */}
-                      <div className="flex items-center gap-1">
-                        {/* İlk sayfa */}
-                        {currentPage > 3 && (
-                          <>
-                            <button
-                              onClick={() => setCurrentPage(1)}
-                              className="w-8 h-8 text-sm rounded-full border transition-all bg-selectBox text-black border-selectBox hover:bg-secondary hover:border-secondary flex items-center justify-center"
-                            >
-                              1
-                            </button>
-                            {currentPage > 4 && (
-                              <span className="text-textPrimary px-1">-</span>
-                            )}
-                          </>
-                        )}
-
-                        {/* Ortadaki sayfalar */}
-                        {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
-                          let pageNum;
-                          if (totalPages <= 3) {
-                            pageNum = i + 1;
-                          } else if (currentPage <= 2) {
-                            pageNum = i + 1;
-                          } else if (currentPage >= totalPages - 1) {
-                            pageNum = totalPages - 2 + i;
-                          } else {
-                            pageNum = currentPage - 1 + i;
-                          }
-                          
-                          if (pageNum <= 0 || pageNum > totalPages) return null;
-                          
-                          return (
-                            <button
-                              key={pageNum}
-                              onClick={() => setCurrentPage(pageNum)}
-                              className={`w-8 h-8 text-sm rounded-full border transition-all flex items-center justify-center ${
-                                currentPage === pageNum
-                                  ? 'bg-secondary text-black border-secondary font-semibold hover:bg-secondaryHover hover:text-black'
-                                  : 'bg-selectBox text-black border-selectBox hover:bg-secondary hover:border-secondary'
-                              }`}
-                            >
-                              {pageNum}
-                            </button>
-                          );
-                        })}
-
-                        {/* Son sayfa */}
-                        {currentPage < totalPages - 2 && totalPages > 3 && (
-                          <>
-                            {currentPage < totalPages - 3 && (
-                              <span className="text-textPrimary px-1">-</span>
-                            )}
-                            <button
-                              onClick={() => setCurrentPage(totalPages)}
-                              className="w-8 h-8 text-sm rounded-full border transition-all bg-selectBox text-black border-selectBox hover:bg-secondary hover:border-secondary flex items-center justify-center"
-                            >
-                              {totalPages}
-                            </button>
-                          </>
-                        )}
-                      </div>
-
-                      {/* Sonraki */}
-                      <button
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className="px-2 py-1 text-lg text-textPrimary hover:text-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                      >
-                        <ChevronRight size={18} />
-                      </button>
-                    </div>
-                  </div>
+                  {/* Sayfalama */}
+                  <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                  />
                 </div>
               </div>
-              {loading ? (
-                <div className="flex justify-center items-center py-20">
-                  <div className="flex items-center gap-3 text-xl text-gray-500">
-                    <Clock size={24} className="animate-spin" />
-                    Haberler yükleniyor...
-                  </div>
-                </div>
-              ) : paginatedNews.length > 0 ? (
-                <motion.div 
-                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                  {paginatedNews.map((item, index) => (
-                    <motion.div 
-                      key={item.id} 
-                      className="bg-primary p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-primaryBG w-full"
-                      initial={{ y: 50, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ 
-                        duration: 0.5, 
-                        delay: index * 0.1,
-                        ease: "easeOut" 
-                      }}
-                      whileHover={{ 
-                        scale: 1.02,
-                        transition: { duration: 0.2 }
-                      }}
-                    >
-                      <div className="flex flex-col h-full">
-                        {/* Görsel kısmı - 160px */}
-                        <div className="w-full h-[160px] bg-primaryBG rounded-lg overflow-hidden mb-3 flex items-center justify-center">
-                          {item.image ? (
-                            <img 
-                              src={item.image} 
-                              alt={item.name} 
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                console.log("Resim yüklenemedi:", e);
-                                e.target.onerror = null; 
-                                e.target.src = "/imgs/logo.png"; // Fallback resim
-                              }} 
-                            />
-                          ) : (
-                            <div className="flex flex-col items-center justify-center text-textPrimary">
-                              <Image size={40} className="opacity-40 mb-2" />
-                              <span className="text-sm opacity-60">Görsel yok</span>
-                            </div>
-                          )}
-                        </div>
-                        
-                        {/* İçerik kısmı - 213px */}
-                        <div className="h-[213px] flex flex-col">
-                          {/* Başlık */}
-                          <h3 className="text-lg font-bold mb-2 text-textHeading line-clamp-2">{item.name}</h3>
-                          
-                          {/* Açıklama */}
-                          <p className="text-sm text-textPrimary mb-3 line-clamp-3">{item.minides}</p>
-                          
-                          {/* Etiketler - Roundedli */}
-                          <div className="flex flex-wrap gap-2 mb-3">
-                            {item.tag && item.tag.map((category, idx) => (
-                              <span key={idx} className={`text-xs px-2 py-1 rounded-full inline-flex items-center gap-1 ${CATEGORY_COLORS[category] || 'bg-primaryBG text-textPrimary'}`}>
-                                {CATEGORY_ICONS[category]} {category}
-                              </span>
-                            ))}
-                          </div>
-                          
-                          {/* Footer - Like/Dislike ve Tarih */}
-                          <div className="mt-auto flex justify-between items-center text-xs text-textPrimary">
-                            <div className="flex items-center gap-3">
-                              <button className="flex items-center gap-1 hover:text-red-500 transition-colors">
-                                <Heart size={12} />
-                                <span>{item.likes || 0}</span>
-                              </button>
-                              <button className="flex items-center gap-1 hover:text-blue-500 transition-colors">
-                                <ThumbsDown size={12} />
-                                <span>{item.dislikes || 0}</span>
-                              </button>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Calendar size={12} />
-                              <span>{formatDate(item.createdAt)}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              ) : (
-                <div className="text-center py-20">
-                  <div className="text-xl text-textPrimary">
-                    {searchTerm ? 
-                      <>
-                        <Search size={48} className="mx-auto mb-4 text-textPrimary opacity-50" />
-                        "{searchTerm}" için sonuç bulunamadı
-                      </> :
-                      selectedCategory === CATEGORIES.ALL ? 
-                        <>
-                          <FileText size={48} className="mx-auto mb-4 text-textPrimary opacity-50" />
-                          Henüz haber yok
-                        </> : 
-                        <>
-                          <FileText size={48} className="mx-auto mb-4 text-textPrimary opacity-50" />
-                          {selectedCategory} kategorisinde haber bulunamadı
-                        </>
-                    }
-                  </div>
-                  {searchTerm && (
-                    <button
-                      onClick={() => setSearchTerm('')}
-                      className="mt-4 px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondaryHover transition-colors flex items-center gap-2 mx-auto"
-                    >
-                      <Trash2 size={16} />
-                      Aramayı temizle
-                    </button>
-                  )}
-                </div>
-              )}
+
+              {/* Haber Grid */}
+              <NewsGrid 
+                news={paginatedNews}
+                loading={loading}
+                searchTerm={searchTerm}
+                selectedCategory={selectedCategory}
+                onClearSearch={handleClearSearch}
+              />
             </motion.div>
           </div>
         </div>
