@@ -8,7 +8,7 @@ const config = require("./config.json");
 
 async function main() {
     console.log("🚀 Haber getirme işlemi başlatılıyor...");
-    const news = (await getNews()).slice(0, 15);
+    const news = (await getNews()).slice(0, 25);
     
     // 5'li gruplar halinde işle
     const batchSize = 5;
