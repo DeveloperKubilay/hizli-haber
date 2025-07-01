@@ -123,13 +123,13 @@ function CommentSection({ newsId }) {
 
   return (
     <motion.div 
-      className="bg-primary p-6 rounded-lg mb-8"
+      className="bg-primary p-5 md:p-6 rounded-lg mb-8 max-w-none w-full"
       initial={{ y: 30, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
       <motion.div 
-        className="flex items-center gap-3 mb-4"
+        className="flex items-center gap-3 mb-6"
         initial={{ x: -20, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
@@ -138,9 +138,9 @@ function CommentSection({ newsId }) {
           animate={{ rotate: [0, 10, -10, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
-          <MessageCircle className="text-secondary" size={24} />
+          <MessageCircle className="text-secondary" size={26} />
         </motion.div>
-        <h3 className="text-xl font-bold text-textHeading">
+        <h3 className="text-xl md:text-2xl font-bold text-textHeading">
           Yorumlar ({comments.length})
         </h3>
       </motion.div>
@@ -167,9 +167,9 @@ function CommentSection({ newsId }) {
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="Yorumunuzu yazın..."
-                className="w-full px-4 py-3 bg-primaryBG text-textPrimary rounded-lg border border-primaryBG focus:border-secondary focus:outline-none resize-none"
-                rows="3"
-                whileFocus={{ scale: 1.02 }}
+                className="w-full px-5 py-4 bg-primaryBG text-textPrimary rounded-lg border border-primaryBG focus:border-secondary focus:outline-none resize-none text-base"
+                rows="4"
+                whileFocus={{ scale: 1.01 }}
                 transition={{ duration: 0.2 }}
               />
               <div className="flex justify-end mt-2">

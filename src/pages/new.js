@@ -254,17 +254,18 @@ function NewsDetail() {
   return (
     <>
       <Navbar />
-      <div className="max-w-6xl mx-auto py-8 px-6">
+      <div className="max-w-7xl mx-auto py-8 px-6 lg:px-8">
         {/* Geri dön butonu - Hızlı giriş animasyonu */}
         <motion.div
           initial={{ x: -50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
+          className="mb-8"
         >
           <BackButton navigate={navigate} />
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
           {/* Ana içerik */}
           <motion.div 
             className="lg:col-span-2"
@@ -277,6 +278,7 @@ function NewsDetail() {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.3 }}
+              className="mb-8"
             >
               <NewsHeader news={news} formatDate={formatDate} />
             </motion.div>
@@ -286,6 +288,7 @@ function NewsDetail() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.4 }}
+              className="mb-8"
             >
               <NewsImage image={news.image} name={news.name} />
             </motion.div>
@@ -295,6 +298,7 @@ function NewsDetail() {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.5 }}
+              className="mb-10"
             >
               <NewsContent news={news} />
             </motion.div>
@@ -304,6 +308,7 @@ function NewsDetail() {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.6 }}
+              className="mb-6"
             >
               <InteractionButtons 
                 news={news}
@@ -320,6 +325,7 @@ function NewsDetail() {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.7 }}
+              className="mb-8"
             >
               <CommentSection newsId={id} />
             </motion.div>
@@ -337,6 +343,7 @@ function NewsDetail() {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.5 }}
+              className="mb-8"
             >
               <RelatedNews 
                 relatedNews={relatedNews}
@@ -357,6 +364,9 @@ function NewsDetail() {
           </motion.div>
         </div>
       </div>
+      
+      {/* Footer için ekstra boşluk */}
+      <div className="py-12"></div>
       <Footer />
     </>
   );

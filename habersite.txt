@@ -3,16 +3,9 @@ https://v3.tailwindcss.com/
 
 firebase entegrasyonunu sağla like dislike saves yorumlar
 footer
-
-çoğu şeylerde animasyon var ama "new.js" de pek bi animasyon yok o yüzden animasyonlar ekle
-reklam ile benzer haberlerin arasında boşluk yok onu düzeltirmisin
+[home.js]
 anasaydafa haberler listelensin üzüm fln değil .d
+anasayfada tüm haberler aynı uzunluk değil
 
-siteyi genişletmem lazım ferah değil
-
-
-siteyi genişletmem lazım ferah değil
-navbar daki ybutonları büyütmek lazım çözünürlüğe göre ayarlanmalı
-news.js ve new.js içinde genişlikleir öyle
-news.js de reklam alanı küçük ondan dolayı genişletelim diyorum
-new.js de ise herşey dip dip'e duruyor insanın kafası karışır
+[new.js]
+kaydedilenler kısmı
