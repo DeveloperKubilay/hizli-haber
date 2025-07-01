@@ -2,7 +2,8 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { signInWithGoogle, logoutUser } from '../services/authService';
 import { auth } from '../services/firebase';
-import { LogIn, Newspaper, Search, BookMarked } from "lucide-react";
+// eslint-disable-next-line no-unused-vars
+import { LogIn, Newspaper, Search, BookMarked, User, Bookmark, LogOut, ChevronDown } from "lucide-react";
 import { motion } from "motion/react";
 import { CATEGORY_ICONS, NAVBAR_CATEGORIES } from '../services/categories';
 
@@ -11,8 +12,11 @@ function Navbar() {
   const [imageError, setImageError] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
   const dropdownRef = useRef(null);
+  const userDropdownRef = useRef(null);
   const timeoutRef = useRef(null);
+  const userTimeoutRef = useRef(null);
   const location = useLocation();
 
   // Artık kategoriler tamamen dinamik - categories.js'den geliyor!
@@ -31,6 +35,9 @@ function Navbar() {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
+      if (userTimeoutRef.current) {
+        clearTimeout(userTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -45,6 +52,20 @@ function Navbar() {
     timeoutRef.current = setTimeout(() => {
       setShowCategories(false);
     }, 300); // 300ms delay before hiding the menu
+  };
+
+  // User dropdown handlers
+  const handleUserMouseEnter = () => {
+    if (userTimeoutRef.current) {
+      clearTimeout(userTimeoutRef.current);
+    }
+    setShowUserDropdown(true);
+  };
+
+  const handleUserMouseLeave = () => {
+    userTimeoutRef.current = setTimeout(() => {
+      setShowUserDropdown(false);
+    }, 300);
   };
 
   const handleSignIn = useCallback(async () => {
@@ -191,31 +212,76 @@ function Navbar() {
           transition={{ duration: 0.7, delay: 0.6, ease: "easeOut" }}
         >
           {currentUser ? (
-            <div className="flex items-center space-x-3 md:space-x-4">
-              <div className="flex items-center">
-                {currentUser.photoURL && !imageError ? (
-                  <img
-                    src={currentUser.photoURL}
-                    alt="Profile"
-                    className="w-8 h-8 md:w-10 md:h-10 rounded-full mr-3"
-                    onError={handleImageError}
-                    referrerPolicy="no-referrer"
-                  />
-                ) : (
-                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-300 mr-3 flex items-center justify-center text-gray-600 text-sm md:text-base">
-                    {currentUser.displayName ? currentUser.displayName[0].toUpperCase() : 'U'}
-                  </div>
-                )}
-                <span className="text-sm md:text-base font-medium text-opacity-100 hidden sm:block">
-                  {currentUser.displayName || currentUser.email}
-                </span>
-              </div>
-              <button
-                onClick={handleSignOut}
-                className="text-sm md:text-base bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-1 md:py-2 px-3 md:px-4 rounded shadow-md"
+            <div className="relative">
+              <motion.div
+                ref={userDropdownRef}
+                onMouseEnter={handleUserMouseEnter}
+                onMouseLeave={handleUserMouseLeave}
+                className="flex items-center space-x-3 md:space-x-4 cursor-pointer"
               >
-                Çıkış Yap
-              </button>
+                <div className="flex items-center">
+                  {currentUser.photoURL && !imageError ? (
+                    <img
+                      src={currentUser.photoURL}
+                      alt="Profile"
+                      className="w-8 h-8 md:w-10 md:h-10 rounded-full mr-3"
+                      onError={handleImageError}
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-300 mr-3 flex items-center justify-center text-gray-600 text-sm md:text-base">
+                      {currentUser.displayName ? currentUser.displayName[0].toUpperCase() : 'U'}
+                    </div>
+                  )}
+                  <span className="text-sm md:text-base font-medium text-opacity-100 hidden sm:block">
+                    {currentUser.displayName || currentUser.email}
+                  </span>
+                </div>
+                <ChevronDown size={16} className="text-textPrimary" />
+              </motion.div>
+
+              {/* User Dropdown Menu */}
+              {showUserDropdown && (
+                <motion.div
+                  className="absolute top-full right-0 mt-2 bg-blackSelectBg backdrop-blur-sm shadow-xl rounded-lg py-2 px-2 z-20 border-2 border-blackSelectHover w-[200px] origin-top-right"
+                  onMouseEnter={handleUserMouseEnter}
+                  onMouseLeave={handleUserMouseLeave}
+                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="space-y-1">
+                    <motion.div
+                      initial={{ x: -10, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.1 }}
+                    >
+                      <Link
+                        to="/kaydettigim-haberler"
+                        className="flex items-center gap-3 text-white hover:bg-blackSelectHover rounded-lg px-3 py-2 transition-colors"
+                      >
+                        <Bookmark size={24} />
+                        <span className="text-sm font-medium">Kaydettiğim Haberler</span>
+                      </Link>
+                    </motion.div>
+                    
+                    <motion.div
+                      initial={{ x: -10, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <button
+                        onClick={handleSignOut}
+                        className="flex items-center gap-3 text-white hover:bg-red-600 rounded-lg px-3 py-2 transition-colors w-full text-left"
+                      >
+                        <LogOut size={20} />
+                        <span className="text-sm font-medium">Çıkış Yap</span>
+                      </button>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              )}
             </div>
           ) : (
             <div>
