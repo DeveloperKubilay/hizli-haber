@@ -9,7 +9,8 @@ import {
   Search, 
   X, 
   BarChart3, 
-  Eye, 
+  Heart, 
+  ThumbsDown, 
   Calendar, 
   AlignLeft, 
   ChevronLeft, 
@@ -27,7 +28,7 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(APP_CONFIG.DEFAULT_CATEGORY);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('tarih'); // 'tarih', 'baslik', 'okunmaSayisi'
+  const [sortBy, setSortBy] = useState('tarih'); // 'tarih', 'baslik', 'begeniler'
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
   const [showSortDropdown, setShowSortDropdown] = useState(false);
@@ -51,8 +52,8 @@ function Home() {
     switch (sortBy) {
       case 'baslik':
         return (a.name || '').localeCompare(b.name || '');
-      case 'okunmaSayisi':
-        return (b.views || 0) - (a.views || 0);
+      case 'begeniler':
+        return ((b.likes || 0) - (b.dislikes || 0)) - ((a.likes || 0) - (a.dislikes || 0));
       case 'tarih':
       default:
         return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
@@ -137,7 +138,7 @@ function Home() {
   const sortOptions = [
     { value: 'tarih', label: 'Tarihe göre', icon: <Calendar size={16} /> },
     { value: 'baslik', label: 'Başlığa göre', icon: <AlignLeft size={16} /> },
-    { value: 'okunmaSayisi', label: 'Okunma sayısına göre', icon: <Eye size={16} /> }
+    { value: 'begeniler', label: 'Beğenilere göre', icon: <Heart size={16} /> }
   ];
 
   const viewOptions = [
@@ -324,22 +325,21 @@ function Home() {
                     </div>
 
                     {/* Görüntüleme */}
-                    <div className="relative">
-                      <div 
-                        className="bg-primaryBG rounded-full px-4 py-3 border border-primaryBG cursor-pointer hover:border-secondary transition-all"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowViewDropdown(!showViewDropdown);
-                          setShowSortDropdown(false);
-                        }}
-                      >
-                        <div className="flex items-center gap-2">
-                          <Eye size={16} />
-                          <span className="text-textPrimary text-sm font-medium">Göster:</span>
-                          <span className="text-textPrimary text-sm">{itemsPerPage}</span>
-                          <ChevronDown size={14} className={`text-textPrimary transition-transform ${showViewDropdown ? 'rotate-180' : ''}`} />
+                    <div className="relative">                        <div 
+                          className="bg-primaryBG rounded-full px-4 py-3 border border-primaryBG cursor-pointer hover:border-secondary transition-all"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowViewDropdown(!showViewDropdown);
+                            setShowSortDropdown(false);
+                          }}
+                        >
+                          <div className="flex items-center gap-2">
+                            <Heart size={16} />
+                            <span className="text-textPrimary text-sm font-medium">Göster:</span>
+                            <span className="text-textPrimary text-sm">{itemsPerPage}</span>
+                            <ChevronDown size={14} className={`text-textPrimary transition-transform ${showViewDropdown ? 'rotate-180' : ''}`} />
+                          </div>
                         </div>
-                      </div>
                       
                       {/* Custom Dropdown */}
                       {showViewDropdown && (
@@ -388,7 +388,7 @@ function Home() {
                           <>
                             <button
                               onClick={() => setCurrentPage(1)}
-                              className="px-3 py-1 text-sm rounded-full border transition-all bg-selectBox text-black border-selectBox hover:bg-secondary hover:border-secondary"
+                              className="w-8 h-8 text-sm rounded-full border transition-all bg-selectBox text-black border-selectBox hover:bg-secondary hover:border-secondary flex items-center justify-center"
                             >
                               1
                             </button>
@@ -417,7 +417,7 @@ function Home() {
                             <button
                               key={pageNum}
                               onClick={() => setCurrentPage(pageNum)}
-                              className={`px-3 py-1 text-sm rounded-full border transition-all ${
+                              className={`w-8 h-8 text-sm rounded-full border transition-all flex items-center justify-center ${
                                 currentPage === pageNum
                                   ? 'bg-secondary text-black border-secondary font-semibold hover:bg-secondaryHover hover:text-black'
                                   : 'bg-selectBox text-black border-selectBox hover:bg-secondary hover:border-secondary'
@@ -436,7 +436,7 @@ function Home() {
                             )}
                             <button
                               onClick={() => setCurrentPage(totalPages)}
-                              className="px-3 py-1 text-sm rounded-full border transition-all bg-selectBox text-black border-selectBox hover:bg-secondary hover:border-secondary"
+                              className="w-8 h-8 text-sm rounded-full border transition-all bg-selectBox text-black border-selectBox hover:bg-secondary hover:border-secondary flex items-center justify-center"
                             >
                               {totalPages}
                             </button>
@@ -525,11 +525,17 @@ function Home() {
                             ))}
                           </div>
                           
-                          {/* Footer - Görüntülenme ve Tarih */}
+                          {/* Footer - Like/Dislike ve Tarih */}
                           <div className="mt-auto flex justify-between items-center text-xs text-textPrimary">
-                            <div className="flex items-center gap-1">
-                              <Eye size={12} />
-                              <span>{item.views || 0} okunma</span>
+                            <div className="flex items-center gap-3">
+                              <button className="flex items-center gap-1 hover:text-red-500 transition-colors">
+                                <Heart size={12} />
+                                <span>{item.likes || 0}</span>
+                              </button>
+                              <button className="flex items-center gap-1 hover:text-blue-500 transition-colors">
+                                <ThumbsDown size={12} />
+                                <span>{item.dislikes || 0}</span>
+                              </button>
                             </div>
                             <div className="flex items-center gap-1">
                               <Calendar size={12} />
