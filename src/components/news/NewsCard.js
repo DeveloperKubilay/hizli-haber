@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { Heart, ThumbsDown, Calendar, Image } from 'lucide-react';
 import { 
   CATEGORY_COLORS, 
@@ -34,20 +35,21 @@ function NewsCard({ item, index }) {
   };
 
   return (
-    <motion.div 
-      className="bg-primary p-3.5 rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-primaryBG w-full"
-      initial={{ y: 50, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ 
-        duration: 0.5, 
-        delay: index * 0.1,
-        ease: "easeOut" 
-      }}
-      whileHover={{ 
-        scale: 1.02,
-        transition: { duration: 0.2 }
-      }}
-    >
+    <Link to={`/haber/${item.id}`} className="block">
+      <motion.div 
+        className="bg-primary p-3.5 rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-primaryBG w-full cursor-pointer"
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ 
+          duration: 0.5, 
+          delay: index * 0.1,
+          ease: "easeOut" 
+        }}
+        whileHover={{ 
+          scale: 1.02,
+          transition: { duration: 0.2 }
+        }}
+      >
       <div className="flex flex-col h-full">
         {/* Görsel kısmı - 130px */}
         <div className="w-full h-[150px] bg-primaryBG rounded-lg overflow-hidden mb-3 flex items-center justify-center">
@@ -107,6 +109,7 @@ function NewsCard({ item, index }) {
         </div>
       </div>
     </motion.div>
+    </Link>
   );
 }
 
