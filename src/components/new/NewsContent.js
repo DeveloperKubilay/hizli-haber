@@ -7,21 +7,21 @@ function NewsContent({ news }) {
   
   return (
     <motion.div 
-      className="prose prose-lg max-w-none mb-8"
+      className="prose prose-lg max-w-none mb-10"
       initial={{ y: 30, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
       {/* Ayırıcı çizgi */}
       <motion.div 
-        className="border-t-2 border-secondary/30 mb-6"
+        className="border-t-2 border-secondary/30 mb-8"
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
       ></motion.div>
       
       <motion.div 
-        className="text-textPrimary leading-relaxed markdown-content"
+        className="text-textPrimary leading-relaxed markdown-content space-y-6"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.3 }}
@@ -32,7 +32,7 @@ function NewsContent({ news }) {
             // eslint-disable-next-line jsx-a11y/heading-has-content
             h1: ({node, ...props}) => (
               <motion.h1 
-                className="text-2xl font-bold text-textHeading mb-4" 
+                className="text-3xl md:text-4xl font-bold text-textHeading mb-10 mt-12" 
                 initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.5 }}
@@ -42,7 +42,7 @@ function NewsContent({ news }) {
             // eslint-disable-next-line jsx-a11y/heading-has-content
             h2: ({node, ...props}) => (
               <motion.h2 
-                className="text-xl font-bold text-textHeading mb-3" 
+                className="text-2xl md:text-3xl font-bold text-textHeading mb-8 mt-10" 
                 initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.5 }}
@@ -52,7 +52,7 @@ function NewsContent({ news }) {
             // eslint-disable-next-line jsx-a11y/heading-has-content
             h3: ({node, ...props}) => (
               <motion.h3 
-                className="text-lg font-bold text-textHeading mb-2" 
+                className="text-xl md:text-2xl font-bold text-textHeading mb-6 mt-8" 
                 initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.5 }}
@@ -61,7 +61,7 @@ function NewsContent({ news }) {
             ),
             p: ({node, ...props}) => (
               <motion.p 
-                className="mb-4 text-textPrimary leading-relaxed" 
+                className="mb-6 text-textPrimary leading-relaxed text-base" 
                 initial={{ y: 10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5 }}

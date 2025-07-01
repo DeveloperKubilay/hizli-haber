@@ -186,7 +186,7 @@ function Home() {
   return (
     <>
       <Navbar />
-      <div className="max-w-[1300px] mx-auto py-6 sm:px-6 lg:px-8">
+      <div className="max-w-[1400px] mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="space-y-8">
           {/* Kategoriler */}
           <CategoryFilter 
@@ -195,7 +195,7 @@ function Home() {
           />
 
           {/* Ana içerik - Sol reklam, Sağ haberler */}
-          <div className="flex gap-6">
+          <div className="flex gap-8">
             {/* Sol reklam alanı */}
             <AdSidebar />
 
@@ -207,14 +207,14 @@ function Home() {
               transition={{ duration: 0.7, ease: "easeOut", delay: 0.5 }}
             >
               {/* Arama ve Kontrol Paneli */}
-              <div className="bg-transparent px-0 pt-0 pb-4 mb-6">
+              <div className="bg-transparent px-0 pt-0 pb-6 mb-8">
                 <SearchBar 
                   searchTerm={searchTerm}
                   onSearchChange={handleSearchChange}
                   autoFocus={shouldAutoFocusSearch}
                 />
 
-                <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex flex-wrap items-center justify-between gap-4 mt-4">
                   <ControlPanel 
                     sortBy={sortBy}
                     setSortBy={setSortBy}

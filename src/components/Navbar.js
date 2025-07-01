@@ -81,7 +81,7 @@ function Navbar() {
 
   const aGroup = function(name, href, icon, delay = 0) {
     const isActive = location.pathname === href;
-    const baseClasses = "flex items-center gap-2 text-sm text-opacity-100 font-medium py-2 px-4 rounded-lg transition-all duration-200";
+    const baseClasses = "flex items-center gap-2 md:gap-3 text-sm md:text-base text-opacity-100 font-medium py-2 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-200";
     const activeClasses = isActive 
       ? "bg-secondaryBG text-textHeading hover:bg-selectBox hover:text-white" 
       : "hover:text-white hover:bg-blackSelectHover";
@@ -93,7 +93,7 @@ function Navbar() {
         transition={{ duration: 0.5, delay: delay, ease: "easeOut" }}
       >
         <Link to={href} className={`${baseClasses} ${activeClasses}`}>
-          {React.cloneElement(icon, { size: 18 })}
+          {React.cloneElement(icon, { size: window.innerWidth >= 768 ? 20 : 18 })}
           {name}
         </Link>
       </motion.div>
@@ -102,7 +102,7 @@ function Navbar() {
 
   return (
     <motion.header 
-      className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 relative z-10"
+      className="max-w-7xl mx-auto py-4 md:py-6 px-4 sm:px-6 lg:px-8 relative z-10"
       initial={{ y: -50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
@@ -117,13 +117,13 @@ function Navbar() {
             <img
               src="/imgs/logo.png"
               alt="Logo"
-              className="h-10 w-auto" // 🔥 Logo boyutunu büyüttüm
+              className="h-10 md:h-12 w-auto" // 🔥 Responsive logo boyutu
             />
-            <h1 className="text-3xl font-bold text-opacity-100 text-shadow text-[#ecf9fb]">hızlı haber</h1>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-opacity-100 text-shadow text-[#ecf9fb]">hızlı haber</h1>
           </Link>
         </motion.div>
 
-        <nav className="flex space-x-3 items-center">
+        <nav className="flex space-x-2 md:space-x-4 items-center">
           {aGroup("Son Haberler", "/haberler", <BookMarked size={16} />, 0.3)}
           <motion.div 
             className="relative group"
@@ -139,8 +139,8 @@ function Navbar() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
             >
-              <Link to="/haberler" className="flex items-center gap-2 text-sm text-opacity-100 font-medium py-2 px-4 rounded-lg transition-all duration-200 hover:text-white hover:bg-blackSelectHover">
-                <Newspaper size={18} />
+              <Link to="/haberler" className="flex items-center gap-2 md:gap-3 text-sm md:text-base text-opacity-100 font-medium py-2 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-200 hover:text-white hover:bg-blackSelectHover">
+                <Newspaper size={window.innerWidth >= 768 ? 20 : 18} />
                 Haberler
               </Link>
             </motion.div>
@@ -148,7 +148,7 @@ function Navbar() {
             {/* Kategoriler dropdown menüsü 🔥 */}
             {showCategories && (
               <motion.div 
-                className="absolute top-full left-0 mt-0.5 bg-blackSelectBg backdrop-blur-sm shadow-xl rounded-lg py-4 px-5 z-20 border-2 border-blackSelectHover w-[380px] h-auto overflow-auto scrollbar-none origin-top-left" // 🔥 Boyutları büyüttüm
+                className="absolute top-full left-0 mt-0.5 bg-blackSelectBg backdrop-blur-sm shadow-xl rounded-lg py-4 px-5 z-20 border-2 border-blackSelectHover w-[320px] md:w-[400px] h-auto overflow-auto scrollbar-none origin-top-left" // 🔥 Responsive boyut
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -171,7 +171,7 @@ function Navbar() {
                     >
                       <Link 
                         to={category.href}
-                        className={`flex items-center gap-1.5 text-white hover:opacity-90 text-xs rounded-full px-3 py-1.5 transition-all duration-200 ${category.bgColor}`}
+                        className={`flex items-center gap-1.5 text-white hover:opacity-90 text-xs md:text-sm rounded-full px-3 md:px-4 py-1.5 md:py-2 transition-all duration-200 ${category.bgColor}`}
                       >
                         {CATEGORY_ICONS[category.name]}
                         {category.name}
@@ -191,28 +191,28 @@ function Navbar() {
           transition={{ duration: 0.7, delay: 0.6, ease: "easeOut" }}
         >
           {currentUser ? (
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3 md:space-x-4">
               <div className="flex items-center">
                 {currentUser.photoURL && !imageError ? (
                   <img
                     src={currentUser.photoURL}
                     alt="Profile"
-                    className="w-8 h-8 rounded-full mr-3"
+                    className="w-8 h-8 md:w-10 md:h-10 rounded-full mr-3"
                     onError={handleImageError}
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-gray-300 mr-3 flex items-center justify-center text-gray-600">
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-300 mr-3 flex items-center justify-center text-gray-600 text-sm md:text-base">
                     {currentUser.displayName ? currentUser.displayName[0].toUpperCase() : 'U'}
                   </div>
                 )}
-                <span className="text-sm font-medium text-opacity-100">
+                <span className="text-sm md:text-base font-medium text-opacity-100 hidden sm:block">
                   {currentUser.displayName || currentUser.email}
                 </span>
               </div>
               <button
                 onClick={handleSignOut}
-                className="text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-1 px-3 rounded shadow-md"
+                className="text-sm md:text-base bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-1 md:py-2 px-3 md:px-4 rounded shadow-md"
               >
                 Çıkış Yap
               </button>
@@ -221,9 +221,9 @@ function Navbar() {
             <div>
               <button
                 onClick={handleSignIn}
-                className="flex items-center gap-2 bg-secondary text-black rounded-lg shadow-sm px-4 py-2 hover:bg-secondaryHover font-bold text-sm"
+                className="flex items-center gap-2 bg-secondary text-black rounded-lg shadow-sm px-4 md:px-6 py-2 md:py-3 hover:bg-secondaryHover font-bold text-sm md:text-base"
               >
-                <LogIn size={18} strokeWidth={2} />
+                <LogIn size={window.innerWidth >= 768 ? 20 : 18} strokeWidth={2} />
                 Giriş yap
               </button>
             </div>
