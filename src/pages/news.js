@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../services/firebase';
 import { collection, getDocs } from 'firebase/firestore';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 // Components
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import CategoryFilter from '../components/news/CategoryFilter';
 import SearchBar from '../components/news/SearchBar';
 import ControlPanel from '../components/news/ControlPanel';
@@ -33,6 +34,7 @@ function Home() {
   const [showViewDropdown, setShowViewDropdown] = useState(false);
   
   const location = useLocation();
+  const navigate = useNavigate();
   
   // Data filtering and processing
   const filteredNews = news.filter(item => {
@@ -110,7 +112,18 @@ function Home() {
   // Reset page when search/sort changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, sortBy]);
+    
+    // Arama veya sıralama değişirken URL'deki kategoriyi koru
+    if (selectedCategory !== CATEGORIES.ALL) {
+      const categoryKey = Object.entries(CATEGORIES).find(
+        ([key, value]) => value === selectedCategory
+      )?.[0];
+      
+      if (categoryKey) {
+        navigate(`/haberler#${categoryKey.toLowerCase()}`, { replace: true });
+      }
+    }
+  }, [searchTerm, sortBy, selectedCategory, navigate]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -127,6 +140,21 @@ function Home() {
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
     setCurrentPage(1);
+    
+    // URL'yi güncelle
+    if (category === CATEGORIES.ALL) {
+      // "Tüm Haberler" seçilince # kaldır
+      navigate('/haberler', { replace: true });
+    } else {
+      // Diğer kategoriler için # ekle
+      const categoryKey = Object.entries(CATEGORIES).find(
+        ([key, value]) => value === category
+      )?.[0];
+      
+      if (categoryKey) {
+        navigate(`/haberler#${categoryKey.toLowerCase()}`, { replace: true });
+      }
+    }
   };
 
   const handleSearchChange = (term) => {
@@ -135,6 +163,17 @@ function Home() {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
+    
+    // Sayfa değişirken de URL'deki kategoriyi koru
+    if (selectedCategory !== CATEGORIES.ALL) {
+      const categoryKey = Object.entries(CATEGORIES).find(
+        ([key, value]) => value === selectedCategory
+      )?.[0];
+      
+      if (categoryKey) {
+        navigate(`/haberler#${categoryKey.toLowerCase()}`, { replace: true });
+      }
+    }
   };
 
   const handleClearSearch = () => {
@@ -189,12 +228,14 @@ function Home() {
                     setShowViewDropdown={setShowViewDropdown}
                   />
 
-                  {/* Sayfalama */}
-                  <Pagination 
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                  />
+                  {/* Sayfalama - Sadece haber varsa göster */}
+                  {!loading && paginatedNews.length > 0 && totalPages > 1 && (
+                    <Pagination 
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  )}
                 </div>
               </div>
 
@@ -210,6 +251,14 @@ function Home() {
           </div>
         </div>
       </div>
+      
+      {/* Dinamik Spacer - Sadece içerik az ise boşluk ekle */}
+      <div style={{ 
+        minHeight: paginatedNews.length < 5 ? '500px' : '50px' 
+      }} className="bg-tbackground"></div>
+      
+      {/* Footer */}
+      <Footer />
     </>
   );
 }

@@ -9,9 +9,9 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-2 py-1 text-lg text-textPrimary hover:text-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          className="px-2.5 py-1.5 text-lg text-textPrimary hover:text-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-all"
         >
-          <ChevronLeft size={18} />
+          <ChevronLeft size={20} />
         </button>
 
         {/* Sayfa numaraları */}
@@ -21,7 +21,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
             <>
               <button
                 onClick={() => onPageChange(1)}
-                className="w-8 h-8 text-sm rounded-full border transition-all bg-selectBox text-black border-selectBox hover:bg-secondary hover:border-secondary flex items-center justify-center"
+                className="w-9 h-9 text-sm rounded-full border transition-all bg-selectBox text-black border-selectBox hover:bg-secondary hover:border-secondary flex items-center justify-center"
               >
                 1
               </button>
@@ -50,7 +50,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
               <button
                 key={pageNum}
                 onClick={() => onPageChange(pageNum)}
-                className={`w-8 h-8 text-sm rounded-full border transition-all flex items-center justify-center ${
+                className={`w-9 h-9 text-sm rounded-full border transition-all flex items-center justify-center ${
                   currentPage === pageNum
                     ? 'bg-secondary text-black border-secondary font-semibold hover:bg-secondaryHover hover:text-black'
                     : 'bg-selectBox text-black border-selectBox hover:bg-secondary hover:border-secondary'
@@ -69,7 +69,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
               )}
               <button
                 onClick={() => onPageChange(totalPages)}
-                className="w-8 h-8 text-sm rounded-full border transition-all bg-selectBox text-black border-selectBox hover:bg-secondary hover:border-secondary flex items-center justify-center"
+                className="w-9 h-9 text-sm rounded-full border transition-all bg-selectBox text-black border-selectBox hover:bg-secondary hover:border-secondary flex items-center justify-center"
               >
                 {totalPages}
               </button>
@@ -81,9 +81,9 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="px-2 py-1 text-lg text-textPrimary hover:text-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          className="px-2.5 py-1.5 text-lg text-textPrimary hover:text-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-all"
         >
-          <ChevronRight size={18} />
+          <ChevronRight size={20} />
         </button>
       </div>
     </div>
