@@ -14,7 +14,11 @@ import NewsGrid from '../components/news/NewsGrid';
 import AdSidebar from '../components/news/AdSidebar';
 
 // Services
-import { CATEGORIES, APP_CONFIG } from '../services/categories';
+import { 
+  CATEGORIES, 
+  APP_CONFIG, 
+  translateTagsToTurkish 
+} from '../services/categories';
 
 function Home() {
   // State management
@@ -32,7 +36,11 @@ function Home() {
   
   // Data filtering and processing
   const filteredNews = news.filter(item => {
-    const categoryMatch = selectedCategory === CATEGORIES.ALL || item.tag?.includes(selectedCategory);
+    // Kategori eşleştirmesi - backend'den gelen İngilizce tag'leri Türkçe kategorilerle karşılaştır
+    const categoryMatch = selectedCategory === CATEGORIES.ALL || 
+      (item.tag && Array.isArray(item.tag) && 
+       item.tag.some(tag => translateTagsToTurkish([tag]).includes(selectedCategory)));
+    
     const searchMatch = searchTerm === '' || 
       item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.minides?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -139,7 +147,7 @@ function Home() {
   return (
     <>
       <Navbar />
-      <div className="max-w-6xl mx-auto py-6 sm:px-6 lg:px-8">
+      <div className="max-w-[1300px] mx-auto py-6 sm:px-6 lg:px-8">
         <div className="space-y-8">
           {/* Kategoriler */}
           <CategoryFilter 
