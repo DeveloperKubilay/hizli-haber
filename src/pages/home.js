@@ -54,7 +54,7 @@ function Home() {
   useEffect(() => {
     intervalRef.current = setInterval(() => {
       setCurrentMsgIndex(prev => (prev + 1) % 3);
-    }, 3000);
+    }, 5000);
 
     return () => {
       if (intervalRef.current) {
