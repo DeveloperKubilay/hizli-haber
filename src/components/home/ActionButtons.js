@@ -11,9 +11,9 @@ function ActionButtons() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           transition={{ duration: 0.3 }}
-          className='text-black cursor-pointer text-lg bg-secondary hover:bg-secondaryHover hover:font-extrabold px-7 py-4 rounded-full font-bold flex items-center gap-3 shadow-xl transition-all duration-500'
+          className='text-black cursor-pointer text-lg bg-secondary hover:bg-secondaryHover hover:font-extrabold px-7 py-4 rounded-full font-bold flex items-center gap-3 shadow-xl transition-all duration-500 min-w-[180px] justify-center'
         >
-          <Compass className="h-6 w-6 mr-1" />
+          <Compass className="h-6 w-6" />
           Son haber
         </motion.div>
       </Link>
@@ -22,9 +22,9 @@ function ActionButtons() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           transition={{ duration: 0.3 }}
-          className='border-2 cursor-pointer text-base border-textPrimary hover:border-textHeading px-5 py-3 rounded-full flex items-center gap-2 shadow-lg transition-all duration-500'
+          className='border-2 cursor-pointer text-lg border-textPrimary hover:border-textHeading px-7 py-4 rounded-full flex items-center gap-3 shadow-lg transition-all duration-500 min-w-[180px] justify-center font-bold'
         >
-          <Newspaper className="h-5 w-5 mr-1" />
+          <Newspaper className="h-6 w-6" />
           Tüm Haberler
         </motion.div>
       </Link>

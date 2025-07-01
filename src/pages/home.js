@@ -13,6 +13,8 @@ function Home() {
   const [currentMsgIndex, setCurrentMsgIndex] = useState(0);
   const productTickerRef = useRef(null);
   const welcomeContainerRef = useRef(null);
+  const infoCardsRef = useRef(null);
+  const merhabaRef = useRef(null);
   const intervalRef = useRef(null);
 
   const msgs = [{
@@ -31,8 +33,9 @@ function Home() {
   useEffect(() => {
     const adjustWelcomeContainerHeight = () => {
       if (productTickerRef.current && welcomeContainerRef.current) {
-        const productTickerTop = productTickerRef.current.offsetTop;
-        welcomeContainerRef.current.style.height = `${productTickerTop}px`;
+        const tickerRect = productTickerRef.current.getBoundingClientRect();
+        const tickerBottom = tickerRect.bottom + window.scrollY;
+        welcomeContainerRef.current.style.height = `${tickerBottom}px`;
       }
     };
 
@@ -44,10 +47,12 @@ function Home() {
     };
     
     window.addEventListener('resize', handleResize, { passive: true });
+    window.addEventListener('scroll', adjustWelcomeContainerHeight, { passive: true });
     
     return () => {
       clearTimeout(timer);
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', adjustWelcomeContainerHeight);
     };
   }, []);
 
@@ -81,16 +86,16 @@ function Home() {
       </div>
       
       <div className="text-center py-8 mb-20">
-        <h2 className="text-4xl font-bold text-textHeading">
-          Merhaba
+        <h2 ref={merhabaRef} className="text-4xl font-bold text-textHeading">
+          En Hızlı Haber Platformu
         </h2>
         <p className="text-lg text-gray-500 mt-3">
-          evet burası bir merhaba mesajıdır
+          Türkiye'nin en hızlı haberi buradan bulabilirsiniz!<br /> Dakikalar içinde güncel gelişmeler, son dakika haberleri ve dünyadan önemli olaylar
         </p>
       </div>
       
       {/* Info Cards Section */}
-      <div className="max-w-6xl mx-auto px-6 bg-transparent">
+      <div ref={infoCardsRef} className="max-w-6xl mx-auto px-6 bg-transparent">
         <InfoCard 
           title="İlk Başlık"
           description="Bu ilk kartın açıklama metnidir. Burada güzel bir açıklama yazısı bulunmakta."
