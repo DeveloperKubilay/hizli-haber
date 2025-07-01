@@ -1,56 +1,18 @@
-son haberler, haberler katagori, haber ara
-
-Burası aradığın haberlerin
-en hızlısı, en detaylısı,
-birçok haberi bi anda burada bulabilirsin
-son haber tüm haberler
-
-haberler;
-baslık
-kısa açıklama
-açıklama
-okunma sayısı
-yapay zekaya sor
-tarih
-yorumlar
-özet
-foto
-anahtar kelimeler
-katagori
-
 https://v3.tailwindcss.com/
 
 
-anasayfanın animasyon sürelerini arttır
-firebase entegrasyonunu sağla
-yorumlar için ne kullanıcak onu ayarla
-like dislike için ne kullanıcak
+firebase entegrasyonunu sağla like dislike saves yorumlar
+footer
 
-blogs yazarları news die değiştir
+çoğu şeylerde animasyon var ama "new.js" de pek bi animasyon yok o yüzden animasyonlar ekle
+reklam ile benzer haberlerin arasında boşluk yok onu düzeltirmisin
+anasaydafa haberler listelensin üzüm fln değil .d
+
+siteyi genişletmem lazım ferah değil
 
 
-new.js de sağ tarafa benzer haberlerin üstüne bir tane daha div yap oraya haberin resimini göster onun altınada tagları göster ve bunun altına bir div daha ekle 
-oradada summary yazsın
-ve açıklama kısmında gerçek haberide ver aynı yazıyı iki kez söylüyor
-ai asistanı kısmı yerine yorum yapma kısmı die değiştir
-db yapısı:
-createdAt
-"2025-06-29T23:19:00Z"
-(string)
-des
-"# Libya'yı Sarsan Sahte Dinar Kabusu: 650 Milyon Dolarlık Vurgun! 😱 Selam gençler! 👋 Libya'dan gelen son dakika haberi tam anlamıyla 'yok artık' dedirtecek cinsten. Ülke resmen bir *sahte para* kriziyle çalkalanıyor ve olayın boyutu gerçekten akıl almaz! 🤯 ## Ne Oldu Kanka Bu İş? Libya Merkez Bankası'ndan yapılan açıklamaya göre, piyasadan toplanan 50 dinarlık banknotlar incelenince şok edici bir gerçek ortaya çıktı: Dolaşımdaki tam 10.2 milyar dinarın içinden, *neredeyse 3.5 milyar dinar* evet, yanlış duymadınız, **yaklaşık 650 milyon dolar!** 💸 sahte çıktı! Düşünsene, cebindeki para sahte çıkıyor... Tam bir kâbus! 🫠 ### Durum Neden Bu Kadar Ciddi? Merkez Bankası'nın bastığı toplam 50'lik banknot miktarı aslında 6.6 milyar dinar olması gerekirken, piyasada 10.2 milyar dinar bulunması, aradaki farkın tamamen sahte paralardan kaynaklandığını gösteriyor. Bu durum, sadece bir sahtecilik olayı değil, aynı zamanda Libya ekonomisine vurulan *büyük bir darbe* olarak görülüyor. Ülkenin ekonomik dengeleri altüst olmuş durumda! 📉 ## Banknotlar Toplandı, Soruşturma Başladı! 🕵️‍♀️ Merkez Bankası, bu durumun anlaşılması üzerine hızlıca aksiyon aldı ve ülkedeki **tüm 50'lik banknotları piyasadan topladı**. Evet, doğru okudunuz, hepsi! Bu büyük kriz, hemen Başsavcılığa ve Temsilciler Meclisi'ne bildirildi. Çünkü bu işin arkasında çok büyük bir organize suç şebekesi olduğu düşünülüyor. 🧐 Libya Başbakanı Abdulhamid Dibeybe de boş durmadı. Sosyal medya hesabından yaptığı açıklamada, piyasadaki sahte para konusunda daha önce yaptığı uyarıların ne kadar haklı çıktığını belirtti. Yetmedi, Başsavcı'dan bu sahtecilik suçuna karışan *herkes hakkında kapsamlı bir soruşturma* başlatılmasını talep etti. **Hesap sorulacak!** 💪 ### Peki Sonuç Ne Olacak? Şu an için, bu büyük sahtecilik ağının kimler tarafından kurulduğu ve bu kadar devasa miktarda sahte paranın nasıl piyasaya sürüldüğü büyük bir merak konusu. Bu olay, Libya ekonomisini derinden etkileyecek ve halkın paraya olan güvenini sarsacak gibi duruyor. Umalım ki sorumlular bir an önce bulunur ve adalet yerini bulur. 🙏 Bu tarz haberler hepimizi düşündürüyor, değil mi? Paranın bile güvenli olmadığı bir dünya... Vay be! 🌍"
-(string)
-image
-"https://via.placeholder.com/150"
-(string)
-minides
-"Libya'da dolaşımdaki paraların tam 650 milyon dolarlık kısmı sahte çıktı! 😱 Peki bu devasa vurgun kimleri vurdu? Detaylar akıllara durgunluk veriyor... 👇"
-(string)
-name
-"650 MİLYON DOLARLIK ŞOK! 🤯 Libya'da Paran mı Sahte Çıktı? 💸 TikTok'ta Gündem Olan Sahte Dinar Krizi! 👇"
-(string)
-summary
-"Libya Merkez Bankası, piyasadan topladığı 50 dinarlık banknotların yaklaşık 3.5 milyar dinarının 650 milyon dolar değerinde sahte olduğunu duyurdu. Bu durum, ülkedeki tüm 50 dinarlık banknotların toplanmasına ve Başbakan Dibeybe'nin geniş çaplı soruşturma çağrısı yapmasına neden oldu. Olay, Libya ekonomisine büyük zarar verdi."
-(string)
-tag
-(array)
+siteyi genişletmem lazım ferah değil
+navbar daki ybutonları büyütmek lazım çözünürlüğe göre ayarlanmalı
+news.js ve new.js içinde genişlikleir öyle
+news.js de reklam alanı küçük ondan dolayı genişletelim diyorum
+new.js de ise herşey dip dip'e duruyor insanın kafası karışır

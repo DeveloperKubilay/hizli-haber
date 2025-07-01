@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, User, Send, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { auth, db } from '../../services/firebase';
 import { collection, addDoc, getDocs, query, where, orderBy, updateDoc, doc, increment } from 'firebase/firestore';
@@ -121,52 +122,108 @@ function CommentSection({ newsId }) {
   };
 
   return (
-    <div className="bg-primary p-6 rounded-lg mb-8">
-      <div className="flex items-center gap-3 mb-4">
-        <MessageCircle className="text-secondary" size={24} />
-        <h3 className="text-xl font-bold text-textHeading">Yorumlar ({comments.length})</h3>
-      </div>
+    <motion.div 
+      className="bg-primary p-6 rounded-lg mb-8"
+      initial={{ y: 30, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
+      <motion.div 
+        className="flex items-center gap-3 mb-4"
+        initial={{ x: -20, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <motion.div
+          animate={{ rotate: [0, 10, -10, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <MessageCircle className="text-secondary" size={24} />
+        </motion.div>
+        <h3 className="text-xl font-bold text-textHeading">
+          Yorumlar ({comments.length})
+        </h3>
+      </motion.div>
       
       {/* Yorum yazma formu */}
       {auth.currentUser ? (
-        <form onSubmit={handleSubmitComment} className="mb-6">
+        <motion.form 
+          onSubmit={handleSubmitComment} 
+          className="mb-6"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
           <div className="flex gap-3">
-            <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
+            <motion.div 
+              className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center"
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileTap={{ scale: 0.95 }}
+            >
               <User className="text-white" size={20} />
-            </div>
+            </motion.div>
             <div className="flex-1">
-              <textarea
+              <motion.textarea
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="Yorumunuzu yazın..."
                 className="w-full px-4 py-3 bg-primaryBG text-textPrimary rounded-lg border border-primaryBG focus:border-secondary focus:outline-none resize-none"
                 rows="3"
+                whileFocus={{ scale: 1.02 }}
+                transition={{ duration: 0.2 }}
               />
               <div className="flex justify-end mt-2">
-                <button
+                <motion.button
                   type="submit"
                   disabled={loading || !newComment.trim()}
                   className="bg-secondary hover:bg-secondaryHover text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ x: 20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.4 }}
                 >
-                  <Send size={16} />
+                  <motion.div
+                    animate={loading ? { rotate: 360 } : {}}
+                    transition={{ duration: 1, repeat: loading ? Infinity : 0 }}
+                  >
+                    <Send size={16} />
+                  </motion.div>
                   {loading ? 'Gönderiliyor...' : 'Gönder'}
-                </button>
+                </motion.button>
               </div>
             </div>
           </div>
-        </form>
+        </motion.form>
       ) : (
-        <div className="mb-6 p-4 bg-primaryBG rounded-lg text-center">
+        <motion.div 
+          className="mb-6 p-4 bg-primaryBG rounded-lg text-center"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          whileHover={{ scale: 1.02 }}
+        >
           <p className="text-textPrimary">Yorum yapmak için giriş yapmalısınız.</p>
-        </div>
+        </motion.div>
       )}
 
       {/* Yorumlar listesi */}
-      <div className="space-y-4">
+      <motion.div 
+        className="space-y-4"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
         {commentsLoading ? (
           // Skeleton loading
           Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="animate-pulse">
+            <motion.div 
+              key={index} 
+              className="animate-pulse"
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
               <div className="flex gap-3">
                 <div className="w-10 h-10 bg-primaryBG rounded-full"></div>
                 <div className="flex-1">
@@ -175,52 +232,102 @@ function CommentSection({ newsId }) {
                   <div className="h-3 bg-primaryBG rounded w-3/4"></div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))
         ) : comments.length > 0 ? (
-          comments.map((comment) => (
-            <div key={comment.id} className="flex gap-3 pb-4 border-b border-primaryBG last:border-b-0">
-              <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
-                <User className="text-white" size={20} />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h4 className="font-semibold text-textHeading text-sm">
-                    {comment.userName}
-                  </h4>
-                  <span className="text-xs text-textPrimary">
-                    {formatDate(comment.createdAt)}
-                  </span>
-                </div>
-                <p className="text-textPrimary mb-2 text-sm leading-relaxed">
-                  {comment.content}
-                </p>
-                <div className="flex items-center gap-4">
-                  <button
-                    onClick={() => handleCommentLike(comment.id, true)}
-                    className="flex items-center gap-1 text-xs text-textPrimary hover:text-secondary transition-colors"
+          <AnimatePresence>
+            {comments.map((comment, index) => (
+              <motion.div 
+                key={comment.id} 
+                className="flex gap-3 pb-4 border-b border-primaryBG last:border-b-0"
+                initial={{ x: -30, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: 30, opacity: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ x: 5, scale: 1.02 }}
+              >
+                <motion.div 
+                  className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center"
+                  whileHover={{ scale: 1.1, rotate: 10 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <User className="text-white" size={20} />
+                </motion.div>
+                <div className="flex-1">
+                  <motion.div 
+                    className="flex items-center gap-2 mb-1"
+                    initial={{ y: -10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
                   >
-                    <ThumbsUp size={14} />
-                    {comment.likes || 0}
-                  </button>
-                  <button
-                    onClick={() => handleCommentLike(comment.id, false)}
-                    className="flex items-center gap-1 text-xs text-textPrimary hover:text-red-500 transition-colors"
+                    <h4 className="font-semibold text-textHeading text-sm">
+                      {comment.userName}
+                    </h4>
+                    <span className="text-xs text-textPrimary">
+                      {formatDate(comment.createdAt)}
+                    </span>
+                  </motion.div>
+                  <motion.p 
+                    className="text-textPrimary mb-2 text-sm leading-relaxed"
+                    initial={{ y: 10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 }}
                   >
-                    <ThumbsDown size={14} />
-                    {comment.dislikes || 0}
-                  </button>
+                    {comment.content}
+                  </motion.p>
+                  <motion.div 
+                    className="flex items-center gap-4"
+                    initial={{ y: 10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    <motion.button
+                      onClick={() => handleCommentLike(comment.id, true)}
+                      className="flex items-center gap-1 text-xs text-textPrimary hover:text-secondary transition-colors"
+                      whileHover={{ scale: 1.1, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <ThumbsUp size={14} />
+                      <motion.span
+                        key={comment.likes || 0}
+                        initial={{ y: -10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                      >
+                        {comment.likes || 0}
+                      </motion.span>
+                    </motion.button>
+                    <motion.button
+                      onClick={() => handleCommentLike(comment.id, false)}
+                      className="flex items-center gap-1 text-xs text-textPrimary hover:text-red-500 transition-colors"
+                      whileHover={{ scale: 1.1, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <ThumbsDown size={14} />
+                      <motion.span
+                        key={comment.dislikes || 0}
+                        initial={{ y: -10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                      >
+                        {comment.dislikes || 0}
+                      </motion.span>
+                    </motion.button>
+                  </motion.div>
                 </div>
-              </div>
-            </div>
-          ))
+              </motion.div>
+            ))}
+          </AnimatePresence>
         ) : (
-          <p className="text-textPrimary text-sm text-center py-4">
+          <motion.p 
+            className="text-textPrimary text-sm text-center py-4"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
             Henüz yorum yapılmamış. İlk yorumu siz yapın!
-          </p>
+          </motion.p>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 

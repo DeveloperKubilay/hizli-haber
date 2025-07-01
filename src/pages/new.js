@@ -255,27 +255,56 @@ function NewsDetail() {
     <>
       <Navbar />
       <div className="max-w-6xl mx-auto py-8 px-6">
+        {/* Geri dön butonu - Hızlı giriş animasyonu */}
         <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6 }}
+          initial={{ x: -50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
         >
-          {/* Geri dön butonu */}
           <BackButton navigate={navigate} />
+        </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Ana içerik */}
-            <div className="lg:col-span-2">
-              {/* Başlık ve meta bilgiler */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Ana içerik */}
+          <motion.div 
+            className="lg:col-span-2"
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            {/* Başlık ve meta bilgiler */}
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
               <NewsHeader news={news} formatDate={formatDate} />
+            </motion.div>
 
-              {/* Ana resim */}
+            {/* Ana resim */}
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
               <NewsImage image={news.image} name={news.name} />
+            </motion.div>
 
-              {/* İçerik */}
+            {/* İçerik */}
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
               <NewsContent news={news} />
+            </motion.div>
 
-              {/* Etkileşim butonları */}
+            {/* Etkileşim butonları */}
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
               <InteractionButtons 
                 news={news}
                 liked={liked}
@@ -284,26 +313,49 @@ function NewsDetail() {
                 handleDislike={handleDislike}
                 handleShare={handleShare}
               />
+            </motion.div>
 
-              {/* Yorum Sistemi */}
+            {/* Yorum Sistemi */}
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.7 }}
+            >
               <CommentSection newsId={id} />
-            </div>
+            </motion.div>
+          </motion.div>
 
-            {/* Yan panel */}
-            <div className="lg:col-span-1">
-              {/* Yan bilgiler ve benzer haberler */}
+          {/* Yan panel */}
+          <motion.div 
+            className="lg:col-span-1"
+            initial={{ x: 50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            {/* Yan bilgiler ve benzer haberler */}
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
               <RelatedNews 
                 relatedNews={relatedNews}
                 relatedLoading={relatedLoading}
                 formatDate={formatDate}
                 currentNews={news}
               />
+            </motion.div>
 
-              {/* Reklam alanı */}
+            {/* Reklam alanı */}
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
               <AdSection />
-            </div>
-          </div>
-        </motion.div>
+            </motion.div>
+          </motion.div>
+        </div>
       </div>
       <Footer />
     </>
