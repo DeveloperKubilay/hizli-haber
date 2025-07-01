@@ -1,27 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { db, auth, ai } from '../services/firebase';
+import { db, auth } from '../services/firebase';
 import { doc, getDoc, collection, getDocs, updateDoc, increment } from 'firebase/firestore';
-import { 
-  Heart, 
-  ThumbsDown, 
-  Calendar, 
-  Share2, 
-  ArrowLeft,
-  Eye,
-  Bookmark,
-  Brain
-} from 'lucide-react';
 
 // Components
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { 
-  CATEGORY_COLORS, 
-  CATEGORY_ICONS, 
-  translateTagsToTurkish 
-} from '../services/categories';
+import BackButton from '../components/new/BackButton';
+import NewsHeader from '../components/new/NewsHeader';
+import NewsImage from '../components/new/NewsImage';
+import NewsContent from '../components/new/NewsContent';
+import InteractionButtons from '../components/new/InteractionButtons';
+import CommentSection from '../components/new/CommentSection';
+import RelatedNews from '../components/new/RelatedNews';
+import AdSection from '../components/new/AdSection';
+import LoadingState from '../components/new/LoadingState';
+import ErrorState from '../components/new/ErrorState';
+import NotFoundState from '../components/new/NotFoundState';
 
 function NewsDetail() {
   const { id } = useParams();
@@ -32,18 +28,12 @@ function NewsDetail() {
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
   const [relatedNews, setRelatedNews] = useState([]);
-  const [aiSummary, setAiSummary] = useState('');
-  const [isLoadingAi, setIsLoadingAi] = useState(false);
-  const [aiQuestion, setAiQuestion] = useState('');
-  const [aiAnswer, setAiAnswer] = useState('');
+  const [relatedLoading, setRelatedLoading] = useState(false);
 
   // Haber detayını çek
   useEffect(() => {
     const fetchNewsDetail = async () => {
-      console.log('🔍 Fetching news with ID:', id);
-      
       if (!id) {
-        console.error('❌ No ID provided');
         setError('Haber ID\'si bulunamadı');
         setLoading(false);
         return;
@@ -51,20 +41,11 @@ function NewsDetail() {
 
       try {
         setLoading(true);
-        console.log('🚀 Starting Firebase request...');
-        
-        // Firebase bağlantısını test et
-        console.log('📊 Database instance:', db);
         
         const newsDoc = doc(db, 'news', id);
-        console.log('📄 Document reference created:', newsDoc);
-        
         const newsSnapshot = await getDoc(newsDoc);
-        console.log('📥 Document snapshot received:', newsSnapshot);
-        console.log('📋 Document exists:', newsSnapshot.exists());
         
         if (!newsSnapshot.exists()) {
-          console.warn('⚠️ Document not found for ID:', id);
           setError('Haber bulunamadı');
           setLoading(false);
           return;
@@ -75,36 +56,18 @@ function NewsDetail() {
           ...newsSnapshot.data()
         };
         
-        console.log('✅ News data loaded:', newsData);
         setNews(newsData);
+        setLoading(false); // Ana loading'i burada bitir
         
-        // Okunma sayısını artır (hata olursa devam et)
-        try {
-          await updateDoc(newsDoc, {
-            views: increment(1)
-          });
-          console.log('📈 View count incremented');
-        } catch (viewError) {
-          console.warn('⚠️ Could not increment view count:', viewError);
-        }
-        
-        // Benzer haberleri çek
-        try {
-          await fetchRelatedNews(newsData);
-          console.log('🔗 Related news loaded');
-        } catch (relatedError) {
-          console.warn('⚠️ Could not load related news:', relatedError);
-        }
+        // Benzer haberleri background'da çek
+        setRelatedLoading(true);
+        fetchRelatedNews(newsData).finally(() => {
+          setRelatedLoading(false);
+        });
         
       } catch (error) {
         console.error('Haber detayı çekilirken hata:', error);
-        console.error('Error details:', {
-          message: error.message,
-          code: error.code,
-          stack: error.stack
-        });
         setError(`Haber yüklenirken hata: ${error.message || error.toString()}`);
-      } finally {
         setLoading(false);
       }
     };
@@ -114,30 +77,49 @@ function NewsDetail() {
 
   // Benzer haberleri çek
   const fetchRelatedNews = async (currentNews) => {
-    console.log('🔗 Fetching related news...');
     try {
+      // Eğer tag yoksa en son haberleri göster
+      if (!currentNews.tag || currentNews.tag.length === 0) {
+        const newsCollection = collection(db, 'news');
+        const recentNewsSnapshot = await getDocs(newsCollection);
+        const recentNews = recentNewsSnapshot.docs
+          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .filter(item => item.id !== currentNews.id)
+          .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+          .slice(0, 4);
+        
+        setRelatedNews(recentNews);
+        return;
+      }
+
+      // Benzer kategorilerdeki haberleri bul (optimized)
       const newsCollection = collection(db, 'news');
-      console.log('📚 News collection reference:', newsCollection);
-      
       const allNewsSnapshot = await getDocs(newsCollection);
-      console.log('📊 All news snapshot received, docs count:', allNewsSnapshot.docs.length);
       
-      const allNews = allNewsSnapshot.docs
+      const related = allNewsSnapshot.docs
         .map(doc => ({ id: doc.id, ...doc.data() }))
-        .filter(item => item.id !== currentNews.id);
+        .filter(item => {
+          if (item.id === currentNews.id) return false;
+          if (!item.tag || !Array.isArray(item.tag)) return false;
+          
+          // En az bir tag eşleşmesi var mı?
+          return item.tag.some(tag => currentNews.tag.includes(tag));
+        })
+        .sort((a, b) => {
+          // Tag eşleşme sayısına göre sırala
+          const aMatches = a.tag.filter(tag => currentNews.tag.includes(tag)).length;
+          const bMatches = b.tag.filter(tag => currentNews.tag.includes(tag)).length;
+          if (bMatches !== aMatches) return bMatches - aMatches;
+          
+          // Sonra tarihe göre sırala
+          return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+        })
+        .slice(0, 4);
 
-      console.log('📋 Filtered news count:', allNews.length);
-
-      // Aynı kategorideki haberleri bul
-      const related = allNews.filter(item => {
-        if (!currentNews.tag || !item.tag) return false;
-        return item.tag.some(tag => currentNews.tag.includes(tag));
-      }).slice(0, 4);
-
-      console.log('🎯 Related news found:', related.length);
       setRelatedNews(related);
     } catch (error) {
       console.error('❌ Benzer haberler çekilirken hata:', error);
+      setRelatedNews([]); // Hata durumunda boş array
     }
   };
 
@@ -222,40 +204,6 @@ function NewsDetail() {
     }
   };
 
-  // AI özeti oluştur
-  const generateAiSummary = async () => {
-    if (!news?.content) return;
-    
-    setIsLoadingAi(true);
-    try {
-      const prompt = `Bu haber metnini Türkçe olarak özetle ve ana noktaları çıkar:\n\n${news.content}`;
-      const summary = await ai(prompt);
-      setAiSummary(summary);
-    } catch (error) {
-      console.error('AI özeti oluşturulurken hata:', error);
-      setAiSummary('Özet oluşturulurken bir hata oluştu.');
-    } finally {
-      setIsLoadingAi(false);
-    }
-  };
-
-  // AI'ya soru sor
-  const askAiQuestion = async () => {
-    if (!aiQuestion.trim() || !news?.content) return;
-    
-    setIsLoadingAi(true);
-    try {
-      const prompt = `Bu haber metni hakkında sorulan soruyu cevapla:\n\nHaber: ${news.content}\n\nSoru: ${aiQuestion}\n\nCevabı Türkçe ver:`;
-      const answer = await ai(prompt);
-      setAiAnswer(answer);
-    } catch (error) {
-      console.error('AI sorusu cevaplanırken hata:', error);
-      setAiAnswer('Soru cevaplanırken bir hata oluştu.');
-    } finally {
-      setIsLoadingAi(false);
-    }
-  };
-
   // Paylaş
   const handleShare = () => {
     if (navigator.share && news) {
@@ -292,61 +240,15 @@ function NewsDetail() {
   };
 
   if (loading) {
-    return (
-      <>
-        <Navbar />
-        <div className="max-w-4xl mx-auto py-8 px-6">
-          <div className="animate-pulse">
-            <div className="h-8 bg-primary rounded mb-4"></div>
-            <div className="h-64 bg-primary rounded mb-6"></div>
-            <div className="space-y-3">
-              <div className="h-4 bg-primary rounded w-3/4"></div>
-              <div className="h-4 bg-primary rounded w-1/2"></div>
-              <div className="h-4 bg-primary rounded w-5/6"></div>
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </>
-    );
+    return <LoadingState />;
   }
 
   if (error) {
-    return (
-      <>
-        <Navbar />
-        <div className="max-w-4xl mx-auto py-8 px-6 text-center">
-          <h1 className="text-2xl font-bold text-textHeading mb-4">Hata</h1>
-          <p className="text-textPrimary mb-6">{error}</p>
-          <button
-            onClick={() => navigate('/haberler')}
-            className="bg-secondary hover:bg-secondaryHover text-white px-6 py-2 rounded-lg transition-colors"
-          >
-            Haberlere Dön
-          </button>
-        </div>
-        <Footer />
-      </>
-    );
+    return <ErrorState error={error} navigate={navigate} />;
   }
 
   if (!news) {
-    return (
-      <>
-        <Navbar />
-        <div className="max-w-4xl mx-auto py-8 px-6 text-center">
-          <h1 className="text-2xl font-bold text-textHeading mb-4">Haber Bulunamadı</h1>
-          <p className="text-textPrimary mb-6">Aradığınız haber mevcut değil.</p>
-          <button
-            onClick={() => navigate('/haberler')}
-            className="bg-secondary hover:bg-secondaryHover text-white px-6 py-2 rounded-lg transition-colors"
-          >
-            Haberlere Dön
-          </button>
-        </div>
-        <Footer />
-      </>
-    );
+    return <NotFoundState navigate={navigate} />;
   }
 
   return (
@@ -359,209 +261,46 @@ function NewsDetail() {
           transition={{ duration: 0.6 }}
         >
           {/* Geri dön butonu */}
-          <div className="mb-6">
-            <button
-              onClick={() => navigate('/haberler')}
-              className="flex items-center gap-2 text-textPrimary hover:text-textHeading transition-colors"
-            >
-              <ArrowLeft size={20} />
-              Haberlere Dön
-            </button>
-          </div>
+          <BackButton navigate={navigate} />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Ana içerik */}
             <div className="lg:col-span-2">
               {/* Başlık ve meta bilgiler */}
-              <div className="mb-6">
-                <h1 className="text-3xl lg:text-4xl font-bold text-textHeading mb-4 leading-tight">
-                  {news.name}
-                </h1>
-                
-                {/* Kısa açıklama */}
-                <p className="text-lg text-textPrimary mb-4 leading-relaxed">
-                  {news.minides}
-                </p>
-
-                {/* Meta bilgiler */}
-                <div className="flex flex-wrap items-center gap-4 text-sm text-textPrimary mb-6">
-                  <div className="flex items-center gap-2">
-                    <Calendar size={16} />
-                    <span>{formatDate(news.createdAt)}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Eye size={16} />
-                    <span>{news.views || 0} görüntülenme</span>
-                  </div>
-                </div>
-
-                {/* Kategoriler */}
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {news.tag && translateTagsToTurkish(news.tag).map((category, idx) => (
-                    <span key={idx} className={`text-sm px-3 py-2 rounded-full inline-flex items-center gap-1.5 ${CATEGORY_COLORS[category] || 'bg-primaryBG text-textPrimary'}`}>
-                      {CATEGORY_ICONS[category]} {category}
-                    </span>
-                  ))}
-                </div>
-              </div>
+              <NewsHeader news={news} formatDate={formatDate} />
 
               {/* Ana resim */}
-              {news.image && (
-                <div className="mb-8">
-                  <img 
-                    src={news.image} 
-                    alt={news.name}
-                    className="w-full h-64 lg:h-96 object-cover rounded-lg"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
-                </div>
-              )}
+              <NewsImage image={news.image} name={news.name} />
 
               {/* İçerik */}
-              <div className="prose prose-lg max-w-none mb-8">
-                <div className="text-textPrimary leading-relaxed whitespace-pre-wrap">
-                  {news.content || news.description || news.minides || 'İçerik mevcut değil.'}
-                </div>
-              </div>
+              <NewsContent news={news} />
 
               {/* Etkileşim butonları */}
-              <div className="flex flex-wrap items-center gap-4 py-6 border-t border-primary">
-                <button
-                  onClick={handleLike}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                    liked ? 'bg-red-500 text-white' : 'bg-primary text-textPrimary hover:bg-primaryBG'
-                  }`}
-                >
-                  <Heart size={20} />
-                  <span>{news.likes || 0}</span>
-                </button>
+              <InteractionButtons 
+                news={news}
+                liked={liked}
+                disliked={disliked}
+                handleLike={handleLike}
+                handleDislike={handleDislike}
+                handleShare={handleShare}
+              />
 
-                <button
-                  onClick={handleDislike}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                    disliked ? 'bg-blue-500 text-white' : 'bg-primary text-textPrimary hover:bg-primaryBG'
-                  }`}
-                >
-                  <ThumbsDown size={20} />
-                  <span>{news.dislikes || 0}</span>
-                </button>
-
-                <button
-                  onClick={handleShare}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-textPrimary hover:bg-primaryBG transition-colors"
-                >
-                  <Share2 size={20} />
-                  Paylaş
-                </button>
-
-                <button
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-textPrimary hover:bg-primaryBG transition-colors"
-                >
-                  <Bookmark size={20} />
-                  Kaydet
-                </button>
-              </div>
-
-              {/* AI Panel */}
-              <div className="bg-primary p-6 rounded-lg mb-8">
-                <div className="flex items-center gap-3 mb-4">
-                  <Brain className="text-secondary" size={24} />
-                  <h3 className="text-xl font-bold text-textHeading">AI Asistanı</h3>
-                </div>
-                
-                <div className="space-y-4">
-                  {/* Özet oluştur */}
-                  <div>
-                    <button
-                      onClick={generateAiSummary}
-                      disabled={isLoadingAi}
-                      className="bg-secondary hover:bg-secondaryHover text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
-                    >
-                      {isLoadingAi ? 'Özet oluşturuluyor...' : 'Haberi Özetle'}
-                    </button>
-                    
-                    {aiSummary && (
-                      <div className="mt-4 p-4 bg-primaryBG rounded-lg">
-                        <h4 className="font-semibold text-textHeading mb-2">AI Özeti:</h4>
-                        <p className="text-textPrimary">{aiSummary}</p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Soru sor */}
-                  <div>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={aiQuestion}
-                        onChange={(e) => setAiQuestion(e.target.value)}
-                        placeholder="Bu haber hakkında bir soru sorun..."
-                        className="flex-1 px-4 py-2 bg-primaryBG text-textPrimary rounded-lg border border-primaryBG focus:border-secondary focus:outline-none"
-                      />
-                      <button
-                        onClick={askAiQuestion}
-                        disabled={isLoadingAi || !aiQuestion.trim()}
-                        className="bg-secondary hover:bg-secondaryHover text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
-                      >
-                        Sor
-                      </button>
-                    </div>
-                    
-                    {aiAnswer && (
-                      <div className="mt-4 p-4 bg-primaryBG rounded-lg">
-                        <h4 className="font-semibold text-textHeading mb-2">AI Cevabı:</h4>
-                        <p className="text-textPrimary">{aiAnswer}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+              {/* Yorum Sistemi */}
+              <CommentSection newsId={id} />
             </div>
 
             {/* Yan panel */}
             <div className="lg:col-span-1">
-              {/* Benzer haberler */}
-              {relatedNews.length > 0 && (
-                <div className="bg-primary p-6 rounded-lg mb-6">
-                  <h3 className="text-xl font-bold text-textHeading mb-4">Benzer Haberler</h3>
-                  <div className="space-y-4">
-                    {relatedNews.map((item) => (
-                      <Link
-                        key={item.id}
-                        to={`/haber/${item.id}`}
-                        className="block group"
-                      >
-                        <div className="flex gap-3">
-                          {item.image && (
-                            <img
-                              src={item.image}
-                              alt={item.name}
-                              className="w-16 h-16 object-cover rounded-lg"
-                              onError={(e) => e.target.style.display = 'none'}
-                            />
-                          )}
-                          <div className="flex-1">
-                            <h4 className="text-sm font-semibold text-textHeading group-hover:text-secondary transition-colors line-clamp-2">
-                              {item.name}
-                            </h4>
-                            <p className="text-xs text-textPrimary mt-1">
-                              {formatDate(item.createdAt)}
-                            </p>
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
+              {/* Yan bilgiler ve benzer haberler */}
+              <RelatedNews 
+                relatedNews={relatedNews}
+                relatedLoading={relatedLoading}
+                formatDate={formatDate}
+                currentNews={news}
+              />
 
               {/* Reklam alanı */}
-              <div className="bg-primary p-6 rounded-lg text-center">
-                <h3 className="text-lg font-bold text-textHeading mb-2">Reklam</h3>
-                <p className="text-textPrimary text-sm">Bu alan reklam için ayrılmıştır</p>
-              </div>
+              <AdSection />
             </div>
           </div>
         </motion.div>
