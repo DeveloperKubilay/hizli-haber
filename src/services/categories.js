@@ -25,6 +25,48 @@ export const CATEGORIES = {
   WORLD: 'Dünya'
 };
 
+// Backend'den gelen İngilizce kategori adlarını Türkçe karşılıklarına çeviren mapping
+export const ENGLISH_TO_TURKISH_CATEGORIES = {
+  'News': 'Haberler',
+  'Sports': 'Spor', 
+  'Technology': 'Teknoloji',
+  'Health': 'Sağlık',
+  'Education': 'Eğitim',
+  'Politics': 'Politika',
+  'Economy': 'Ekonomi',
+  'Culture': 'Kültür',
+  'World': 'Dünya'
+};
+
+// Tersi mapping - Türkçe'den İngilizce'ye
+export const TURKISH_TO_ENGLISH_CATEGORIES = {
+  'Haberler': 'News',
+  'Spor': 'Sports',
+  'Teknoloji': 'Technology', 
+  'Sağlık': 'Health',
+  'Eğitim': 'Education',
+  'Politika': 'Politics',
+  'Ekonomi': 'Economy',
+  'Kültür': 'Culture',
+  'Dünya': 'World'
+};
+
+// İngilizce kategori adını Türkçe'ye çeviren fonksiyon
+export const translateCategoryToTurkish = (englishCategory) => {
+  return ENGLISH_TO_TURKISH_CATEGORIES[englishCategory] || englishCategory;
+};
+
+// Türkçe kategori adını İngilizce'ye çeviren fonksiyon  
+export const translateCategoryToEnglish = (turkishCategory) => {
+  return TURKISH_TO_ENGLISH_CATEGORIES[turkishCategory] || turkishCategory;
+};
+
+// Backend'den gelen tag array'ini Türkçe'ye çeviren fonksiyon
+export const translateTagsToTurkish = (englishTags) => {
+  if (!Array.isArray(englishTags)) return [];
+  return englishTags.map(tag => translateCategoryToTurkish(tag));
+};
+
 export const CATEGORY_LIST = Object.values(CATEGORIES);
 
 export const CATEGORY_ICONS = {
@@ -41,16 +83,16 @@ export const CATEGORY_ICONS = {
 };
 
 export const CATEGORY_COLORS = {
-  [CATEGORIES.ALL]: 'bg-gray-100 text-gray-800',
-  [CATEGORIES.NEWS]: 'bg-blue-100 text-blue-800',
-  [CATEGORIES.SPORTS]: 'bg-green-100 text-green-800', 
-  [CATEGORIES.TECHNOLOGY]: 'bg-purple-100 text-purple-800',
-  [CATEGORIES.HEALTH]: 'bg-red-100 text-red-800',
-  [CATEGORIES.EDUCATION]: 'bg-yellow-100 text-yellow-800',
-  [CATEGORIES.POLITICS]: 'bg-indigo-100 text-indigo-800',
-  [CATEGORIES.ECONOMY]: 'bg-emerald-100 text-emerald-800',
-  [CATEGORIES.CULTURE]: 'bg-pink-100 text-pink-800',
-  [CATEGORIES.WORLD]: 'bg-cyan-100 text-cyan-800'
+  [CATEGORIES.ALL]: 'bg-primaryBG text-gray-300',
+  [CATEGORIES.NEWS]: 'bg-primaryBG text-blue-400',
+  [CATEGORIES.SPORTS]: 'bg-primaryBG text-green-400', 
+  [CATEGORIES.TECHNOLOGY]: 'bg-primaryBG text-purple-400',
+  [CATEGORIES.HEALTH]: 'bg-primaryBG text-red-400',
+  [CATEGORIES.EDUCATION]: 'bg-primaryBG text-yellow-400',
+  [CATEGORIES.POLITICS]: 'bg-primaryBG text-indigo-400',
+  [CATEGORIES.ECONOMY]: 'bg-primaryBG text-emerald-400',
+  [CATEGORIES.CULTURE]: 'bg-primaryBG text-pink-400',
+  [CATEGORIES.WORLD]: 'bg-primaryBG text-cyan-400'
 };
 
 export const APP_CONFIG = {
@@ -81,8 +123,7 @@ function getNavbarCategoryColor(categoryKey) {
     'POLITICS': 'bg-indigo-600',
     'ECONOMY': 'bg-amber-600',
     'CULTURE': 'bg-orange-600',
-    'WORLD': 'bg-teal-600',
-    'WORLD2': 'bg-green-600'
+    'WORLD': 'bg-teal-600'
   };
   return colorMap[categoryKey] || 'bg-gray-600';
 }

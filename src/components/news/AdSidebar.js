@@ -5,7 +5,7 @@ import { Megaphone } from 'lucide-react';
 function AdSidebar() {
   return (
     <motion.div 
-      className="w-[300px] flex-shrink-0"
+      className="w-[250px] flex-shrink-0"
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.7, ease: "easeOut", delay: 0.3 }}
