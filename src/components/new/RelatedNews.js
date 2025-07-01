@@ -1,24 +1,56 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Tag, FileText } from 'lucide-react';
+import { Tag, FileText, Heart, ThumbsDown, Calendar } from 'lucide-react';
+import { CATEGORY_COLORS, CATEGORY_ICONS, translateTagsToTurkish } from '../../services/categories';
 
 function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
   return (
     <div className="space-y-6">
-      {/* Haber Resmi */}
-      {currentNews?.image && (
-        <div className="bg-primary p-6 rounded-lg">
-          <h3 className="text-lg font-bold text-textHeading mb-4">Haber Resmi</h3>
-          <img
-            src={currentNews.image}
-            alt={currentNews.name}
-            className="w-full h-48 object-cover rounded-lg"
-            onError={(e) => e.target.style.display = 'none'}
-          />
+      {/* Haber Resmi ve Bilgiler */}
+      <div className="bg-primary p-6 rounded-lg">
+        <div className="w-full h-48 bg-primaryBG rounded-lg overflow-hidden flex items-center justify-center mb-4">
+          {currentNews?.image ? (
+            <img
+              src={currentNews.image}
+              alt={currentNews.name}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "/imgs/logo.png";
+              }}
+            />
+          ) : (
+            <img
+              src="/imgs/logo.png"
+              alt="Site Logosu"
+              className="w-32 h-32 object-contain opacity-60"
+            />
+          )}
         </div>
-      )}
+        
+        {/* Like/Dislike ve Tarih */}
+        <div className="space-y-3">
+          {/* Like/Dislike Butonları */}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-textPrimary">
+              <Heart size={18} className="text-red-500" />
+              <span className="font-medium">{currentNews?.likes || 0} Beğeni</span>
+            </div>
+            <div className="flex items-center gap-2 text-textPrimary">
+              <ThumbsDown size={18} className="text-blue-500" />
+              <span className="font-medium">{currentNews?.dislikes || 0} Beğenmeme</span>
+            </div>
+          </div>
+          
+          {/* Tarih */}
+          <div className="flex items-center gap-2 text-textPrimary">
+            <Calendar size={18} className="text-secondary" />
+            <span className="font-medium">{formatDate(currentNews?.createdAt)}</span>
+          </div>
+        </div>
+      </div>
 
-      {/* Taglar */}
+      {/* Etiketler */}
       {currentNews?.tag && currentNews.tag.length > 0 && (
         <div className="bg-primary p-6 rounded-lg">
           <div className="flex items-center gap-2 mb-4">
@@ -26,12 +58,12 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
             <h3 className="text-lg font-bold text-textHeading">Etiketler</h3>
           </div>
           <div className="flex flex-wrap gap-2">
-            {currentNews.tag.map((tag, index) => (
+            {translateTagsToTurkish(currentNews.tag).map((category, index) => (
               <span
                 key={index}
-                className="bg-secondary text-white px-3 py-1 rounded-full text-sm font-medium"
+                className={`text-sm px-3 py-2 rounded-full inline-flex items-center gap-1.5 ${CATEGORY_COLORS[category] || 'bg-primaryBG text-textPrimary'}`}
               >
-                {tag}
+                {CATEGORY_ICONS[category]} {category}
               </span>
             ))}
           </div>
