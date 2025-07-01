@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, ThumbsDown, Share2, Bookmark } from 'lucide-react';
+import { Heart, ThumbsDown, Share2, Bookmark, BookmarkCheck } from 'lucide-react';
+import { auth, db } from '../../services/firebase';
+import { collection, addDoc, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
 
 function InteractionButtons({ 
   news, 
@@ -10,6 +12,76 @@ function InteractionButtons({
   handleDislike, 
   handleShare 
 }) {
+  const [saved, setSaved] = useState(false);
+  const [savingInProgress, setSavingInProgress] = useState(false);
+
+  // Kaydetme durumunu kontrol et
+  useEffect(() => {
+    const checkSaveStatus = async () => {
+      if (!auth.currentUser || !news?.id) return;
+
+      try {
+        const savedNewsRef = collection(db, 'savedNews');
+        const q = query(
+          savedNewsRef,
+          where('userId', '==', auth.currentUser.uid),
+          where('newsId', '==', news.id)
+        );
+        
+        const querySnapshot = await getDocs(q);
+        setSaved(!querySnapshot.empty);
+      } catch (error) {
+        console.error('Kaydetme durumu kontrol edilemedi:', error);
+      }
+    };
+
+    checkSaveStatus();
+  }, [news?.id]);
+
+  // Haberi kaydet/çıkar
+  const handleSave = async () => {
+    if (!auth.currentUser) {
+      alert('Haber kaydetmek için giriş yapmalısınız');
+      return;
+    }
+
+    if (savingInProgress) return;
+
+    try {
+      setSavingInProgress(true);
+
+      if (saved) {
+        // Kaydedilmişse çıkar
+        const savedNewsRef = collection(db, 'savedNews');
+        const q = query(
+          savedNewsRef,
+          where('userId', '==', auth.currentUser.uid),
+          where('newsId', '==', news.id)
+        );
+        
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach(async (docSnapshot) => {
+          await deleteDoc(doc(db, 'savedNews', docSnapshot.id));
+        });
+        
+        setSaved(false);
+      } else {
+        // Kaydet
+        await addDoc(collection(db, 'savedNews'), {
+          userId: auth.currentUser.uid,
+          newsId: news.id,
+          savedAt: new Date().toISOString()
+        });
+        
+        setSaved(true);
+      }
+    } catch (error) {
+      console.error('Kaydetme işleminde hata:', error);
+      alert('Bir hata oluştu');
+    } finally {
+      setSavingInProgress(false);
+    }
+  };
   const buttonVariants = {
     hover: { 
       scale: 1.05,
@@ -111,16 +183,31 @@ function InteractionButtons({
       </motion.button>
 
       <motion.button
-        className="flex items-center gap-3 md:gap-4 px-5 md:px-7 py-3 md:py-4 rounded-lg bg-primary text-textPrimary hover:bg-primaryBG transition-colors text-base font-medium"
+        onClick={handleSave}
+        disabled={savingInProgress}
+        className={`flex items-center gap-3 md:gap-4 px-5 md:px-7 py-3 md:py-4 rounded-lg transition-colors text-base font-medium ${
+          saved ? 'bg-green-500 text-white' : 'bg-primary text-textPrimary hover:bg-primaryBG'
+        } ${savingInProgress ? 'opacity-50 cursor-not-allowed' : ''}`}
         variants={buttonVariants}
-        whileHover="hover"
-        whileTap="tap"
+        whileHover={savingInProgress ? {} : "hover"}
+        whileTap={savingInProgress ? {} : "tap"}
         initial={{ x: -20, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ delay: 0.4 }}
       >
-        <Bookmark size={22} />
-        Kaydet
+        {savingInProgress ? (
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          >
+            <Bookmark size={22} />
+          </motion.div>
+        ) : saved ? (
+          <BookmarkCheck size={22} />
+        ) : (
+          <Bookmark size={22} />
+        )}
+        {savingInProgress ? 'Kaydediliyor...' : saved ? 'Kaydedildi' : 'Kaydet'}
       </motion.button>
     </motion.div>
   );

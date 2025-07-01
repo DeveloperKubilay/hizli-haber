@@ -1,11 +1,11 @@
 https://v3.tailwindcss.com/
 
 
-firebase entegrasyonunu sağla like dislike saves yorumlar
-footer
+firebase entegrasyonunu
+like dislike
+yorumlar 
+kaydedilenler
+
 [home.js]
 anasaydafa haberler listelensin üzüm fln değil .d
-anasayfada tüm haberler aynı uzunluk değil
-
-[new.js]
-kaydedilenler kısmı
+anasayfada tüm haberler buttonu aynı uzunluk değil

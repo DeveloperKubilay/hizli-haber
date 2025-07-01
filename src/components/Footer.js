@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Mail } from 'lucide-react';
 
 function Footer() {
   return (
@@ -36,9 +36,6 @@ function Footer() {
             <ul className="space-y-2">
               <li><button className="text-gray-400 hover:text-white transition-colors text-left">Ana Sayfa</button></li>
               <li><button className="text-gray-400 hover:text-white transition-colors text-left">Haberler</button></li>
-              <li><button className="text-gray-400 hover:text-white transition-colors text-left">Kategoriler</button></li>
-              <li><button className="text-gray-400 hover:text-white transition-colors text-left">Hakkımızda</button></li>
-              <li><button className="text-gray-400 hover:text-white transition-colors text-left">İletişim</button></li>
             </ul>
           </motion.div>
 
@@ -53,14 +50,6 @@ function Footer() {
               <p className="text-gray-400 flex items-center">
                 <Mail size={16} className="mr-2" />
                 info@hizlihaber.com
-              </p>
-              <p className="text-gray-400 flex items-center">
-                <Phone size={16} className="mr-2" />
-                +90 555 123 4567
-              </p>
-              <p className="text-gray-400 flex items-center">
-                <MapPin size={16} className="mr-2" />
-                İstanbul, Türkiye
               </p>
             </div>
           </motion.div>
