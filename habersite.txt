@@ -28,7 +28,6 @@ like dislike için ne kullanıcak
 
 blogs yazarları news die değiştir
 
-new.js deki haber yükleniyor oluyor ya aynısınını news.js dede istiyorum haberler yüklenirken site daha akıcı olsun die
 
 new.js de sağ tarafa benzer haberlerin üstüne bir tane daha div yap oraya haberin resimini göster onun altınada tagları göster ve bunun altına bir div daha ekle 
 oradada summary yazsın
