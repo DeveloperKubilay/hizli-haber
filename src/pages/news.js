@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { db, storage } from '../services/firebase'; // storage'ı import ediyorum
+import { db } from '../services/firebase';
 import { collection, getDocs } from 'firebase/firestore';
-import { ref, getDownloadURL } from 'firebase/storage'; // ref ve getDownloadURL import ediyorum
 import Navbar from '../components/Navbar';
 import { CATEGORY_LIST, CATEGORIES, CATEGORY_ICONS, CATEGORY_COLORS, APP_CONFIG } from '../services/categories';
 import { useLocation } from 'react-router-dom';
@@ -466,7 +465,7 @@ function Home() {
                 </div>
               ) : paginatedNews.length > 0 ? (
                 <motion.div 
-                  className="grid grid-cols-1 gap-6"
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
@@ -474,7 +473,7 @@ function Home() {
                   {paginatedNews.map((item, index) => (
                     <motion.div 
                       key={item.id} 
-                      className="bg-primary p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-primaryBG w-full max-w-[454px] mx-auto"
+                      className="bg-primary p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-primaryBG w-full"
                       initial={{ y: 50, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       transition={{ 

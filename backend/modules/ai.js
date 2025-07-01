@@ -1,7 +1,8 @@
 const { GoogleGenAI } = require('@google/genai');
 const ai = new GoogleGenAI({ apiKey: process.env.Gemini_API_KEY });
 
-module.exports = async function (ainame,data, uploadFile) {
+// Tek prompt işleme fonksiyonu
+async function processSinglePrompt(ainame, data, uploadFile) {
     try {
         let content = data;
 
@@ -59,3 +60,30 @@ module.exports = async function (ainame,data, uploadFile) {
         throw err;
     }
 }
+
+// Çoklu prompt işleme fonksiyonu (5 adet paralel)
+async function processMultiplePrompts(ainame, prompts, uploadFiles = []) {
+    try {
+        console.log(`🚀 ${prompts.length} adet prompt paralel olarak işleniyor...`);
+        
+        const promises = prompts.map((prompt, index) => {
+            const uploadFile = uploadFiles[index] || null;
+            return processSinglePrompt(ainame, prompt, uploadFile);
+        });
+
+        const results = await Promise.all(promises);
+        console.log(`✅ Tüm prompt'lar başarıyla işlendi!`);
+        
+        return results;
+    } catch (err) {
+        console.error("🤖 Çoklu AI Error:", err);
+        throw err;
+    }
+}
+
+// Ana export fonksiyonu - geriye uyumluluk için
+module.exports = processSinglePrompt;
+
+// Çoklu işlem için export
+module.exports.processMultiple = processMultiplePrompts;
+module.exports.processSingle = processSinglePrompt;

@@ -1,46 +1,75 @@
 if (process.env.GITHUB_ACTIONS !== "true") require("dotenv").config();
-const s3 = require("./modules/s3");
 const getNews = require("./modules/getNews");
 const ai = require("./modules/ai");
 const firebase = require("./modules/firebase");
 const config = require("./config.json");
-const fs = require("fs")
 //https://gnews.io/dashboard
 //https://newsapi.org/
 
 async function main() {
-
     console.log("🚀 Haber getirme işlemi başlatılıyor...");
     const news = (await getNews()).slice(0, 15);
-    const texts = []
-    for (const article of news) {
-        const response = await ai(config.MODEL, config.promt.join("\n").replace("{PROMT}", article.url))
-        texts.push({ data: response.replace("```json", "").replace("```", ""), time: article.publishedAt })
+    
+    // 5'li gruplar halinde işle
+    const batchSize = 5;
+    const batches = [];
+    
+    for (let i = 0; i < news.length; i += batchSize) {
+        batches.push(news.slice(i, i + batchSize));
     }
-
-    try {
-        console.log("📝 AI'dan gelen ham veri: ", texts[0].data);
-
-        let parsedNews;
-
-        let jsonStr = texts[0].data.trim();
-        if (!jsonStr.startsWith('{')) jsonStr = jsonStr.substring(jsonStr.indexOf('{'));
-        if (!jsonStr.endsWith('}')) jsonStr = jsonStr.substring(0, jsonStr.lastIndexOf('}') + 1);
-
-
-        console.log("🛠️ Düzeltilen JSON: ", jsonStr);
-        parsedNews = JSON.parse(jsonStr);
-
-        const newsId = await firebase.addWithAdmin('news', {
-            ...parsedNews,
-            createdAt: texts[0].time,
-            image: "https://via.placeholder.com/150"
-        });
-
-        console.log(`🔥 Haber Admin SDK ile veritabanına eklendi! ID: ${newsId}`);
-    } catch (error) {
-        console.error(`💥 Firebase işlemi sırasında hata: ${error}`);
+    
+    console.log(`📊 Toplam ${news.length} haber, ${batches.length} batch halinde işlenecek`);
+    
+    for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
+        const batch = batches[batchIndex];
+        console.log(`🔄 Batch ${batchIndex + 1}/${batches.length} işleniyor... (${batch.length} haber)`);
+        
+        // Bu batch için prompt'ları hazırla
+        const prompts = batch.map(article => 
+            config.promt.join("\n").replace("{PROMT}", article.url)
+        );
+        
+        try {
+            // 5 prompt'ı aynı anda gönder
+            const responses = await ai.processMultiple(config.MODEL, prompts);
+            console.log(`✅ Batch ${batchIndex + 1} AI işlemi tamamlandı`);
+            
+            // Her bir cevabı işle ve Firebase'e kaydet
+            for (let i = 0; i < responses.length; i++) {
+                try {
+                    console.log(`📝 ${batchIndex * batchSize + i + 1}. haberin AI cevabı işleniyor...`);
+                    
+                    let jsonStr = responses[i].trim();
+                    if (!jsonStr.startsWith('{')) jsonStr = jsonStr.substring(jsonStr.indexOf('{'));
+                    if (!jsonStr.endsWith('}')) jsonStr = jsonStr.substring(0, jsonStr.lastIndexOf('}') + 1);
+                    
+                    const parsedNews = JSON.parse(jsonStr);
+                    
+                    const newsId = await firebase.addWithAdmin('news', {
+                        ...parsedNews,
+                        createdAt: batch[i].publishedAt,
+                        image: "https://via.placeholder.com/150"
+                    });
+                    
+                    console.log(`🔥 Haber ${batchIndex * batchSize + i + 1} Firebase'e eklendi! ID: ${newsId}`);
+                } catch (parseError) {
+                    console.error(`💥 ${batchIndex * batchSize + i + 1}. haber işlenirken hata:`, parseError);
+                    console.error("Ham veri:", responses[i]);
+                }
+            }
+            
+            // Batch'ler arası kısa bekleme (rate limiting için)
+            if (batchIndex < batches.length - 1) {
+                console.log("⏳ Sonraki batch için 2 saniye bekleniyor...");
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+            
+        } catch (batchError) {
+            console.error(`💥 Batch ${batchIndex + 1} işlenirken hata:`, batchError);
+        }
     }
+    
+    console.log("🎉 Tüm haberler işlendi!");
 }
 
 main()
