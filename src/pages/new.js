@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { db, auth } from '../services/firebase';
-import { doc, getDoc, collection, getDocs, updateDoc, increment } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, setDoc, deleteDoc, query, where } from 'firebase/firestore';
 
 // Components
 import Navbar from '../components/Navbar';
@@ -27,6 +27,8 @@ function NewsDetail() {
   const [error, setError] = useState(null);
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
+  const [dislikesCount, setDislikesCount] = useState(0);
   const [relatedNews, setRelatedNews] = useState([]);
   const [relatedLoading, setRelatedLoading] = useState(false);
 
@@ -74,6 +76,49 @@ function NewsDetail() {
 
     fetchNewsDetail();
   }, [id]);
+
+  // Like/dislike sayıları ve user durumunu çek (her zaman çalışsın)
+  useEffect(() => {
+    const loadLikeDislikeCounts = async () => {
+      if (!id) return;
+
+      try {
+        // Like sayısını al
+        const likesRef = collection(db, 'news', id, 'likes');
+        const allLikesSnapshot = await getDocs(likesRef);
+        setLikesCount(allLikesSnapshot.size);
+
+        // Dislike sayısını al
+        const dislikesRef = collection(db, 'news', id, 'dislikes');
+        const allDislikesSnapshot = await getDocs(dislikesRef);
+        setDislikesCount(allDislikesSnapshot.size);
+
+        // User login'se durumunu da kontrol et
+        if (auth.currentUser) {
+          const userId = auth.currentUser.uid;
+          
+          // User'ın like durumunu kontrol et
+          const userLikeQuery = query(likesRef, where('__name__', '==', userId));
+          const likeSnapshot = await getDocs(userLikeQuery);
+          setLiked(!likeSnapshot.empty);
+
+          // User'ın dislike durumunu kontrol et
+          const userDislikeQuery = query(dislikesRef, where('__name__', '==', userId));
+          const dislikeSnapshot = await getDocs(userDislikeQuery);
+          setDisliked(!dislikeSnapshot.empty);
+        } else {
+          // User login değilse false yap
+          setLiked(false);
+          setDisliked(false);
+        }
+
+      } catch (error) {
+        console.error('Like/dislike sayıları yüklenirken hata:', error);
+      }
+    };
+
+    loadLikeDislikeCounts();
+  }, [id]); // Sadece id değişince çalışsın
 
   // Benzer haberleri çek
   const fetchRelatedNews = async (currentNews) => {
@@ -123,44 +168,57 @@ function NewsDetail() {
     }
   };
 
-  // Beğeni/beğenmeme işlemleri
+  // Beğeni işlemi - Instant response + backend update
   const handleLike = async () => {
     if (!auth.currentUser) {
       alert('Beğenmek için giriş yapmalısınız');
       return;
     }
 
-    try {
-      const newsDoc = doc(db, 'news', id);
+    // Instant UI update
+    const wasLiked = liked;
+    const wasDisliked = disliked;
+
+    if (wasLiked) {
+      // Like'ı kaldır (instant)
+      setLiked(false);
+      setLikesCount(prev => prev - 1);
+    } else {
+      // Like ekle (instant)
+      setLiked(true);
+      setLikesCount(prev => prev + 1);
       
-      if (liked) {
-        // Beğeniyi geri çek
-        await updateDoc(newsDoc, {
-          likes: increment(-1)
-        });
-        setLiked(false);
+      // Eğer dislike yapmışsa onu kaldır (instant)
+      if (wasDisliked) {
+        setDisliked(false);
+        setDislikesCount(prev => prev - 1);
+      }
+    }
+
+    // Backend update (background)
+    try {
+      const userId = auth.currentUser.uid;
+      const likeRef = doc(db, 'news', id, 'likes', userId);
+      const dislikeRef = doc(db, 'news', id, 'dislikes', userId);
+
+      if (wasLiked) {
+        await deleteDoc(likeRef);
       } else {
-        // Beğen
-        await updateDoc(newsDoc, {
-          likes: increment(1)
-        });
-        setLiked(true);
-        
-        // Eğer dislike yapmışsa onu geri çek
-        if (disliked) {
-          await updateDoc(newsDoc, {
-            dislikes: increment(-1)
-          });
-          setDisliked(false);
+        if (wasDisliked) {
+          await deleteDoc(dislikeRef);
         }
+        await setDoc(likeRef, { likedAt: new Date() });
       }
       
-      // Haberi yeniden çek
-      const updatedNews = await getDoc(newsDoc);
-      setNews(prev => ({ ...prev, ...updatedNews.data() }));
-      
     } catch (error) {
-      console.error('Beğeni işleminde hata:', error);
+      console.error('Like backend update hatası:', error);
+      // Error durumunda UI'ı geri al
+      setLiked(wasLiked);
+      setDisliked(wasDisliked);
+      setLikesCount(prev => wasLiked ? prev + 1 : prev - 1);
+      if (wasDisliked && !wasLiked) {
+        setDislikesCount(prev => prev + 1);
+      }
     }
   };
 
@@ -170,39 +228,59 @@ function NewsDetail() {
       return;
     }
 
-    try {
-      const newsDoc = doc(db, 'news', id);
+    // Instant UI update
+    const wasLiked = liked;
+    const wasDisliked = disliked;
+
+    if (wasDisliked) {
+      // Dislike'ı kaldır (instant)
+      setDisliked(false);
+      setDislikesCount(prev => prev - 1);
+    } else {
+      // Dislike ekle (instant)
+      setDisliked(true);
+      setDislikesCount(prev => prev + 1);
       
-      if (disliked) {
-        // Beğenmemeyi geri çek
-        await updateDoc(newsDoc, {
-          dislikes: increment(-1)
-        });
-        setDisliked(false);
+      // Eğer like yapmışsa onu kaldır (instant)
+      if (wasLiked) {
+        setLiked(false);
+        setLikesCount(prev => prev - 1);
+      }
+    }
+
+    // Backend update (background)
+    try {
+      const userId = auth.currentUser.uid;
+      const likeRef = doc(db, 'news', id, 'likes', userId);
+      const dislikeRef = doc(db, 'news', id, 'dislikes', userId);
+
+      if (wasDisliked) {
+        await deleteDoc(dislikeRef);
       } else {
-        // Beğenme
-        await updateDoc(newsDoc, {
-          dislikes: increment(1)
-        });
-        setDisliked(true);
-        
-        // Eğer like yapmışsa onu geri çek
-        if (liked) {
-          await updateDoc(newsDoc, {
-            likes: increment(-1)
-          });
-          setLiked(false);
+        if (wasLiked) {
+          await deleteDoc(likeRef);
         }
+        await setDoc(dislikeRef, { dislikedAt: new Date() });
       }
       
-      // Haberi yeniden çek
-      const updatedNews = await getDoc(newsDoc);
-      setNews(prev => ({ ...prev, ...updatedNews.data() }));
-      
     } catch (error) {
-      console.error('Beğenmeme işleminde hata:', error);
+      console.error('Dislike backend update hatası:', error);
+      // Error durumunda UI'ı geri al
+      setDisliked(wasDisliked);
+      setLiked(wasLiked);
+      setDislikesCount(prev => wasDisliked ? prev + 1 : prev - 1);
+      if (wasLiked && !wasDisliked) {
+        setLikesCount(prev => prev + 1);
+      }
     }
   };
+
+  // Memoized news object - re-render'ları önlemek için
+  const newsWithCounts = useMemo(() => ({
+    ...news,
+    likes: likesCount,
+    dislikes: dislikesCount
+  }), [news, likesCount, dislikesCount]);
 
   // Paylaş
   const handleShare = () => {
@@ -300,7 +378,7 @@ function NewsDetail() {
               transition={{ duration: 0.5, delay: 0.5 }}
               className="mb-10"
             >
-              <NewsContent news={news} />
+              <NewsContent key={news?.id} news={news} />
             </motion.div>
 
             {/* Etkileşim butonları */}
@@ -311,7 +389,7 @@ function NewsDetail() {
               className="mb-6"
             >
               <InteractionButtons 
-                news={news}
+                news={newsWithCounts}
                 liked={liked}
                 disliked={disliked}
                 handleLike={handleLike}
@@ -349,7 +427,7 @@ function NewsDetail() {
                 relatedNews={relatedNews}
                 relatedLoading={relatedLoading}
                 formatDate={formatDate}
-                currentNews={news}
+                currentNews={newsWithCounts}
               />
             </motion.div>
 

@@ -1,15 +1,24 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { memo, useRef, useEffect } from 'react';
+import { motion, useAnimation } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 
-function NewsContent({ news }) {
+const NewsContent = memo(function NewsContent({ news }) {
   const content = news.des || news.content || news.description || news.minides || 'İçerik mevcut değil.';
+  const controls = useAnimation();
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    if (!hasAnimated.current) {
+      controls.start({ y: 0, opacity: 1 });
+      hasAnimated.current = true;
+    }
+  }, [controls]);
   
   return (
     <motion.div 
       className="prose prose-lg max-w-none mb-10"
       initial={{ y: 30, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
+      animate={controls}
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
       {/* Ayırıcı çizgi */}
@@ -22,9 +31,9 @@ function NewsContent({ news }) {
       
       <motion.div 
         className="text-textPrimary leading-relaxed markdown-content space-y-6"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.3 }}
+        initial={hasAnimated.current ? false : { y: 20, opacity: 0 }}
+        animate={hasAnimated.current ? false : { y: 0, opacity: 1 }}
+        transition={hasAnimated.current ? false : { duration: 0.6, delay: 0.3 }}
       >
         <ReactMarkdown 
           components={{
@@ -137,6 +146,6 @@ function NewsContent({ news }) {
       </motion.div>
     </motion.div>
   );
-}
+});
 
 export default NewsContent;

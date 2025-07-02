@@ -2,8 +2,11 @@ https://v3.tailwindcss.com/
 
 
 backend png üretme
+
 firebase entegrasyonunu
 like dislike
 yorumlar 
 kaydedilenler
+
 ana sayfa test.pngler 
+new.js de katagoriye tıklarsa katagoriye yönlendrisin poişnter yap
