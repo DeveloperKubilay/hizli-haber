@@ -35,7 +35,7 @@ function NewsCard({ item, index, viewMode = 'grid' }) {
   };
 
   return (
-    <Link to={`/haber/${item.id}`} className="block">
+    <Link to={`/haberler/${item.id}`} className="block">
       <motion.div 
         className={`bg-primary rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-primaryBG w-full cursor-pointer overflow-hidden ${
           viewMode === 'grid' ? "p-3.5" : "p-4"

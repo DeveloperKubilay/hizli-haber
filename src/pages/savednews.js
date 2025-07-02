@@ -42,7 +42,7 @@ function SavedNewsCard({ item, index, viewMode, onRemove, formatDate }) {
           viewMode === 'grid' ? "w-full h-[150px]" : "flex-shrink-0 w-[150px] h-[100px]"
         } bg-primaryBG rounded-lg overflow-hidden flex items-center justify-center`}>
           {item.image ? (
-            <Link to={`/haber/${item.newsId}`}>
+            <Link to={`/haberler/${item.newsId}`}>
               <img 
                 src={item.image} 
                 alt={item.name} 
@@ -64,7 +64,7 @@ function SavedNewsCard({ item, index, viewMode, onRemove, formatDate }) {
         {/* İçerik kısmı */}
         <div className={`flex-1 flex flex-col ${viewMode === 'grid' ? "mt-3" : ""}`}>
           {/* Başlık */}
-          <Link to={`/haber/${item.newsId}`} className="block">
+          <Link to={`/haberler/${item.newsId}`} className="block">
             <h3 className="font-semibold text-lg text-textHeading mb-2 hover:text-secondary transition-colors">
               {item.name}
             </h3>

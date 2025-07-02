@@ -226,7 +226,7 @@ function CommentSection({ newsId }) {
                 <motion.button
                   type="submit"
                   disabled={loading || !newComment.trim()}
-                  className="bg-secondary hover:bg-secondaryHover text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+                  className="bg-secondary hover:bg-secondaryHover text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   initial={{ x: 20, opacity: 0 }}

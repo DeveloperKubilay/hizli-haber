@@ -28,6 +28,28 @@ service cloud.firestore {
                      resource.data.uid == request.auth.uid;
       }
     }
+
+     // Likes
+    match /news/{newsId}/likes/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Dislikes
+    match /news/{newsId}/dislikes/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Saved News
+     match /savednews/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      match /news/{newsId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+   
     
     // Kullanıcı profilleri
     match /users/{userId} {

@@ -9,7 +9,7 @@ export function ProductTicker() {
   const navigate = useNavigate();
 
   const handleNewsClick = (newsId) => {
-    navigate(`/haber/${newsId}`);
+    navigate(`/haberler/${newsId}`);
   };
 
   useEffect(() => {
@@ -286,7 +286,7 @@ export function ProductTickerReverse() {
   const navigate = useNavigate();
 
   const handleNewsClick = (newsId) => {
-    navigate(`/haber/${newsId}`);
+    navigate(`/haberler/${newsId}`);
   };
 
   useEffect(() => {

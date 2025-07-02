@@ -224,7 +224,7 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
                 whileTap={{ scale: 0.98 }}
               >
                 <Link
-                  to={`/haber/${item.id}`}
+                  to={`/haberler/${item.id}`}
                   className="block group"
                 >
                   <div className="flex gap-3">

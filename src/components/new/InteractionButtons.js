@@ -22,7 +22,6 @@ function InteractionButtons({
 
       try {
         const userId = auth.currentUser.uid;
-        const savedNewsRef = doc(db, 'savednews', userId, 'news', news.id);
         
         // Document'in var olup olmadığını kontrol et
         const savedNewsCollection = collection(db, 'savednews', userId, 'news');
@@ -111,7 +110,7 @@ function InteractionButtons({
     >
       <motion.button
         onClick={handleLike}
-        className={`flex items-center gap-3 md:gap-4 px-5 md:px-7 py-3 md:py-4 rounded-lg transition-colors text-base font-medium ${
+        className={`flex items-center gap-3 md:gap-4 px-5 md:px-7 py-3 md:py-4 rounded-lg transition-colors duration-150 text-base font-medium ${
           liked ? 'bg-red-500 text-white' : 'bg-primary text-textPrimary hover:bg-primaryBG'
         }`}
         variants={buttonVariants}
@@ -139,7 +138,7 @@ function InteractionButtons({
 
       <motion.button
         onClick={handleDislike}
-        className={`flex items-center gap-3 md:gap-4 px-5 md:px-7 py-3 md:py-4 rounded-lg transition-colors text-base font-medium ${
+        className={`flex items-center gap-3 md:gap-4 px-5 md:px-7 py-3 md:py-4 rounded-lg transition-colors duration-150 text-base font-medium ${
           disliked ? 'bg-blue-500 text-white' : 'bg-primary text-textPrimary hover:bg-primaryBG'
         }`}
         variants={buttonVariants}
@@ -167,7 +166,7 @@ function InteractionButtons({
 
       <motion.button
         onClick={handleShare}
-        className="flex items-center gap-3 md:gap-4 px-5 md:px-7 py-3 md:py-4 rounded-lg bg-primary text-textPrimary hover:bg-primaryBG transition-colors text-base font-medium"
+        className="flex items-center gap-3 md:gap-4 px-5 md:px-7 py-3 md:py-4 rounded-lg bg-primary text-textPrimary hover:bg-primaryBG transition-colors duration-150 text-base font-medium"
         variants={buttonVariants}
         whileHover="hover"
         whileTap="tap"
@@ -182,7 +181,7 @@ function InteractionButtons({
       <motion.button
         onClick={handleSave}
         disabled={savingInProgress}
-        className={`flex items-center gap-3 md:gap-4 px-5 md:px-7 py-3 md:py-4 rounded-lg transition-colors text-base font-medium ${
+        className={`flex items-center gap-3 md:gap-4 px-5 md:px-7 py-3 md:py-4 rounded-lg transition-colors duration-150 text-base font-medium ${
           saved ? 'bg-green-500 text-white' : 'bg-primary text-textPrimary hover:bg-primaryBG'
         } ${savingInProgress ? 'opacity-50 cursor-not-allowed' : ''}`}
         variants={buttonVariants}
