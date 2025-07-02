@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, ThumbsDown, Share2, Bookmark, BookmarkCheck } from 'lucide-react';
 import { auth, db } from '../../services/firebase';
-import { collection, addDoc, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, doc, getDocs, deleteDoc, setDoc } from 'firebase/firestore';
 
 function InteractionButtons({ 
   news, 
@@ -15,21 +15,21 @@ function InteractionButtons({
   const [saved, setSaved] = useState(false);
   const [savingInProgress, setSavingInProgress] = useState(false);
 
-  // Kaydetme durumunu kontrol et
+  // Kaydetme durumunu kontrol et - Yeni yapı
   useEffect(() => {
     const checkSaveStatus = async () => {
       if (!auth.currentUser || !news?.id) return;
 
       try {
-        const savedNewsRef = collection(db, 'savedNews');
-        const q = query(
-          savedNewsRef,
-          where('userId', '==', auth.currentUser.uid),
-          where('newsId', '==', news.id)
-        );
+        const userId = auth.currentUser.uid;
+        const savedNewsRef = doc(db, 'savednews', userId, 'news', news.id);
         
-        const querySnapshot = await getDocs(q);
-        setSaved(!querySnapshot.empty);
+        // Document'in var olup olmadığını kontrol et
+        const savedNewsCollection = collection(db, 'savednews', userId, 'news');
+        const docSnapshot = await getDocs(savedNewsCollection);
+        const isDocExists = docSnapshot.docs.some(doc => doc.id === news.id);
+        setSaved(isDocExists);
+        
       } catch (error) {
         console.error('Kaydetme durumu kontrol edilemedi:', error);
       }
@@ -38,7 +38,7 @@ function InteractionButtons({
     checkSaveStatus();
   }, [news?.id]);
 
-  // Haberi kaydet/çıkar
+  // Haberi kaydet/çıkar - Like sistemi gibi
   const handleSave = async () => {
     if (!auth.currentUser) {
       alert('Haber kaydetmek için giriş yapmalısınız');
@@ -47,36 +47,33 @@ function InteractionButtons({
 
     if (savingInProgress) return;
 
-    try {
-      setSavingInProgress(true);
+    // Instant UI update
+    const wasSaved = saved;
+    setSaved(!wasSaved);
+    setSavingInProgress(true);
 
-      if (saved) {
+    try {
+      const userId = auth.currentUser.uid;
+      const savedNewsRef = doc(db, 'savednews', userId, 'news', news.id);
+
+      if (wasSaved) {
         // Kaydedilmişse çıkar
-        const savedNewsRef = collection(db, 'savedNews');
-        const q = query(
-          savedNewsRef,
-          where('userId', '==', auth.currentUser.uid),
-          where('newsId', '==', news.id)
-        );
-        
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach(async (docSnapshot) => {
-          await deleteDoc(doc(db, 'savedNews', docSnapshot.id));
-        });
-        
-        setSaved(false);
+        await deleteDoc(savedNewsRef);
       } else {
         // Kaydet
-        await addDoc(collection(db, 'savedNews'), {
-          userId: auth.currentUser.uid,
+        await setDoc(savedNewsRef, {
           newsId: news.id,
-          savedAt: new Date().toISOString()
+          newsTitle: news.name,
+          newsImage: news.image,
+          newsMinides: news.minides,
+          savedAt: new Date()
         });
-        
-        setSaved(true);
       }
+      
     } catch (error) {
       console.error('Kaydetme işleminde hata:', error);
+      // Error durumunda UI'ı geri al
+      setSaved(wasSaved);
       alert('Bir hata oluştu');
     } finally {
       setSavingInProgress(false);
