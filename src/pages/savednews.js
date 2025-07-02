@@ -3,7 +3,8 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Bookmark, Heart, Calendar, Trash2, BookmarkCheck } from 'lucide-react';
 import { auth, db } from '../services/firebase';
-import { collection, query, where, getDocs, doc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 
 // Components
 import Navbar from '../components/Navbar';
@@ -13,11 +14,25 @@ function SavedNews() {
   const [savedNews, setSavedNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true); // Auth durumu için
+  const [user, setUser] = useState(null);
 
-  // Kaydedilmiş haberleri getir
+  // Auth state'i dinle
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setAuthLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Kaydedilmiş haberleri getir - Auth hazır olunca
   useEffect(() => {
     const fetchSavedNews = async () => {
-      if (!auth.currentUser) {
+      if (authLoading) return; // Auth henüz hazır değilse bekle
+      
+      if (!user) {
         setError('Kaydettiğiniz haberleri görmek için giriş yapmalısınız');
         setLoading(false);
         return;
@@ -25,33 +40,28 @@ function SavedNews() {
 
       try {
         setLoading(true);
-        const savedNewsRef = collection(db, 'savedNews');
-        const q = query(
-          savedNewsRef,
-          where('userId', '==', auth.currentUser.uid)
-        );
+        setError(null); // Önceki hataları temizle
+        const userId = user.uid;
         
-        const querySnapshot = await getDocs(q);
+        // savednews/{userId}/news/ collection'ından çek
+        const savedNewsRef = collection(db, 'savednews', userId, 'news');
+        const querySnapshot = await getDocs(savedNewsRef);
+        
         const savedNewsData = [];
         
-        for (const docSnap of querySnapshot.docs) {
+        querySnapshot.forEach((docSnap) => {
           const saveData = docSnap.data();
-          
-          // Her kaydetme için haber bilgilerini çek
-          const newsCollection = collection(db, 'news');
-          const newsQuery = query(newsCollection, where('__name__', '==', saveData.newsId));
-          const newsSnapshot = await getDocs(newsQuery);
-          
-          if (!newsSnapshot.empty) {
-            const newsData = newsSnapshot.docs[0].data();
-            savedNewsData.push({
-              saveId: docSnap.id,
-              savedAt: saveData.savedAt,
-              newsId: saveData.newsId,
-              ...newsData
-            });
-          }
-        }
+          savedNewsData.push({
+            saveId: docSnap.id, // news document ID
+            savedAt: saveData.savedAt?.toDate?.() || saveData.savedAt, // Firebase Timestamp'ı Date'e çevir
+            newsId: saveData.newsId,
+            name: saveData.newsTitle,
+            image: saveData.newsImage,
+            minides: saveData.newsMinides,
+            // Diğer alanlar InteractionButtons'ta setDoc ile kaydediliyor
+            ...saveData
+          });
+        });
         
         // Kaydetme tarihine göre sırala (yeniden eskiye)
         savedNewsData.sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt));
@@ -66,26 +76,39 @@ function SavedNews() {
     };
 
     fetchSavedNews();
-  }, []);
+  }, [authLoading, user]); // Auth ve user state'ine bağımlı
 
-  // Haberi kaydetme listesinden çıkar
-  const handleRemoveSavedNews = async (saveId) => {
+  // Haberi kaydetme listesinden çıkar - User state kullan
+  const handleRemoveSavedNews = async (newsId) => {
+    if (!user) {
+      alert('İşlem için giriş yapmalısınız');
+      return;
+    }
+
     try {
-      await deleteDoc(doc(db, 'savedNews', saveId));
-      setSavedNews(prev => prev.filter(item => item.saveId !== saveId));
+      const userId = user.uid;
+      await deleteDoc(doc(db, 'savednews', userId, 'news', newsId));
+      setSavedNews(prev => prev.filter(item => item.saveId !== newsId));
     } catch (error) {
       console.error('Haber kaydedilen listeden çıkarılamadı:', error);
       alert('Haber çıkarılırken bir hata oluştu');
     }
   };
 
-  // Tarih formatla
-  const formatDate = (dateString) => {
-    if (!dateString) return 'Bilinmiyor';
+  // Tarih formatla - Firebase Timestamp uyumlu
+  const formatDate = (dateInput) => {
+    if (!dateInput) return 'Bilinmiyor';
     
     try {
-      const date = new Date(dateString);
-      if (isNaN(date)) return dateString;
+      // Firebase Timestamp'sa Date'e çevir
+      let date;
+      if (dateInput.toDate && typeof dateInput.toDate === 'function') {
+        date = dateInput.toDate();
+      } else {
+        date = new Date(dateInput);
+      }
+      
+      if (isNaN(date)) return 'Geçersiz tarih';
       
       const day = date.getDate().toString().padStart(2, '0');
       const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -95,11 +118,11 @@ function SavedNews() {
       
       return `${day}.${month}.${year} ${hours}:${minutes}`;
     } catch (error) {
-      return dateString;
+      return 'Tarih hatası';
     }
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <>
         <Navbar />
