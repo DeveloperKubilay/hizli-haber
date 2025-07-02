@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart3, Heart, ChevronDown, Calendar, AlignLeft } from 'lucide-react';
+import { BarChart3, Heart, ChevronDown, Calendar, AlignLeft, Grid, List } from 'lucide-react';
 
 function ControlPanel({ 
   sortBy, 
@@ -11,7 +11,9 @@ function ControlPanel({
   showSortDropdown,
   setShowSortDropdown,
   showViewDropdown,
-  setShowViewDropdown
+  setShowViewDropdown,
+  viewMode,
+  setViewMode
 }) {
   const sortOptions = [
     { value: 'tarih', label: 'Tarihe göre', icon: <Calendar size={16} /> },
@@ -123,6 +125,32 @@ function ControlPanel({
             </div>
           )}
         </div>
+      </div>
+
+      {/* Görünüm modu butonları */}
+      <div className="flex">
+        <button
+          onClick={() => setViewMode('grid')}
+          className={`px-4 py-3 rounded-l-full border border-primaryBG cursor-pointer transition-all ${
+            viewMode === 'grid' 
+              ? 'bg-secondaryBG text-secondary border-secondary hover:text-secondaryHover hover:bg-selectBox' 
+              : 'bg-primaryBG text-textPrimary hover:text-textHeading hover:border-secondary'
+          }`}
+          title="Grid görünümü"
+        >
+          <Grid size={16} />
+        </button>
+        <button
+          onClick={() => setViewMode('list')}
+          className={`px-4 py-3 rounded-r-full border border-primaryBG cursor-pointer transition-all ${
+            viewMode === 'list' 
+              ? 'bg-secondaryBG text-secondary border-secondary hover:text-secondaryHover hover:bg-selectBox' 
+              : 'bg-primaryBG text-textPrimary hover:text-textHeading hover:border-secondary'
+          }`}
+          title="Liste görünümü"
+        >
+          <List size={16} />
+        </button>
       </div>
     </div>
   );

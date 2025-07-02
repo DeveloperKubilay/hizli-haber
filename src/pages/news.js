@@ -32,6 +32,7 @@ function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [showViewDropdown, setShowViewDropdown] = useState(false);
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' veya 'list'
   
   const location = useLocation();
   const navigate = useNavigate();
@@ -226,6 +227,8 @@ function Home() {
                     setShowSortDropdown={setShowSortDropdown}
                     showViewDropdown={showViewDropdown}
                     setShowViewDropdown={setShowViewDropdown}
+                    viewMode={viewMode}
+                    setViewMode={setViewMode}
                   />
 
                   {/* Sayfalama - Sadece haber varsa göster */}
@@ -246,6 +249,7 @@ function Home() {
                 searchTerm={searchTerm}
                 selectedCategory={selectedCategory}
                 onClearSearch={handleClearSearch}
+                viewMode={viewMode}
               />
             </motion.div>
           </div>
