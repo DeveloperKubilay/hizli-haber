@@ -1,10 +1,25 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Tag, FileText, Heart, ThumbsDown, Calendar } from 'lucide-react';
-import { CATEGORY_COLORS, CATEGORY_ICONS, translateTagsToTurkish } from '../../services/categories';
+import { CATEGORY_COLORS, CATEGORY_ICONS, translateTagsToTurkish, CATEGORIES } from '../../services/categories';
 
 function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
+  const navigate = useNavigate();
+  
+  // Kategori tıklama handler'ı
+  const handleCategoryClick = (category) => {
+    // Kategori adından kategori key'ini bul
+    const categoryKey = Object.entries(CATEGORIES).find(
+      ([key, value]) => value === category
+    )?.[0];
+    
+    if (categoryKey && categoryKey !== 'ALL') {
+      navigate(`/haberler#${categoryKey.toLowerCase()}`);
+    } else {
+      navigate('/haberler');
+    }
+  };
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -127,15 +142,16 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
             animate="visible"
           >
             {translateTagsToTurkish(currentNews.tag).map((category, index) => (
-              <motion.span
+              <motion.button
                 key={index}
-                className={`text-sm px-4 py-3 rounded-full inline-flex items-center gap-2 ${CATEGORY_COLORS[category] || 'bg-primaryBG text-textPrimary'}`}
+                onClick={() => handleCategoryClick(category)}
+                className={`text-sm px-4 py-3 rounded-full inline-flex items-center gap-2 cursor-pointer transition-all hover:shadow-lg ${CATEGORY_COLORS[category] || 'bg-primaryBG text-textPrimary'}`}
                 variants={itemVariants}
                 whileHover={{ scale: 1.1, y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >
                 {CATEGORY_ICONS[category]} {category}
-              </motion.span>
+              </motion.button>
             ))}
           </motion.div>
         </motion.div>

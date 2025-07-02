@@ -16,7 +16,7 @@
         "- \"minides\": Olayın kısa ve net ama gizemli bir özetini yaz. Tam olarak ne olduğunu söyleme, sadece ilgi çek. İnsanları okumaya zorla.",
         "- \"summary\": Olayın kısa özeti. Ne olduğunu net şekilde anlat.",
         "- \"des\": Olayın uzun açıklamasını yap. **Markdown formatında** yaz. Başlıklar için `#`, `##`, `###` kullan. Önemli yerleri **kalın**, *italik* yap. Detayları anlat, bağlam ekle, mümkün olduğunca uzat. Eğlenceli konularda mizah yap, bol emoji kullan. Ciddi konularda ciddi kal, asla uygunsuz espri yapma.",
-        "- \"tag\": İçeriğe en uygun kategoriyi seç. Listeden uygun olanı seç. Aynı anda birden fazla seçebilirsin. Liste şu: [News,Sports,Technology,Health,Education,Politics,Economy,Culture,World]",
+        "- \"tag\": İçeriğe en uygun kategoriyi seç. Listeden uygun olanı seç. Aynı anda birden fazla seçebilirsin. Liste şu: [Sports,Technology,Health,Education,Politics,Economy,Culture,World,Magazine,Science]",
         "",
         "Ek Kurallar:",
         "- Metnin hiçbir yerinde [1], [2], [kaynak] gibi referanslar olmasın.",
