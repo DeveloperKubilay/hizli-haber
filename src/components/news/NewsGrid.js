@@ -3,32 +3,40 @@ import { motion } from 'framer-motion';
 import NewsCard from './NewsCard';
 import { Search, FileText, Trash2, Clock } from 'lucide-react';
 
-function NewsGrid({ news, loading, searchTerm, selectedCategory, onClearSearch }) {
+function NewsGrid({ news, loading, searchTerm, selectedCategory, onClearSearch, viewMode = 'grid' }) {
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Loading skeleton'ları - NewsCard'ların kare yapısına uygun */}
+      <div className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "space-y-4"}>
+        {/* Loading skeleton'ları - viewMode'a göre */}
         {Array.from({ length: 6 }).map((_, index) => (
           <div key={index} className="animate-pulse">
-            <div className="bg-primary p-3.5 rounded-lg shadow-lg border border-primaryBG w-full">
-              <div className="flex flex-col h-full">
-                {/* Görsel kısmı skeleton - 150px */}
-                <div className="w-full h-[150px] bg-gray-300 rounded-lg mb-3"></div>
+            <div className={`bg-primary rounded-lg shadow-lg border border-primaryBG w-full ${
+              viewMode === 'grid' ? "p-3.5" : "p-4"
+            }`}>
+              <div className={`flex ${viewMode === 'grid' ? "flex-col h-full" : "gap-4"}`}>
+                {/* Görsel kısmı skeleton */}
+                <div className={`${
+                  viewMode === 'grid' ? "w-full h-[150px] mb-3" : "flex-shrink-0 w-[150px] h-[100px]"
+                } bg-gray-300 rounded-lg`}></div>
                 
-                {/* İçerik kısmı skeleton - 250px */}
-                <div className="h-[250px] flex flex-col space-y-3">
+                {/* İçerik kısmı skeleton */}
+                <div className={`flex-1 flex flex-col space-y-3 ${
+                  viewMode === 'grid' ? "h-[250px]" : ""
+                }`}>
                   {/* Başlık skeleton */}
                   <div className="space-y-2">
                     <div className="h-4 bg-gray-300 rounded w-full"></div>
                     <div className="h-4 bg-gray-300 rounded w-3/4"></div>
                   </div>
                   
-                  {/* Açıklama skeleton */}
-                  <div className="space-y-2">
-                    <div className="h-3 bg-gray-300 rounded w-full"></div>
-                    <div className="h-3 bg-gray-300 rounded w-5/6"></div>
-                    <div className="h-3 bg-gray-300 rounded w-4/5"></div>
-                  </div>
+                  {/* Açıklama skeleton - sadece grid modunda */}
+                  {viewMode === 'grid' && (
+                    <div className="space-y-2">
+                      <div className="h-3 bg-gray-300 rounded w-full"></div>
+                      <div className="h-3 bg-gray-300 rounded w-5/6"></div>
+                      <div className="h-3 bg-gray-300 rounded w-4/5"></div>
+                    </div>
+                  )}
                   
                   {/* Etiketler skeleton */}
                   <div className="flex gap-1.5">
@@ -91,13 +99,13 @@ function NewsGrid({ news, loading, searchTerm, selectedCategory, onClearSearch }
 
   return (
     <motion.div 
-      className="grid grid-cols-1 md:grid-cols-2 gap-6"
+      className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "space-y-4"}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.2 }}
     >
       {news.map((item, index) => (
-        <NewsCard key={item.id} item={item} index={index} />
+        <NewsCard key={item.id} item={item} index={index} viewMode={viewMode} />
       ))}
     </motion.div>
   );
