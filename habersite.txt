@@ -1,6 +1,7 @@
 https://v3.tailwindcss.com/
 
 
+backend png üretme
 firebase entegrasyonunu
 like dislike
 yorumlar 
