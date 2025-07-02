@@ -5,7 +5,4 @@ firebase entegrasyonunu
 like dislike
 yorumlar 
 kaydedilenler
-
-[home.js]
-anasaydafa haberler listelensin üzüm fln değil .d
-tıkladığımda haberi açsın
+ana sayfa test.pngler 
