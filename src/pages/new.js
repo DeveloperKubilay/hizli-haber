@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { db, auth } from '../services/firebase';
@@ -31,6 +31,10 @@ function NewsDetail() {
   const [dislikesCount, setDislikesCount] = useState(0);
   const [relatedNews, setRelatedNews] = useState([]);
   const [relatedLoading, setRelatedLoading] = useState(false);
+  const [allNews, setAllNews] = useState([]);
+  const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
+  const [isLoadingNextNews, setIsLoadingNextNews] = useState(false);
+  const [scrollCooldown, setScrollCooldown] = useState(false);
 
   // Haber detayını çek
   useEffect(() => {
@@ -43,6 +47,19 @@ function NewsDetail() {
 
       try {
         setLoading(true);
+        
+        // Tüm haberleri al
+        const newsCollection = collection(db, 'news');
+        const allNewsSnapshot = await getDocs(newsCollection);
+        const allNewsData = allNewsSnapshot.docs
+          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        
+        setAllNews(allNewsData);
+        
+        // Mevcut haberin index'ini bul
+        const currentIndex = allNewsData.findIndex(n => n.id === id);
+        setCurrentNewsIndex(currentIndex);
         
         const newsDoc = doc(db, 'news', id);
         const newsSnapshot = await getDoc(newsDoc);
@@ -119,6 +136,66 @@ function NewsDetail() {
 
     loadLikeDislikeCounts();
   }, [id]); // Sadece id değişince çalışsın
+
+  // Yeni haber yükleme fonksiyonu
+  const loadNextNews = useCallback(async () => {
+    if (currentNewsIndex >= allNews.length - 1) return; // Son haberdeyse çık
+    if (isLoadingNextNews || scrollCooldown) return; // Loading varsa veya cooldown aktifse çık
+    
+    // Cooldown başlat (2 saniye)
+    setScrollCooldown(true);
+    setIsLoadingNextNews(true);
+    
+    try {
+      const nextNewsIndex = currentNewsIndex + 1;
+      const nextNews = allNews[nextNewsIndex];
+      
+      if (nextNews) {
+        // 1 saniye bekle (kullanıcı deneyimi için)
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Direkt yeni URL'ye git (tam sayfa yenileme gibi)
+        navigate(`/haberler/${nextNews.id}`, { replace: true });
+        
+        // Scroll pozisyonunu zorla en başa al
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+        }, 0);
+      }
+    } catch (error) {
+      console.error('Yeni haber yüklenirken hata:', error);
+    } finally {
+      setIsLoadingNextNews(false);
+      
+      // 2 saniye sonra cooldown'u kaldır
+      setTimeout(() => {
+        setScrollCooldown(false);
+      }, 2000);
+    }
+  }, [allNews, currentNewsIndex, isLoadingNextNews, scrollCooldown, navigate]);
+
+  // Scroll event listener - Sayfa sonuna gelince yeni haber yükle
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      
+      // Sayfanın %95'ine ulaştığında yeni haber yükle
+      // ANCAK: loading yoksa VE cooldown yoksa VE haberler varsa
+      if (
+        scrollTop + windowHeight >= documentHeight * 0.95 && 
+        !isLoadingNextNews && 
+        !scrollCooldown && 
+        allNews.length > 0
+      ) {
+        loadNextNews();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [allNews, currentNewsIndex, isLoadingNextNews, scrollCooldown, loadNextNews]);
 
   // Benzer haberleri çek
   const fetchRelatedNews = async (currentNews) => {
@@ -198,8 +275,8 @@ function NewsDetail() {
     // Backend update (background)
     try {
       const userId = auth.currentUser.uid;
-      const likeRef = doc(db, 'news', id, 'likes', userId);
-      const dislikeRef = doc(db, 'news', id, 'dislikes', userId);
+      const likeRef = doc(db, 'news', news.id, 'likes', userId);
+      const dislikeRef = doc(db, 'news', news.id, 'dislikes', userId);
 
       if (wasLiked) {
         await deleteDoc(likeRef);
@@ -251,8 +328,8 @@ function NewsDetail() {
     // Backend update (background)
     try {
       const userId = auth.currentUser.uid;
-      const likeRef = doc(db, 'news', id, 'likes', userId);
-      const dislikeRef = doc(db, 'news', id, 'dislikes', userId);
+      const likeRef = doc(db, 'news', news.id, 'likes', userId);
+      const dislikeRef = doc(db, 'news', news.id, 'dislikes', userId);
 
       if (wasDisliked) {
         await deleteDoc(dislikeRef);
@@ -405,7 +482,7 @@ function NewsDetail() {
               transition={{ duration: 0.5, delay: 0.7 }}
               className="mb-8"
             >
-              <CommentSection newsId={id} />
+              <CommentSection newsId={news?.id} />
             </motion.div>
           </motion.div>
 
@@ -442,6 +519,99 @@ function NewsDetail() {
           </motion.div>
         </div>
       </div>
+      
+      {/* Yeni haber yükleniyor göstergesi */}
+      {isLoadingNextNews && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="flex justify-center items-center py-12"
+        >
+          <motion.div
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            className="relative"
+          >
+            {/* Ana loading kartı */}
+            <div className="bg-gradient-to-br from-primary to-primaryBG rounded-2xl p-8 shadow-2xl border border-gray-700/50 backdrop-blur-sm">
+              {/* Glow efekti */}
+              <div className="absolute inset-0 bg-gradient-to-r from-secondary/20 to-secondaryHover/20 rounded-2xl blur-xl -z-10"></div>
+              
+              <div className="flex flex-col items-center space-y-6">
+                {/* Gelişmiş spinner */}
+                <div className="relative">
+                  {/* Ana spinner */}
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="w-16 h-16 border-4 border-blackSelectBg rounded-full border-t-secondary shadow-lg"
+                  />
+                  
+                  {/* İç spinner */}
+                  <motion.div
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                    className="absolute inset-2 w-12 h-12 border-3 border-transparent rounded-full border-t-secondaryHover"
+                  />
+                  
+                  {/* Merkez nokta */}
+                  <div className="absolute inset-1/2 w-2 h-2 bg-secondary rounded-full transform -translate-x-1/2 -translate-y-1/2">
+                    <div className="w-full h-full bg-secondary rounded-full animate-ping"></div>
+                  </div>
+                </div>
+
+                {/* Loading metni */}
+                <div className="text-center space-y-2">
+                  <motion.h3
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="text-lg font-semibold text-textHeading"
+                  >
+                    Yeni Haber Yükleniyor
+                  </motion.h3>
+                  
+                  <div className="flex items-center justify-center space-x-1 text-textPrimary text-sm">
+                    <span>Lütfen bekleyin</span>
+                    <motion.div
+                      animate={{ opacity: [0, 1, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}
+                    >
+                      .
+                    </motion.div>
+                    <motion.div
+                      animate={{ opacity: [0, 1, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
+                    >
+                      .
+                    </motion.div>
+                    <motion.div
+                      animate={{ opacity: [0, 1, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity, delay: 1 }}
+                    >
+                      .
+                    </motion.div>
+                  </div>
+                </div>
+
+                {/* İlerleme çizgisi */}
+                <div className="w-32 h-1 bg-blackSelectBg rounded-full overflow-hidden">
+                  <motion.div
+                    animate={{ x: ['-100%', '100%'] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                    className="w-full h-full bg-gradient-to-r from-transparent via-secondary to-transparent"
+                  />
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {/* Gizli boşluk - kullanıcı fark etmesin, sadece kaydırsın */}
+      {!isLoadingNextNews && currentNewsIndex < allNews.length - 1 && (
+        <div className="py-24"></div>
+      )}
       
       {/* Footer için ekstra boşluk */}
       <div className="py-12"></div>

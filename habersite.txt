@@ -7,4 +7,4 @@ ana sayfa test.pngler
 kaydedildi buttonu hover yapmayı bırakınca birazcık geç gidiyor
 yapay zeka bağlantısı
 
-new.js de en aşağı indiğimizde yeni haber gelsin döngüde olsun
+beğeniyi news kısmında dene ve firestore güncelle like
