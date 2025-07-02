@@ -4,7 +4,6 @@ const { getFirestore, collection, addDoc, doc, setDoc, updateDoc } = require('fi
 
 // 👑 Admin SDK
 const admin = require("firebase-admin");
-require('dotenv').config();
 
 // 🎯 Admin SDK için config - gizli değerler env'den, sabitler hardcoded
 const adminConfig = {
