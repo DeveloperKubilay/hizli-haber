@@ -1,25 +1,40 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, User, Send, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { MessageCircle, User, Send, ThumbsUp, ThumbsDown, Trash2 } from 'lucide-react';
 import { auth, db } from '../../services/firebase';
-import { collection, addDoc, getDocs, query, where, orderBy, updateDoc, doc, increment } from 'firebase/firestore';
+import { 
+  collection, 
+  addDoc, 
+  getDocs, 
+  query, 
+  orderBy, 
+  updateDoc, 
+  doc, 
+  deleteDoc
+} from 'firebase/firestore';
 
 function CommentSection({ newsId }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(false);
   const [commentsLoading, setCommentsLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
 
-  // Yorumları yükle
+  // Kullanıcı durumunu takip et
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Yorumları yükle - Sadece news/{newsId}/comments yapısı
   const fetchComments = useCallback(async () => {
     try {
       setCommentsLoading(true);
-      const commentsRef = collection(db, 'comments');
-      const q = query(
-        commentsRef,
-        where('newsId', '==', newsId),
-        orderBy('createdAt', 'desc')
-      );
+      
+      const commentsRef = collection(db, `news/${newsId}/comments`);
+      const q = query(commentsRef, orderBy('createdAt', 'desc'));
       
       const querySnapshot = await getDocs(q);
       const commentsData = querySnapshot.docs.map(doc => ({
@@ -29,7 +44,7 @@ function CommentSection({ newsId }) {
       
       setComments(commentsData);
     } catch (error) {
-      console.error('Yorumlar yüklenirken hata:', error);
+      setComments([]);
     } finally {
       setCommentsLoading(false);
     }
@@ -39,17 +54,17 @@ function CommentSection({ newsId }) {
     fetchComments();
   }, [fetchComments]);
 
-  // Yorum gönder
+  // Yorum gönder - Firebase kurallarına uygun
   const handleSubmitComment = async (e) => {
     e.preventDefault();
     
-    if (!auth.currentUser) {
+    if (!currentUser) {
       alert('Yorum yapmak için giriş yapmalısınız');
       return;
     }
 
-    if (!newComment.trim()) {
-      alert('Lütfen bir yorum yazın');
+    if (!newComment.trim() || newComment.length >= 500) {
+      alert('Lütfen geçerli bir yorum yazın (maksimum 500 karakter)');
       return;
     }
 
@@ -57,46 +72,69 @@ function CommentSection({ newsId }) {
       setLoading(true);
       
       const commentData = {
-        newsId,
-        userId: auth.currentUser.uid,
-        userEmail: auth.currentUser.email,
-        userName: auth.currentUser.displayName || auth.currentUser.email.split('@')[0],
-        content: newComment.trim(),
-        createdAt: new Date().toISOString(),
+        text: newComment.trim(),
+        uid: currentUser.uid,
+        userEmail: currentUser.email,
+        userName: currentUser.displayName || currentUser.email.split('@')[0],
+        userPhotoURL: currentUser.photoURL || null,
+        createdAt: new Date(),
+        newsId: newsId,
         likes: 0,
         dislikes: 0
       };
-
-      await addDoc(collection(db, 'comments'), commentData);
+      
+      // news/{newsId}/comments koleksiyonuna ekle
+      await addDoc(collection(db, `news/${newsId}/comments`), commentData);
+      
       setNewComment('');
       fetchComments(); // Yorumları yeniden yükle
       
     } catch (error) {
-      console.error('Yorum gönderilirken hata:', error);
-      alert('Yorum gönderilirken hata oluştu');
+      alert(`Yorum gönderilirken hata oluştu: ${error.message}`);
     } finally {
       setLoading(false);
     }
   };
 
-  // Yorum beğen/beğenme
+  // Yorum sil - Sadece kendi yorumunu silebilir
+  const handleDeleteComment = async (commentId, commentUid) => {
+    if (!currentUser || currentUser.uid !== commentUid) {
+      alert('Bu yorumu silme yetkiniz yok');
+      return;
+    }
+
+    if (window.confirm('Bu yorumu silmek istediğinizden emin misiniz?')) {
+      try {
+        await deleteDoc(doc(db, `news/${newsId}/comments`, commentId));
+        fetchComments();
+      } catch (error) {
+        alert('Yorum silinirken hata oluştu: ' + error.message);
+      }
+    }
+  };
+
+  // Yorum beğen/beğenme - Like/Dislike sistemi
   const handleCommentLike = async (commentId, isLike) => {
-    if (!auth.currentUser) {
+    if (!currentUser) {
       alert('Beğenmek için giriş yapmalısınız');
       return;
     }
 
     try {
-      const commentDoc = doc(db, 'comments', commentId);
+      const currentComment = comments.find(c => c.id === commentId);
+      if (!currentComment) return;
+
       const updateField = isLike ? 'likes' : 'dislikes';
+      const newValue = (currentComment[updateField] || 0) + 1;
       
+      const commentDoc = doc(db, `news/${newsId}/comments`, commentId);
       await updateDoc(commentDoc, {
-        [updateField]: increment(1)
+        [updateField]: newValue
       });
       
       fetchComments(); // Yorumları yeniden yükle
     } catch (error) {
-      console.error('Yorum beğeni işleminde hata:', error);
+      alert('Beğeni işleminde hata oluştu: ' + error.message);
     }
   };
 
@@ -146,7 +184,7 @@ function CommentSection({ newsId }) {
       </motion.div>
       
       {/* Yorum yazma formu */}
-      {auth.currentUser ? (
+      {currentUser ? (
         <motion.form 
           onSubmit={handleSubmitComment} 
           className="mb-6"
@@ -156,23 +194,35 @@ function CommentSection({ newsId }) {
         >
           <div className="flex gap-3">
             <motion.div 
-              className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center"
+              className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center overflow-hidden"
               whileHover={{ scale: 1.1, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
             >
-              <User className="text-white" size={20} />
+              {currentUser?.photoURL ? (
+                <img 
+                  src={currentUser.photoURL} 
+                  alt="Profile" 
+                  className="w-full h-full object-cover rounded-full"
+                />
+              ) : (
+                <User className="text-white" size={20} />
+              )}
             </motion.div>
             <div className="flex-1">
               <motion.textarea
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Yorumunuzu yazın..."
+                placeholder="Yorumunuzu yazın... (maksimum 500 karakter)"
                 className="w-full px-5 py-4 bg-primaryBG text-textPrimary rounded-lg border border-primaryBG focus:border-secondary focus:outline-none resize-none text-base"
                 rows="4"
+                maxLength={500}
                 whileFocus={{ scale: 1.01 }}
                 transition={{ duration: 0.2 }}
               />
-              <div className="flex justify-end mt-2">
+              <div className="flex justify-between items-center mt-2">
+                <span className="text-xs text-textPrimary">
+                  {newComment.length}/500 karakter
+                </span>
                 <motion.button
                   type="submit"
                   disabled={loading || !newComment.trim()}
@@ -247,11 +297,19 @@ function CommentSection({ newsId }) {
                 whileHover={{ x: 5, scale: 1.02 }}
               >
                 <motion.div 
-                  className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center"
+                  className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center overflow-hidden"
                   whileHover={{ scale: 1.1, rotate: 10 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <User className="text-white" size={20} />
+                  {comment.userPhotoURL ? (
+                    <img 
+                      src={comment.userPhotoURL} 
+                      alt={comment.userName} 
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  ) : (
+                    <User className="text-white" size={20} />
+                  )}
                 </motion.div>
                 <div className="flex-1">
                   <motion.div 
@@ -264,7 +322,7 @@ function CommentSection({ newsId }) {
                       {comment.userName}
                     </h4>
                     <span className="text-xs text-textPrimary">
-                      {formatDate(comment.createdAt)}
+                      {comment.createdAt?.toDate ? formatDate(comment.createdAt.toDate()) : formatDate(comment.createdAt)}
                     </span>
                   </motion.div>
                   <motion.p 
@@ -273,7 +331,7 @@ function CommentSection({ newsId }) {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.3 }}
                   >
-                    {comment.content}
+                    {comment.text}
                   </motion.p>
                   <motion.div 
                     className="flex items-center gap-4"
@@ -311,6 +369,18 @@ function CommentSection({ newsId }) {
                         {comment.dislikes || 0}
                       </motion.span>
                     </motion.button>
+                    {/* Silme butonu - sadece kendi yorumları için */}
+                    {currentUser && currentUser.uid === comment.uid && (
+                      <motion.button
+                        onClick={() => handleDeleteComment(comment.id, comment.uid)}
+                        className="flex items-center gap-1 text-xs text-textPrimary hover:text-red-500 transition-colors"
+                        whileHover={{ scale: 1.1, y: -2 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Trash2 size={14} />
+                        <span>Sil</span>
+                      </motion.button>
+                    )}
                   </motion.div>
                 </div>
               </motion.div>

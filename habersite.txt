@@ -8,20 +8,3 @@ kaydedildi buttonu hover yapmayı bırakınca birazcık geç gidiyor
 yapay zeka bağlantısı
 
 new.js de en aşağı indiğimizde yeni haber gelsin döngüde olsun
-
-
-knka yorumları firebase bağlayabilirmisin tıpkı like dislike butonları gibi kullanabilirmisin ve knka yorumlar kısmında kullanıcı giriş yaptıysa kullanıcınının kendi fotosu olsun "new.js" için konuşuyorum
-
-    // news altındaki comments
-    match /news/{newsId}/comments/{commentId} {
-      allow read: if true;
-
-      allow create: if request.auth != null &&
-                    typeof(request.resource.data.text) == "string" &&
-                    request.resource.data.text.length < 500;
-
-      allow delete: if request.auth != null &&
-                    request.auth.uid == resource.data.uid;
-
-      allow update: if false;
-    }
