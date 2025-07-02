@@ -1,7 +1,6 @@
 import React from 'react';
 import { 
   ClipboardList, 
-  Newspaper, 
   Trophy, 
   Laptop, 
   Heart, 
@@ -9,12 +8,13 @@ import {
   Building, 
   DollarSign, 
   Palette, 
-  Globe 
+  Globe,
+  Star,
+  Microscope
 } from 'lucide-react';
 
 export const CATEGORIES = {
   ALL: 'Tümü',
-  NEWS: 'Haberler', 
   SPORTS: 'Spor',
   TECHNOLOGY: 'Teknoloji',
   HEALTH: 'Sağlık',
@@ -22,12 +22,13 @@ export const CATEGORIES = {
   POLITICS: 'Politika',
   ECONOMY: 'Ekonomi',
   CULTURE: 'Kültür',
-  WORLD: 'Dünya'
+  WORLD: 'Dünya',
+  MAGAZINE: 'Magazin',
+  SCIENCE: 'Bilim'
 };
 
 // Backend'den gelen İngilizce kategori adlarını Türkçe karşılıklarına çeviren mapping
 export const ENGLISH_TO_TURKISH_CATEGORIES = {
-  'News': 'Haberler',
   'Sports': 'Spor', 
   'Technology': 'Teknoloji',
   'Health': 'Sağlık',
@@ -35,12 +36,13 @@ export const ENGLISH_TO_TURKISH_CATEGORIES = {
   'Politics': 'Politika',
   'Economy': 'Ekonomi',
   'Culture': 'Kültür',
-  'World': 'Dünya'
+  'World': 'Dünya',
+  'Magazine': 'Magazin',
+  'Science': 'Bilim'
 };
 
 // Tersi mapping - Türkçe'den İngilizce'ye
 export const TURKISH_TO_ENGLISH_CATEGORIES = {
-  'Haberler': 'News',
   'Spor': 'Sports',
   'Teknoloji': 'Technology', 
   'Sağlık': 'Health',
@@ -48,7 +50,9 @@ export const TURKISH_TO_ENGLISH_CATEGORIES = {
   'Politika': 'Politics',
   'Ekonomi': 'Economy',
   'Kültür': 'Culture',
-  'Dünya': 'World'
+  'Dünya': 'World',
+  'Magazin': 'Magazine',
+  'Bilim': 'Science'
 };
 
 // İngilizce kategori adını Türkçe'ye çeviren fonksiyon
@@ -71,7 +75,6 @@ export const CATEGORY_LIST = Object.values(CATEGORIES);
 
 export const CATEGORY_ICONS = {
   [CATEGORIES.ALL]: <ClipboardList size={16} />,
-  [CATEGORIES.NEWS]: <Newspaper size={16} />, 
   [CATEGORIES.SPORTS]: <Trophy size={16} />,
   [CATEGORIES.TECHNOLOGY]: <Laptop size={16} />,
   [CATEGORIES.HEALTH]: <Heart size={16} />,
@@ -79,12 +82,13 @@ export const CATEGORY_ICONS = {
   [CATEGORIES.POLITICS]: <Building size={16} />,
   [CATEGORIES.ECONOMY]: <DollarSign size={16} />,
   [CATEGORIES.CULTURE]: <Palette size={16} />,
-  [CATEGORIES.WORLD]: <Globe size={16} />
+  [CATEGORIES.WORLD]: <Globe size={16} />,
+  [CATEGORIES.MAGAZINE]: <Star size={16} />,
+  [CATEGORIES.SCIENCE]: <Microscope size={16} />
 };
 
 export const CATEGORY_COLORS = {
   [CATEGORIES.ALL]: 'bg-primaryBG text-gray-300',
-  [CATEGORIES.NEWS]: 'bg-primaryBG text-blue-400',
   [CATEGORIES.SPORTS]: 'bg-primaryBG text-green-400', 
   [CATEGORIES.TECHNOLOGY]: 'bg-primaryBG text-purple-400',
   [CATEGORIES.HEALTH]: 'bg-primaryBG text-red-400',
@@ -92,7 +96,9 @@ export const CATEGORY_COLORS = {
   [CATEGORIES.POLITICS]: 'bg-primaryBG text-indigo-400',
   [CATEGORIES.ECONOMY]: 'bg-primaryBG text-emerald-400',
   [CATEGORIES.CULTURE]: 'bg-primaryBG text-pink-400',
-  [CATEGORIES.WORLD]: 'bg-primaryBG text-cyan-400'
+  [CATEGORIES.WORLD]: 'bg-primaryBG text-cyan-400',
+  [CATEGORIES.MAGAZINE]: 'bg-primaryBG text-orange-400',
+  [CATEGORIES.SCIENCE]: 'bg-primaryBG text-blue-400'
 };
 
 export const APP_CONFIG = {
@@ -115,7 +121,6 @@ export const NAVBAR_CATEGORIES = Object.entries(CATEGORIES)
 // Navbar kategori renklerini belirle
 function getNavbarCategoryColor(categoryKey) {
   const colorMap = {
-    'NEWS': 'bg-blue-600',
     'SPORTS': 'bg-red-600', 
     'TECHNOLOGY': 'bg-purple-600',
     'HEALTH': 'bg-pink-600',
@@ -123,7 +128,9 @@ function getNavbarCategoryColor(categoryKey) {
     'POLITICS': 'bg-indigo-600',
     'ECONOMY': 'bg-amber-600',
     'CULTURE': 'bg-orange-600',
-    'WORLD': 'bg-teal-600'
+    'WORLD': 'bg-teal-600',
+    'MAGAZINE': 'bg-yellow-600',
+    'SCIENCE': 'bg-blue-600'
   };
   return colorMap[categoryKey] || 'bg-gray-600';
 }
