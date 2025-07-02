@@ -1,18 +1,138 @@
-import React from 'react';
-
-const products = [
-  { id: 1, image: 'https://i.imgur.com/1GnhM3T.png', name: 'Elma', description: 'Taze ve lezzetli elma' },
-  { id: 2, image: 'https://i.imgur.com/bXYHGBL.png', name: 'Muz', description: 'Sarı muzlar burada' },
-  { id: 3, image: 'https://i.imgur.com/HlVXEZK.png', name: 'Avokado', description: 'Sağlıklı yağ kaynağı' },
-  { id: 4, image: 'https://i.imgur.com/SRt4Kj7.png', name: 'Çilek', description: 'Tatlı kırmızı meyve' },
-  { id: 5, image: 'https://i.imgur.com/vpYY5YO.png', name: 'Üzüm', description: 'Salkım salkım üzüm' },
-];
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { db } from '../../services/firebase';
+import { collection, getDocs, orderBy, query, limit } from 'firebase/firestore';
 
 export function ProductTicker() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const handleNewsClick = (newsId) => {
+    navigate(`/haber/${newsId}`);
+  };
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        setLoading(true);
+        const newsQuery = query(
+          collection(db, 'news'),
+          orderBy('createdAt', 'desc'),
+          limit(10)
+        );
+        const newsSnapshot = await getDocs(newsQuery);
+        
+        const newsData = newsSnapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            image: data.image || '/favicon.ico',
+            name: data.name || 'Haber Başlığı',
+            description: data.minides ? 
+              (data.minides.length > 25 ? data.minides.slice(0, 25) + '...' : data.minides) : 
+              'Haber açıklaması'
+          };
+        });
+        
+        setProducts(newsData);
+      } catch (error) {
+        console.error("Haberler çekilirken hata:", error);
+        // Hata durumunda varsayılan veriler
+        setProducts([
+          { id: 1, image: '/favicon.ico', name: 'Ekonomi Haberleri', description: 'Güncel ekonomik gelişmeler' },
+          { id: 2, image: '/favicon.ico', name: 'Spor Dünyası', description: 'En son spor haberleri' },
+          { id: 3, image: '/favicon.ico', name: 'Teknoloji', description: 'Teknoloji dünyasındaki yenilikler' },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNews();
+  }, []);
+
+  // Loading durumunda skeleton göster
+  if (loading) {
+    return (
+      <div style={{ 
+        position: 'relative', 
+        width: '100%', 
+        height: '120px', 
+        overflow: 'hidden', 
+        backgroundColor: 'transparent' 
+      }}>
+        <div style={{
+          display: 'flex',
+          gap: '30px',
+          position: 'absolute',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          height: '90px',
+          alignItems: 'center'
+        }}>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div 
+              key={index} 
+              className="animate-pulse"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                border: '2px solid #ddd',
+                borderRadius: '12px',
+                padding: '15px 25px',
+                minWidth: '300px',
+                height: '90px',
+                backgroundColor: 'transparent',
+                flexShrink: 0
+              }}
+            >
+              {/* Resim skeleton */}
+              <div 
+                style={{
+                  width: '45px',
+                  height: '35px',
+                  marginRight: '18px',
+                  backgroundColor: '#e5e7eb',
+                  borderRadius: '4px'
+                }}
+              ></div>
+              
+              {/* Text container skeleton */}
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                width: '180px',
+                gap: '8px'
+              }}>
+                {/* Başlık skeleton */}
+                <div style={{
+                  height: '20px',
+                  backgroundColor: '#e5e7eb',
+                  borderRadius: '4px',
+                  width: '85%'
+                }}></div>
+                
+                {/* Açıklama skeleton */}
+                <div style={{
+                  height: '16px',
+                  backgroundColor: '#e5e7eb',
+                  borderRadius: '4px',
+                  width: '70%'
+                }}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   const containerStyle = {
     position: 'relative',
     width: '100%',
-    height: '120px', // 🔥 Yüksekliği daha da artırdım
+    height: '120px', // 🔥 Yükseklik daha da artırdım
     overflow: 'hidden',
     backgroundColor: 'transparent',
   };
@@ -44,6 +164,7 @@ export function ProductTicker() {
     boxShadow: 'none', // 🔥 Gölge kaldırıldı
     userSelect: 'none',
     transition: 'transform 0.3s, border-color 0.3s',
+    cursor: 'pointer', // 🔥 Pointer ekledim
   };
   const imageStyle = {
     width: '45px', // 🔥 İmaj boyutu artırıldı
@@ -131,11 +252,16 @@ export function ProductTicker() {
                 key={`${id}-${index}`}
                 className="product-card"
                 style={productStyle}
+                onClick={() => handleNewsClick(id)}
               >
                 <img
                   src={image}
                   alt={name}
                   style={imageStyle}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = '/favicon.ico';
+                  }}
                 />
                 <div style={textContainerStyle}>
                   <div style={nameStyle} title={name}>
@@ -155,6 +281,131 @@ export function ProductTicker() {
 }
 
 export function ProductTickerReverse() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const handleNewsClick = (newsId) => {
+    navigate(`/haber/${newsId}`);
+  };
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        setLoading(true);
+        const newsQuery = query(
+          collection(db, 'news'),
+          orderBy('createdAt', 'desc'),
+          limit(10)
+        );
+        const newsSnapshot = await getDocs(newsQuery);
+        
+        const newsData = newsSnapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            image: data.image || '/favicon.ico',
+            name: data.name || 'Haber Başlığı',
+            description: data.minides ? 
+              (data.minides.length > 25 ? data.minides.slice(0, 25) + '...' : data.minides) : 
+              'Haber açıklaması'
+          };
+        });
+        
+        setProducts(newsData);
+      } catch (error) {
+        console.error("Haberler çekilirken hata:", error);
+        // Hata durumunda varsayılan veriler
+        setProducts([
+          { id: 1, image: '/favicon.ico', name: 'Ekonomi Haberleri', description: 'Güncel ekonomik gelişmeler' },
+          { id: 2, image: '/favicon.ico', name: 'Spor Dünyası', description: 'En son spor haberleri' },
+          { id: 3, image: '/favicon.ico', name: 'Teknoloji', description: 'Teknoloji dünyasındaki yenilikler' },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNews();
+  }, []);
+
+  // Loading durumunda skeleton göster
+  if (loading) {
+    return (
+      <div style={{ 
+        position: 'relative', 
+        width: '100%', 
+        height: '120px', 
+        overflow: 'hidden', 
+        backgroundColor: 'transparent' 
+      }}>
+        <div style={{
+          display: 'flex',
+          gap: '30px',
+          position: 'absolute',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          height: '90px',
+          alignItems: 'center'
+        }}>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div 
+              key={index} 
+              className="animate-pulse"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                border: '2px solid #ddd',
+                borderRadius: '12px',
+                padding: '15px 25px',
+                minWidth: '300px',
+                height: '90px',
+                backgroundColor: 'transparent',
+                flexShrink: 0
+              }}
+            >
+              {/* Resim skeleton */}
+              <div 
+                style={{
+                  width: '45px',
+                  height: '35px',
+                  marginRight: '18px',
+                  backgroundColor: '#e5e7eb',
+                  borderRadius: '4px'
+                }}
+              ></div>
+              
+              {/* Text container skeleton */}
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                width: '180px',
+                gap: '8px'
+              }}>
+                {/* Başlık skeleton */}
+                <div style={{
+                  height: '20px',
+                  backgroundColor: '#e5e7eb',
+                  borderRadius: '4px',
+                  width: '85%'
+                }}></div>
+                
+                {/* Açıklama skeleton */}
+                <div style={{
+                  height: '16px',
+                  backgroundColor: '#e5e7eb',
+                  borderRadius: '4px',
+                  width: '70%'
+                }}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   const containerStyle = {
     position: 'relative',
     width: '100%',
@@ -190,6 +441,7 @@ export function ProductTickerReverse() {
     boxShadow: 'none',
     userSelect: 'none',
     transition: 'transform 0.3s, border-color 0.3s',
+    cursor: 'pointer', // 🔥 Pointer ekledim
   };
   const imageStyle = {
     width: '45px',
@@ -280,11 +532,16 @@ export function ProductTickerReverse() {
               key={`${id}-${index}`}
               className="product-card"
               style={productStyle}
+              onClick={() => handleNewsClick(id)}
             >
               <img
                 src={image}
                 alt={name}
                 style={imageStyle}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = '/favicon.ico';
+                }}
               />
               <div style={textContainerStyle}>
                 <div style={nameStyle} title={name}>

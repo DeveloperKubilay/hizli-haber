@@ -81,7 +81,7 @@ function Home() {
         </div>
       </div>
       
-      <div ref={productTickerRef}>
+      <div ref={productTickerRef} className="mt-8">
         <TickerSection />
       </div>
       
@@ -95,7 +95,7 @@ function Home() {
       </div>
       
       {/* Info Cards Section */}
-      <div ref={infoCardsRef} className="max-w-6xl mx-auto px-6 bg-transparent">
+      <div ref={infoCardsRef} className="max-w-6xl mx-auto px-6 bg-transparent mb-12">
         <InfoCard 
           title="İlk Başlık"
           description="Bu ilk kartın açıklama metnidir. Burada güzel bir açıklama yazısı bulunmakta."
