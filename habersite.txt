@@ -4,7 +4,4 @@ https://v3.tailwindcss.com/
 backend png üretme
 ana sayfa test.pngler 
 
-kaydedildi buttonu hover yapmayı bırakınca birazcık geç gidiyor
 yapay zeka bağlantısı
-
-beğeniyi news kısmında dene ve firestore güncelle like

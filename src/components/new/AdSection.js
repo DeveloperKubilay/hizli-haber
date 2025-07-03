@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Megaphone } from 'lucide-react';
 
 function AdSection() {
   return (
@@ -14,14 +15,17 @@ function AdSection() {
         transition: { duration: 0.2 }
       }}
     >
-      <motion.h3 
-        className="text-lg md:text-xl font-bold text-textHeading mb-4"
+      <motion.div 
+        className="flex items-center gap-3 mb-4"
         initial={{ y: -10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2 }}
       >
-        Reklam Alanı
-      </motion.h3>
+        <Megaphone className="text-secondary" size={22} />
+        <h3 className="text-lg md:text-xl font-bold text-textHeading">
+          Reklam Alanı
+        </h3>
+      </motion.div>
       <motion.div 
         className="bg-primaryBG rounded-lg p-8 md:p-10 min-h-[220px] md:min-h-[280px] flex items-center justify-center w-full"
         initial={{ y: 10, opacity: 0 }}

@@ -134,7 +134,7 @@ function SavedNewsCard({ item, index, viewMode, onRemove, formatDate }) {
 }
 
 function SavedNews() {
-  const [savedNews, setSavedNews] = useState([]);
+  const [savedNewsWithCounts, setSavedNewsWithCounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [authLoading, setAuthLoading] = useState(true); // Auth durumu için
@@ -195,7 +195,9 @@ function SavedNews() {
         
         // Kaydetme tarihine göre sırala (yeniden eskiye)
         savedNewsData.sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt));
-        setSavedNews(savedNewsData);
+        
+        // Like/dislike sayılarını çek
+        await loadLikeDislikeCounts(savedNewsData);
         
       } catch (error) {
         console.error('Kaydettiğiniz haberler getirilemedi:', error);
@@ -208,6 +210,46 @@ function SavedNews() {
     fetchSavedNews();
   }, [authLoading, user]); // Auth ve user state'ine bağımlı
 
+  // Like/dislike sayılarını yükle
+  const loadLikeDislikeCounts = async (savedNewsData) => {
+    try {
+      const newsWithCountsData = await Promise.all(
+        savedNewsData.map(async (newsItem) => {
+          try {
+            // Like sayısını al
+            const likesRef = collection(db, 'news', newsItem.newsId, 'likes');
+            const allLikesSnapshot = await getDocs(likesRef);
+            const likesCount = allLikesSnapshot.size;
+
+            // Dislike sayısını al
+            const dislikesRef = collection(db, 'news', newsItem.newsId, 'dislikes');
+            const allDislikesSnapshot = await getDocs(dislikesRef);
+            const dislikesCount = allDislikesSnapshot.size;
+
+            return {
+              ...newsItem,
+              likes: likesCount,
+              dislikes: dislikesCount
+            };
+          } catch (error) {
+            console.error(`Haber ${newsItem.newsId} için like/dislike sayıları alınamadı:`, error);
+            return {
+              ...newsItem,
+              likes: 0,
+              dislikes: 0
+            };
+          }
+        })
+      );
+      
+      setSavedNewsWithCounts(newsWithCountsData);
+    } catch (error) {
+      console.error('Like/dislike sayıları yüklenirken hata:', error);
+      // Hata durumunda orijinal savedNews'i kullan
+      setSavedNewsWithCounts(savedNewsData);
+    }
+  };
+
   // Haberi kaydetme listesinden çıkar - User state kullan
   const handleRemoveSavedNews = async (newsId) => {
     if (!user) {
@@ -218,7 +260,7 @@ function SavedNews() {
     try {
       const userId = user.uid;
       await deleteDoc(doc(db, 'savednews', userId, 'news', newsId));
-      setSavedNews(prev => prev.filter(item => item.saveId !== newsId));
+      setSavedNewsWithCounts(prev => prev.filter(item => item.saveId !== newsId));
     } catch (error) {
       console.error('Haber kaydedilen listeden çıkarılamadı:', error);
       alert('Haber çıkarılırken bir hata oluştu');
@@ -226,7 +268,7 @@ function SavedNews() {
   };
 
   // Arama işlemi
-  const filteredNews = savedNews.filter(item => 
+  const filteredNews = savedNewsWithCounts.filter(item => 
     searchTerm === '' || 
     item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.minides?.toLowerCase().includes(searchTerm.toLowerCase()) ||
