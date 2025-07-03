@@ -1,5 +1,5 @@
 const { GoogleGenAI } = require('@google/genai');
-const ai = new GoogleGenAI({ apiKey: process.env.Gemini_API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // Tek prompt işleme fonksiyonu
 async function processSinglePrompt(ainame, data, uploadFile) {

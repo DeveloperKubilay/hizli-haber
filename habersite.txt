@@ -12,3 +12,5 @@ yapay zeka gen z tarzı konuşsun
 bizim yazıların renki çok açık
 
 genimg ile s3 bağlamak lazım haberlerin başlığını yollicaz direk 
+
+yapay zeka ile sohbette botun söylediği md formatında göstermeli ve chati biraz büyütmek lazım azcık new.js için zaten gerekli modüller yüklü açıklama kısmı md mesela ona bakarak yapabilirsin
