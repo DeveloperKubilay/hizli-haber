@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
+import { BotMessageSquare } from 'lucide-react';
 import { ai } from '../../services/firebase';
 
 const AIChat = ({ news }) => {
@@ -7,7 +9,7 @@ const AIChat = ({ news }) => {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: "Merhaba! Ben haber asistanınızım. Size haberin içeriği, kaynak güvenilirliği veya başka sorularınızla yardımcı olabilirim. Nasıl yardımcı olabilirim?",
+      text: "**Selamlar!** 👋✨ Ben senin **haber buddy'n** 🤖💫\n\nBu haberle ilgili kafanda **soru işaretleri** mi var? 🤔💭\n\n*Sor gelsin!* 🔥💯",
       isUser: false,
       timestamp: new Date()
     }
@@ -47,8 +49,9 @@ const AIChat = ({ news }) => {
 
     try {
       // Haber içeriğini prompta ekle
-      let haberIcerik = news ? `\n\nHaber Başlığı: ${news.name || ''}\nHaber Özeti: ${news.minides || ''}\nHaber İçeriği: ${news.content || ''}` : '';
-      const aiPrompt = `Sen bir haber asistanısın. Kullanıcının sorusu: "${inputValue}".\n${haberIcerik}\nKullanıcıya haberin içeriğiyle ilgili, kaynak güvenilirliği, güncel olaylar veya medya okuryazarlığı konularında yardımcı ol. Kısa, net ve yardımcı cevaplar ver. Türkçe yanıtla.`;
+      let haberIcerik = news ? `\n\nHaber Başlığı: ${news.name || ''}\nHaber Özeti: ${news.summary || ''}\nHaber Açıklaması: ${news.des || ''}` : '';
+      const aiPrompt = `Sen genç ve eğlenceli bir haber asistanısın. Kullanıcının sorusu: "${inputValue}".\n${haberIcerik}\n\nZ kuşağına hitap eden eğlenceli bir dille cevap ver. Bol bol emoji kullan 😊🔥💯. Modern slang ve güncel ifadeler kullan. Samimi ve arkadaşça yaklaş. Sadece sorulan soruya doğrudan cevap ver. Cevabını markdown formatında ver. Türkçe yanıtla.`;
+      console.log("🤖 AI Prompt:", aiPrompt);
       const aiResponse = await ai(aiPrompt);
       const aiMessage = {
         id: Date.now() + 1,
@@ -60,7 +63,7 @@ const AIChat = ({ news }) => {
     } catch (error) {
       const errorMessage = {
         id: Date.now() + 1,
-        text: "Üzgünüm, şu anda bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
+        text: "**Ups!** �💥 Bir şeyler ters gitti!\n\n*Biraz sonra tekrar dene* 🔄✨",
         isUser: false,
         timestamp: new Date()
       };
@@ -97,13 +100,9 @@ const AIChat = ({ news }) => {
         transition={{ delay: 0.5 }}
         style={{ minWidth: 220 }}
       >
-        {/* AI Icon */}
+        {/* AI Robot Icon */}
         <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-secondaryBG">
-          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="#1bd96a" />
-            <rect x="9.5" y="9.5" width="5" height="5" fill="#16181c" />
-            <circle cx="12" cy="12" r="2.5" fill="#22ff84" />
-          </svg>
+          <BotMessageSquare className="w-5 h-5 text-white" />
         </span>
         <span>Yapay Zekaya Sor</span>
       </motion.button>
@@ -115,17 +114,13 @@ const AIChat = ({ news }) => {
             initial={{ opacity: 0, y: 100, scale: 0.8 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 100, scale: 0.8 }}
-            className="fixed bottom-32 right-8 z-50 w-[370px] h-[520px] bg-tbackground dark:bg-blackSelectBg rounded-3xl shadow-2xl border border-secondary/40 flex flex-col overflow-hidden"
+            className="fixed bottom-32 right-8 z-50 w-[450px] max-w-[calc(100vw-2rem)] h-[600px] max-h-[calc(100vh-10rem)] bg-tbackground dark:bg-blackSelectBg rounded-3xl shadow-2xl border border-secondary/40 flex flex-col overflow-hidden sm:w-[450px] xs:w-[350px]"
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-primary to-secondary text-white p-5 flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <div className="w-9 h-9 bg-secondaryBG rounded-full flex items-center justify-center">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="#1bd96a" />
-                    <rect x="9.5" y="9.5" width="5" height="5" fill="#16181c" />
-                    <circle cx="12" cy="12" r="2.5" fill="#22ff84" />
-                  </svg>
+                  <BotMessageSquare className="w-5 h-5 text-white" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-base">Haber Asistanı</h3>
@@ -148,14 +143,36 @@ const AIChat = ({ news }) => {
                   animate={{ opacity: 1, y: 0 }}
                   className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className={`max-w-[80%] rounded-2xl px-4 py-2 break-words ${
+                  <div className={`max-w-[85%] rounded-2xl px-4 py-3 break-words ${
                     message.isUser 
-                      ? 'bg-gradient-to-r from-secondary to-secondaryHover text-white' 
-                      : 'bg-primaryBG text-textPrimary border border-secondary/30'
+                      ? 'bg-secondary text-white' 
+                      : 'bg-primaryBG hover:bg-blackSelectHover hover:text-white text-textPrimary'
                   }`}>
-                    <p className="text-sm whitespace-pre-wrap">{message.text}</p>
-                    <p className={`text-xs mt-1 ${
-                      message.isUser ? 'text-white/70' : 'text-secondary'
+                    {message.isUser ? (
+                      <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+                    ) : (
+                      <div className="text-sm max-w-none">
+                        <ReactMarkdown
+                          components={{
+                            p: ({ children }) => <p className="mb-2 last:mb-0 text-textPrimary leading-relaxed">{children}</p>,
+                            strong: ({ children }) => <strong className="font-semibold text-secondary">{children}</strong>,
+                            em: ({ children }) => <em className="italic text-textPrimary">{children}</em>,
+                            ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1 text-textPrimary ml-2">{children}</ul>,
+                            ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1 text-textPrimary ml-2">{children}</ol>,
+                            li: ({ children }) => <li className="text-textPrimary">{children}</li>,
+                            code: ({ children }) => <code className="bg-secondary/20 px-1.5 py-0.5 rounded text-secondary font-mono text-xs">{children}</code>,
+                            blockquote: ({ children }) => <blockquote className="border-l-4 border-secondary pl-3 italic text-textPrimary/80 mb-2 bg-secondary/5 py-1">{children}</blockquote>,
+                            h1: ({ children }) => <h1 className="text-lg font-bold text-secondary mb-2 mt-1">{children}</h1>,
+                            h2: ({ children }) => <h2 className="text-base font-bold text-secondary mb-2 mt-1">{children}</h2>,
+                            h3: ({ children }) => <h3 className="text-sm font-bold text-secondary mb-1 mt-1">{children}</h3>,
+                          }}
+                        >
+                          {message.text}
+                        </ReactMarkdown>
+                      </div>
+                    )}
+                    <p className={`text-xs mt-2 ${
+                      message.isUser ? 'text-white/80' : 'text-secondary'
                     }`}>
                       {formatTime(message.timestamp)}
                     </p>
@@ -203,19 +220,27 @@ const AIChat = ({ news }) => {
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Haberle ilgili sorunuzu yazın..."
-                  className="flex-1 px-3 py-2 text-sm border border-secondaryBG rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary bg-primaryBG text-textPrimary"
+                  className="flex-1 px-4 py-3 text-sm border border-secondaryBG rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary bg-primaryBG text-textPrimary placeholder-textSecondary"
                   disabled={isLoading}
                 />
                 <motion.button
                   onClick={handleSendMessage}
                   disabled={!inputValue.trim() || isLoading}
-                  className="px-4 py-2 bg-gradient-to-r from-secondary to-secondaryHover text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-5 py-3 bg-gradient-to-r from-secondary to-secondaryHover text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                  </svg>
+                  {isLoading ? (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                    />
+                  ) : (
+                    <svg className="w-5 h-5 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                  )}
                 </motion.button>
               </div>
             </div>
