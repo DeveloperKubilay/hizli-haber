@@ -2,6 +2,7 @@ if (process.env.GITHUB_ACTIONS !== "true") require("dotenv").config();
 const getNews = require("./modules/getNews");
 const ai = require("./modules/ai");
 const firebase = require("./modules/firebase");
+const { generateAndUploadImage } = require("./modules/genimg");
 const config = require("./config.json");
 //https://gnews.io/dashboard
 //https://newsapi.org/
@@ -45,10 +46,22 @@ async function main() {
                     
                     const parsedNews = JSON.parse(jsonStr);
                     
+                    // Haber başlığından görsel oluştur ve S3'e yükle
+                    console.log(`🎨 ${batchIndex * batchSize + i + 1}. haber için görsel oluşturuluyor...`);
+                    const imageResult = await generateAndUploadImage(parsedNews.title || parsedNews.headline || 'Haber');
+                    
+                    let imageUrl = "https://i.imgur.com/qB16SCf.png";
+                    if (imageResult.success) {
+                        imageUrl = imageResult.imageUrl;
+                        console.log(`✅ Görsel başarıyla oluşturuldu: ${imageResult.fileName}`);
+                    } else {
+                        console.warn(`⚠️ Görsel oluşturulamadı: ${imageResult.message}`);
+                    }
+                    
                     const newsId = await firebase.addWithAdmin('news', {
                         ...parsedNews,
                         createdAt: batch[i].publishedAt,
-                        image: "https://via.placeholder.com/150"
+                        image: imageUrl
                     });
                     
                     console.log(`🔥 Haber ${batchIndex * batchSize + i + 1} Firebase'e eklendi! ID: ${newsId}`);

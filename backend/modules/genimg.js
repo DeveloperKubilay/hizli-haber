@@ -1,10 +1,13 @@
 var GoogleGenAI = require('@google/genai').GoogleGenAI;
 const config = require('../config.json');
+const uploadFile = require('./s3');
+
 var ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
 });
 
-module.exports = async function (promt) {
+// Sadece görsel oluşturmak için (eski fonksiyon)
+async function generateImage(promt) {
     var fail = false;
     try {
         const response = await ai.models.generateImages({
@@ -20,8 +23,6 @@ module.exports = async function (promt) {
             !response.generatedImages[0] || !response.generatedImages[0].image || !response.generatedImages[0].image.imageBytes) 
             return fail = true;
         
-
-
         var fileName = 'image_' + Date.now() + '.jpeg';
         var buffer = Buffer.from(response.generatedImages[0].image.imageBytes || '', 'base64');
         return {
@@ -33,3 +34,42 @@ module.exports = async function (promt) {
         error: true
     };
 }
+
+// Görsel oluşturup S3'e yüklemek için (yeni fonksiyon)
+async function generateAndUploadImage(newsTitle) {
+    try {
+        // Önce görseli oluştur
+        const imageResult = await generateImage(newsTitle);
+        
+        if (imageResult.error) {
+            return {
+                error: true,
+                message: "Görsel oluşturulamadı"
+            };
+        }
+
+        // S3'e yükle
+        await uploadFile(imageResult.fileName, imageResult.buffer, 'image/jpeg');
+        
+        // CDN URL'ini oluştur
+        const imageUrl = `https://cdn.emailsunucusu.tech/${encodeURIComponent(imageResult.fileName)}`;
+        
+        return {
+            success: true,
+            fileName: imageResult.fileName,
+            imageUrl: imageUrl
+        };
+        
+    } catch (error) {
+        console.error('Görsel oluşturma ve yükleme hatası:', error);
+        return {
+            error: true,
+            message: "Görsel oluşturma veya yükleme sırasında hata oluştu"
+        };
+    }
+}
+
+module.exports = {
+    generateImage,
+    generateAndUploadImage
+};
