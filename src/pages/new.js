@@ -18,6 +18,7 @@ import AdSection from '../components/new/AdSection';
 import LoadingState from '../components/new/LoadingState';
 import ErrorState from '../components/new/ErrorState';
 import NotFoundState from '../components/new/NotFoundState';
+import AIChat from '../components/new/AIChat';
 
 function NewsDetail() {
   const { id } = useParams();
@@ -629,6 +630,9 @@ function NewsDetail() {
       {/* Footer için ekstra boşluk */}
       <div className="py-12"></div>
       <Footer />
+      
+      {/* AI Chat Assistant */}
+      <AIChat news={news} />
     </>
   );
 }

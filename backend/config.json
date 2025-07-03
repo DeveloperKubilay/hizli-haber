@@ -8,6 +8,10 @@
         "haber7.com"
     ],
     "MODEL": "gemini-2.5-flash",
+    "IMG_MODEL": "models/imagen-4.0-generate-preview-06-06",
+    "IMG_promt": [
+        "{DATA}"
+    ],
     "promt": [
         "Senden JSON formatında yanıt vermeni istiyorum. Format şu şekilde olacak:",
         "{name: string, minides: string, summary: string, des: string, tag: array}",
