@@ -5,3 +5,10 @@ backend png üretme
 ana sayfa test.pngler 
 
 yapay zeka bağlantısı
+tos kuralları 
+knka new.js de sağ alta yapay zeka butonu eklemek istiyorum fixed olarak mesela bir ürün almak için konuşursun ya destek ekibi ile aynı onun gibi sağ altta haber ile bilgi alabileceğin soru sorabileceğin bir ai olsun isitom firebase.js de nasıl kullanıldığına bakabilirsin
+
+yapay zeka gen z tarzı konuşsun
+bizim yazıların renki çok açık
+
+genimg ile s3 bağlamak lazım haberlerin başlığını yollicaz direk 
