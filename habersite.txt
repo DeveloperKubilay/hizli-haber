@@ -2,9 +2,4 @@ https://v3.tailwindcss.com/
 
 
 ana sayfa test.pngler 
-yapay zeka bağlantısı *
 genimg ile s3 bağlamak lazım haberlerin başlığını yollicaz direk *
-
-knka new.js news.js incele ona göre senden bi sayfa yapmanı isticem
-tasarımını anladıysan anlatıyorum
-knka bu sitedeki içerikler ve resimler yapay zeka tarafından yapılıyor otomatik olarak o yüzden olası şeylerde biz sorumlu olmadığımızı belirmeni ve diğer kullanım şartlarını söylemeni istiyorum
