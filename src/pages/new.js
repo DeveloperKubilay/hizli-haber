@@ -142,6 +142,9 @@ function NewsDetail() {
     if (currentNewsIndex >= allNews.length - 1) return; // Son haberdeyse çık
     if (isLoadingNextNews || scrollCooldown) return; // Loading varsa veya cooldown aktifse çık
     
+    // Loading başlamadan önce scroll pozisyonunu kaydet
+    const initialScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    
     // Cooldown başlat (2 saniye)
     setScrollCooldown(true);
     setIsLoadingNextNews(true);
@@ -153,6 +156,16 @@ function NewsDetail() {
       if (nextNews) {
         // 1 saniye bekle (kullanıcı deneyimi için)
         await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Yönlendirme öncesi son kontrol - kullanıcı scroll pozisyonunu değiştirdi mi?
+        const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollDifference = Math.abs(currentScrollTop - initialScrollTop);
+        
+        // Eğer kullanıcı 100px'den fazla yukarı kaydırdıysa işlemi iptal et
+        if (scrollDifference > 100 && currentScrollTop < initialScrollTop) {
+          console.log('Kullanıcı yukarı kaydırdı, yeni haber yükleme iptal edildi');
+          return;
+        }
         
         // Direkt yeni URL'ye git (tam sayfa yenileme gibi)
         navigate(`/haberler/${nextNews.id}`, { replace: true });
@@ -520,17 +533,17 @@ function NewsDetail() {
         </div>
       </div>
       
-      {/* Yeni haber yükleniyor göstergesi */}
+      {/* Yeni haber yükleniyor göstergesi - Fixed position */}
       {isLoadingNextNews && (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className="flex justify-center items-center py-12"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex justify-center items-center"
         >
           <motion.div
-            initial={{ scale: 0.9 }}
-            animate={{ scale: 1 }}
+            initial={{ scale: 0.9, y: 20 }}
+            animate={{ scale: 1, y: 0 }}
             className="relative"
           >
             {/* Ana loading kartı */}

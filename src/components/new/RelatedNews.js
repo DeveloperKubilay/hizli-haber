@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { Tag, FileText, Heart, ThumbsDown, Calendar } from 'lucide-react';
+import { Tag, FileText, Heart, ThumbsDown, Calendar, Newspaper } from 'lucide-react';
 import { CATEGORY_COLORS, CATEGORY_ICONS, translateTagsToTurkish, CATEGORIES } from '../../services/categories';
 
 function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
@@ -186,12 +186,13 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
         variants={itemVariants}
         whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
       >
-        <motion.h3 
-          className="text-xl font-bold text-textHeading mb-6"
+        <motion.div 
+          className="flex items-center gap-3 mb-6"
           variants={itemVariants}
         >
-          Benzer Haberler
-        </motion.h3>
+          <Newspaper className="text-secondary" size={22} />
+          <h3 className="text-xl font-bold text-textHeading">Benzer Haberler</h3>
+        </motion.div>
         
         <motion.div 
           className="space-y-4"

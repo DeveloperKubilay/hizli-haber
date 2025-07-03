@@ -23,7 +23,7 @@ import {
 
 function Home() {
   // State management
-  const [news, setNews] = useState([]);
+  const [newsWithCounts, setNewsWithCounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(APP_CONFIG.DEFAULT_CATEGORY);
   const [searchTerm, setSearchTerm] = useState('');
@@ -38,7 +38,7 @@ function Home() {
   const navigate = useNavigate();
   
   // Data filtering and processing
-  const filteredNews = news.filter(item => {
+  const filteredNews = newsWithCounts.filter(item => {
     // Kategori eşleştirmesi - backend'den gelen İngilizce tag'leri Türkçe kategorilerle karşılaştır
     const categoryMatch = selectedCategory === CATEGORIES.ALL || 
       (item.tag && Array.isArray(item.tag) && 
@@ -82,7 +82,8 @@ function Home() {
           };
         });
         
-        setNews(newsData);
+        // Like/dislike sayılarını çek
+        await loadLikeDislikeCounts(newsData);
       } catch (error) {
         console.error("❌ Haber verileri çekilirken hata:", error);
       } finally {
@@ -92,6 +93,46 @@ function Home() {
     
     fetchNews();
   }, []);
+
+  // Like/dislike sayılarını yükle
+  const loadLikeDislikeCounts = async (newsData) => {
+    try {
+      const newsWithCountsData = await Promise.all(
+        newsData.map(async (newsItem) => {
+          try {
+            // Like sayısını al
+            const likesRef = collection(db, 'news', newsItem.id, 'likes');
+            const allLikesSnapshot = await getDocs(likesRef);
+            const likesCount = allLikesSnapshot.size;
+
+            // Dislike sayısını al
+            const dislikesRef = collection(db, 'news', newsItem.id, 'dislikes');
+            const allDislikesSnapshot = await getDocs(dislikesRef);
+            const dislikesCount = allDislikesSnapshot.size;
+
+            return {
+              ...newsItem,
+              likes: likesCount,
+              dislikes: dislikesCount
+            };
+          } catch (error) {
+            console.error(`Haber ${newsItem.id} için like/dislike sayıları alınamadı:`, error);
+            return {
+              ...newsItem,
+              likes: 0,
+              dislikes: 0
+            };
+          }
+        })
+      );
+      
+      setNewsWithCounts(newsWithCountsData);
+    } catch (error) {
+      console.error('Like/dislike sayıları yüklenirken hata:', error);
+      // Hata durumunda orijinal news'i kullan
+      setNewsWithCounts(newsData);
+    }
+  };
 
   // URL handling
   useEffect(() => {
