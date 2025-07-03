@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Mail } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 function Footer() {
   return (
@@ -34,8 +35,9 @@ function Footer() {
           >
             <h4 className="text-xl font-bold mb-4 text-green-400">Hızlı Linkler</h4>
             <ul className="space-y-2">
-              <li><button className="text-gray-400 hover:text-white transition-colors text-left">Ana Sayfa</button></li>
-              <li><button className="text-gray-400 hover:text-white transition-colors text-left">Haberler</button></li>
+              <li><Link to="/" className="text-gray-400 hover:text-white transition-colors">Ana Sayfa</Link></li>
+              <li><Link to="/haberler" className="text-gray-400 hover:text-white transition-colors">Haberler</Link></li>
+              <li><Link to="/hizmet-sartlari" className="text-gray-400 hover:text-white transition-colors">Hizmet Şartları</Link></li>
             </ul>
           </motion.div>
 
