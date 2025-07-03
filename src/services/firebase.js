@@ -19,7 +19,7 @@ const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
 const ai = getAI(app, { backend: new GoogleAIBackend() });
-const model = getGenerativeModel(ai, { model: "gemini-2.5-flash" });
+const model = getGenerativeModel(ai, { model: "gemini-2.5-flash" });//gemma-3-27b-it
 
 async function sendMessageToModel(message = "Hello") {
   try {

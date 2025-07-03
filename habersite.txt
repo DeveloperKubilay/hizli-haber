@@ -1,16 +1,10 @@
 https://v3.tailwindcss.com/
 
 
-backend png üretme
 ana sayfa test.pngler 
+yapay zeka bağlantısı *
+genimg ile s3 bağlamak lazım haberlerin başlığını yollicaz direk *
 
-yapay zeka bağlantısı
-tos kuralları 
-knka new.js de sağ alta yapay zeka butonu eklemek istiyorum fixed olarak mesela bir ürün almak için konuşursun ya destek ekibi ile aynı onun gibi sağ altta haber ile bilgi alabileceğin soru sorabileceğin bir ai olsun isitom firebase.js de nasıl kullanıldığına bakabilirsin
-
-yapay zeka gen z tarzı konuşsun
-bizim yazıların renki çok açık
-
-genimg ile s3 bağlamak lazım haberlerin başlığını yollicaz direk 
-
-yapay zeka ile sohbette botun söylediği md formatında göstermeli ve chati biraz büyütmek lazım azcık new.js için zaten gerekli modüller yüklü açıklama kısmı md mesela ona bakarak yapabilirsin
+knka new.js news.js incele ona göre senden bi sayfa yapmanı isticem
+tasarımını anladıysan anlatıyorum
+knka bu sitedeki içerikler ve resimler yapay zeka tarafından yapılıyor otomatik olarak o yüzden olası şeylerde biz sorumlu olmadığımızı belirmeni ve diğer kullanım şartlarını söylemeni istiyorum
