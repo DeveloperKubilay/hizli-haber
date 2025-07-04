@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { db, loadNewsInteractions } from '../services/firebase';
+import { db } from '../services/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -83,7 +83,8 @@ function Home() {
         });
         
         // Like/dislike sayılarını çek
-        await loadLikeDislikeCounts(newsData);
+        // await loadLikeDislikeCounts(newsData);
+        setNewsWithCounts(newsData);
       } catch (error) {
         console.error("❌ Haber verileri çekilirken hata:", error);
       } finally {
@@ -93,19 +94,6 @@ function Home() {
     
     fetchNews();
   }, []);
-
-  // Like/dislike sayılarını verimli şekilde yükle
-  const loadLikeDislikeCounts = async (newsData) => {
-    try {
-      // Yeni verimli fonksiyonu kullan
-      const newsWithCountsData = await loadNewsInteractions(newsData);
-      setNewsWithCounts(newsWithCountsData);
-    } catch (error) {
-      console.error('Like/dislike sayıları yüklenirken hata:', error);
-      // Hata durumunda orijinal news'i kullan
-      setNewsWithCounts(newsData);
-    }
-  };
 
   // URL handling
   useEffect(() => {
