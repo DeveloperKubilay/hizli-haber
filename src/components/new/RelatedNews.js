@@ -229,15 +229,6 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
                   className="block group"
                 >
                   <div className="flex gap-3">
-                    {item.image && (
-                      <motion.img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-16 h-16 object-cover rounded-lg"
-                        whileHover={{ scale: 1.1 }}
-                        onError={(e) => e.target.style.display = 'none'}
-                      />
-                    )}
                     <div className="flex-1">
                       <motion.h4 
                         className="text-sm font-semibold text-textHeading group-hover:text-secondary transition-colors line-clamp-2"

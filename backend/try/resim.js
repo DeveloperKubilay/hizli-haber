@@ -24,7 +24,7 @@ function main() {
 
     ai.models.generateImages({
         model: 'models/imagen-4.0-generate-preview-06-06',
-        prompt: 'INSERT_INPUT_HERE',
+        prompt:  "SON DAKİKA! İsrail'e 'NAH!' Dediler! 🤯 Bölgede Tansiyon YÜKSELİYOR! Ne Oluyor Orada?!",
         config: {
             numberOfImages: 1,
             outputMimeType: 'image/jpeg',

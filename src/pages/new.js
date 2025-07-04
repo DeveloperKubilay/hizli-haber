@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { db, auth } from '../services/firebase';
-import { doc, getDoc, collection, getDocs, setDoc, deleteDoc, query, where } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, setDoc, deleteDoc, query, where, orderBy, limit } from 'firebase/firestore';
 
 // Components
 import Navbar from '../components/Navbar';
@@ -48,19 +48,7 @@ function NewsDetail() {
       try {
         setLoading(true);
         
-        // Tüm haberleri al
-        const newsCollection = collection(db, 'news');
-        const allNewsSnapshot = await getDocs(newsCollection);
-        const allNewsData = allNewsSnapshot.docs
-          .map(doc => ({ id: doc.id, ...doc.data() }))
-          .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-        
-        setAllNews(allNewsData);
-        
-        // Mevcut haberin index'ini bul
-        const currentIndex = allNewsData.findIndex(n => n.id === id);
-        setCurrentNewsIndex(currentIndex);
-        
+        // İlk önce sadece mevcut haberi al (hızlı yükleme için)
         const newsDoc = doc(db, 'news', id);
         const newsSnapshot = await getDoc(newsDoc);
         
@@ -76,7 +64,42 @@ function NewsDetail() {
         };
         
         setNews(newsData);
-        setLoading(false); // Ana loading'i burada bitir
+        setLoading(false); // Ana loading'i burada bitir - ÇOK HIZLI!
+        
+        // Background'da diğer haberleri al (scroll için)
+        const newsCollection = collection(db, 'news');
+        try {
+          const allNewsQuery = query(
+            newsCollection,
+            orderBy('createdAt', 'desc'),
+            limit(50)
+          );
+          const allNewsSnapshot = await getDocs(allNewsQuery);
+          const allNewsData = allNewsSnapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }));
+          
+          setAllNews(allNewsData);
+          
+          // Mevcut haberin index'ini bul
+          const currentIndex = allNewsData.findIndex(n => n.id === id);
+          setCurrentNewsIndex(currentIndex);
+        } catch (allNewsError) {
+          console.log('⚠️ All news query hatası, fallback kullanılıyor:', allNewsError);
+          // Fallback: orderBy olmadan çek
+          const allNewsSnapshot = await getDocs(newsCollection);
+          const allNewsData = allNewsSnapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .sort((a, b) => {
+              const dateA = new Date(a.createdAt || 0);
+              const dateB = new Date(b.createdAt || 0);
+              return dateB - dateA;
+            })
+            .slice(0, 50);
+          
+          setAllNews(allNewsData);
+          const currentIndex = allNewsData.findIndex(n => n.id === id);
+          setCurrentNewsIndex(currentIndex);
+        }
         
         // Benzer haberleri background'da çek
         setRelatedLoading(true);
@@ -210,51 +233,105 @@ function NewsDetail() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [allNews, currentNewsIndex, isLoadingNextNews, scrollCooldown, loadNextNews]);
 
-  // Benzer haberleri çek
+  // Benzer haberleri çek - BASIT VE GÜVENİLİR VERSİYON
   const fetchRelatedNews = async (currentNews) => {
     try {
-      // Eğer tag yoksa en son haberleri göster
+      console.log('🔍 Benzer haberler aranıyor...', currentNews);
+      
+      const newsCollection = collection(db, 'news');
+      
+      // Eğer tag yoksa en son 10 haberi çek, 4 tanesini göster
       if (!currentNews.tag || currentNews.tag.length === 0) {
-        const newsCollection = collection(db, 'news');
-        const recentNewsSnapshot = await getDocs(newsCollection);
-        const recentNews = recentNewsSnapshot.docs
-          .map(doc => ({ id: doc.id, ...doc.data() }))
-          .filter(item => item.id !== currentNews.id)
-          .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
-          .slice(0, 4);
-        
-        setRelatedNews(recentNews);
-        return;
+        console.log('📰 Tag yok, en son haberleri getiriliyor...');
+        try {
+          const recentNewsQuery = query(
+            newsCollection,
+            orderBy('createdAt', 'desc'),
+            limit(10)
+          );
+          const recentNewsSnapshot = await getDocs(recentNewsQuery);
+          const recentNews = recentNewsSnapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter(item => item.id !== currentNews.id)
+            .slice(0, 4);
+          
+          console.log('✅ En son haberler:', recentNews.length);
+          setRelatedNews(recentNews);
+          return;
+        } catch (orderError) {
+          console.log('⚠️ OrderBy hatası, fallback kullanılıyor:', orderError);
+          // Fallback: orderBy olmadan
+          const fallbackSnapshot = await getDocs(newsCollection);
+          const fallbackNews = fallbackSnapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter(item => item.id !== currentNews.id)
+            .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+            .slice(0, 4);
+          
+          console.log('✅ Fallback haberler:', fallbackNews.length);
+          setRelatedNews(fallbackNews);
+          return;
+        }
       }
 
-      // Benzer kategorilerdeki haberleri bul (optimized)
-      const newsCollection = collection(db, 'news');
-      const allNewsSnapshot = await getDocs(newsCollection);
+      // Tag'ler varsa - basit yaklaşım
+      console.log('🏷️ Tag\'ler bulundu:', currentNews.tag);
       
-      const related = allNewsSnapshot.docs
-        .map(doc => ({ id: doc.id, ...doc.data() }))
-        .filter(item => {
-          if (item.id === currentNews.id) return false;
-          if (!item.tag || !Array.isArray(item.tag)) return false;
-          
-          // En az bir tag eşleşmesi var mı?
-          return item.tag.some(tag => currentNews.tag.includes(tag));
-        })
-        .sort((a, b) => {
-          // Tag eşleşme sayısına göre sırala
-          const aMatches = a.tag.filter(tag => currentNews.tag.includes(tag)).length;
-          const bMatches = b.tag.filter(tag => currentNews.tag.includes(tag)).length;
-          if (bMatches !== aMatches) return bMatches - aMatches;
-          
-          // Sonra tarihe göre sırala
-          return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
-        })
-        .slice(0, 4);
+      try {
+        // İlk tag ile arama yap (basit ve güvenilir)
+        const firstTag = currentNews.tag[0];
+        const tagQuery = query(
+          newsCollection,
+          where('tag', 'array-contains', firstTag),
+          orderBy('createdAt', 'desc'),
+          limit(10)
+        );
+        
+        const tagSnapshot = await getDocs(tagQuery);
+        const tagNews = tagSnapshot.docs
+          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .filter(item => item.id !== currentNews.id)
+          .slice(0, 4);
 
-      setRelatedNews(related);
+        console.log('✅ Tag ile bulunan haberler:', tagNews.length);
+        setRelatedNews(tagNews);
+      } catch (tagError) {
+        console.log('⚠️ Tag query hatası, fallback kullanılıyor:', tagError);
+        // Fallback: tag olmadan en son haberler
+        const fallbackSnapshot = await getDocs(query(newsCollection, limit(10)));
+        const fallbackNews = fallbackSnapshot.docs
+          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .filter(item => item.id !== currentNews.id)
+          .slice(0, 4);
+        
+        console.log('✅ Tag fallback haberler:', fallbackNews.length);
+        setRelatedNews(fallbackNews);
+      }
+      
     } catch (error) {
-      console.error('❌ Benzer haberler çekilirken hata:', error);
-      setRelatedNews([]); // Hata durumunda boş array
+      console.error('❌ Benzer haberler hatası:', error);
+      
+      // Hata durumunda fallback - basit query
+      try {
+        console.log('🔄 Fallback: Basit query deneniyor...');
+        const newsCollection = collection(db, 'news');
+        const fallbackQuery = query(
+          newsCollection,
+          orderBy('createdAt', 'desc'),
+          limit(5)
+        );
+        const fallbackSnapshot = await getDocs(fallbackQuery);
+        const fallbackNews = fallbackSnapshot.docs
+          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .filter(item => item.id !== currentNews.id)
+          .slice(0, 4);
+        
+        console.log('✅ Fallback haberler:', fallbackNews.length);
+        setRelatedNews(fallbackNews);
+      } catch (fallbackError) {
+        console.error('❌ Fallback da başarısız:', fallbackError);
+        setRelatedNews([]);
+      }
     }
   };
 
@@ -423,53 +500,26 @@ function NewsDetail() {
     <>
       <Navbar />
       <div className="max-w-7xl mx-auto py-8 px-6 lg:px-8">
-        {/* Geri dön butonu - Hızlı giriş animasyonu */}
-        <motion.div
-          initial={{ x: -50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-          className="mb-8"
-        >
+        {/* Geri dön butonu */}
+        <div className="mb-8">
           <BackButton navigate={navigate} />
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
           {/* Ana içerik */}
-          <motion.div 
-            className="lg:col-span-2"
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
+          <div className="lg:col-span-2">
             {/* Başlık ve meta bilgiler */}
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="mb-8"
-            >
+            <div className="mb-8">
               <NewsHeader news={news} formatDate={formatDate} />
-            </motion.div>
-
-
+            </div>
 
             {/* İçerik */}
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="mb-10"
-            >
+            <div className="mb-10">
               <NewsContent key={news?.id} news={news} />
-            </motion.div>
+            </div>
 
             {/* Etkileşim butonları */}
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-              className="mb-6"
-            >
+            <div className="mb-6">
               <InteractionButtons 
                 news={newsWithCounts}
                 liked={liked}
@@ -478,50 +528,31 @@ function NewsDetail() {
                 handleDislike={handleDislike}
                 handleShare={handleShare}
               />
-            </motion.div>
+            </div>
 
             {/* Yorum Sistemi */}
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.7 }}
-              className="mb-8"
-            >
+            <div className="mb-8">
               <CommentSection newsId={news?.id} />
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
           {/* Yan panel */}
-          <motion.div 
-            className="lg:col-span-1"
-            initial={{ x: 50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
+          <div className="lg:col-span-1">
             {/* Yan bilgiler ve benzer haberler */}
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="mb-8"
-            >
+            <div className="mb-8">
               <RelatedNews 
                 relatedNews={relatedNews}
                 relatedLoading={relatedLoading}
                 formatDate={formatDate}
                 currentNews={newsWithCounts}
               />
-            </motion.div>
+            </div>
 
             {/* Reklam alanı */}
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-            >
+            <div>
               <AdSection />
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
       </div>
       
