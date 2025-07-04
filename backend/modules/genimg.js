@@ -1,36 +1,47 @@
 var GoogleGenAI = require('@google/genai').GoogleGenAI;
 const config = require('../config.json');
+var mime = require('mime');
 const uploadFile = require('./s3');
 
 var ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
 });
 
-// Sadece görsel oluşturmak için (eski fonksiyon)
 async function generateImage(promt) {
     var fail = false;
     try {
-        console.log(config.IMG_promt.join("\n").replace("{DATA}", promt),config.IMG_MODEL);
-        const response = await ai.models.generateImages({
+        console.log(config.IMG_promt.join("\n").replace("{DATA}", promt), config.IMG_MODEL);
+        const response = await ai.models.generateContent({
             model: config.IMG_MODEL,
-            prompt: config.IMG_promt.join("\n").replace("{DATA}", promt),
             config: {
-                numberOfImages: 1,
-                outputMimeType: 'image/jpeg',
-                aspectRatio: '4:3',
+                responseModalities: [
+                    "TEXT",
+                    'IMAGE'
+                ],
             },
+            contents: [
+                {
+                    role: 'user',
+                    parts: [
+                        {
+                            text: config.IMG_promt.join("\n").replace("{DATA}", promt),
+                        },
+                    ],
+                },
+            ]
         })
-        if (!response || !response.generatedImages || response.generatedImages.length !== 1 ||
-            !response.generatedImages[0] || !response.generatedImages[0].image || !response.generatedImages[0].image.imageBytes) 
-            return fail = true;
-        
-        var fileName = 'image_' + Date.now() + '.jpeg';
-        var buffer = Buffer.from(response.generatedImages[0].image.imageBytes || '', 'base64');
-        return {
-            fileName: fileName,
-            buffer: buffer
-        }
-    } catch { fail = true; }
+        let fileData = (response.candidates[0] || []).content?.parts?.[0]?.inlineData;
+
+        if (fileData && fileData.data) {
+            const fileExtension = mime.getExtension(fileData.mimeType || '');
+            var fileName = 'image_' + Date.now() + '.' + fileExtension;
+            var buffer = Buffer.from(fileData.data || '', 'base64');
+            return {
+                fileName: fileName,
+                buffer: buffer
+            }
+        } else fail = true;
+    } catch (e){ fail = true;console.log(e) }
     if (fail) return {
         error: true
     };
@@ -41,7 +52,7 @@ async function generateAndUploadImage(newsTitle) {
     try {
         // Önce görseli oluştur
         const imageResult = await generateImage(newsTitle);
-        
+
         if (imageResult.error) {
             return {
                 error: true,
@@ -51,16 +62,16 @@ async function generateAndUploadImage(newsTitle) {
 
         // S3'e yükle
         await uploadFile(imageResult.fileName, imageResult.buffer, 'image/jpeg');
-        
+
         // CDN URL'ini oluştur
         const imageUrl = `https://cdn.emailsunucusu.tech/${encodeURIComponent(imageResult.fileName)}`;
-        
+
         return {
             success: true,
             fileName: imageResult.fileName,
             imageUrl: imageUrl
         };
-        
+
     } catch (error) {
         console.error('Görsel oluşturma ve yükleme hatası:', error);
         return {
