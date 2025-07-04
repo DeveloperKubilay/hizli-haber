@@ -62,7 +62,19 @@ export const translateCategoryToTurkish = (englishCategory) => {
 
 // Türkçe kategori adını İngilizce'ye çeviren fonksiyon  
 export const translateCategoryToEnglish = (turkishCategory) => {
-  return TURKISH_TO_ENGLISH_CATEGORIES[turkishCategory] || turkishCategory;
+  // Hata ayıklama için tüm mevcut çeviri eşleştirmelerini göster
+  console.log('Mevcut çeviri tablosu:', TURKISH_TO_ENGLISH_CATEGORIES);
+  
+  // Tam eşleşme deneyin
+  if (TURKISH_TO_ENGLISH_CATEGORIES[turkishCategory]) {
+    const englishCategory = TURKISH_TO_ENGLISH_CATEGORIES[turkishCategory];
+    console.log(`Kategori çevirisi (tam eşleşme): ${turkishCategory} -> ${englishCategory}`);
+    return englishCategory;
+  }
+  
+  // Eğer tam eşleşme bulunamazsa, bu muhtemelen zaten bir İngilizce kategoridir
+  console.log(`Kategori çevirisi (eşleşme yok, değer aynen kullanılıyor): ${turkishCategory}`);
+  return turkishCategory;
 };
 
 // Backend'den gelen tag array'ini Türkçe'ye çeviren fonksiyon

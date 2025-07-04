@@ -8,3 +8,5 @@ yeni sayfaya geçtiğinde bu sayede tekrar skeleton gelip belli kısmı alabilir
 news.js de kaç tane firebase isteği var
 
 telefona uyumluluk
+
+news.js ye bakarmısın bu sistem firebase sorgusununu limitleyip soruyor dimi tüm db yi çekmiyo
