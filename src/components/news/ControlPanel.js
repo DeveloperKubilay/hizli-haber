@@ -109,7 +109,6 @@ function ControlPanel({
                     onClick={(e) => {
                       e.stopPropagation();
                       setItemsPerPage(option.value);
-                      setCurrentPage(1);
                       setShowViewDropdown(false);
                     }}
                     className={`w-full text-left px-3 py-2.5 rounded-lg transition-all ${

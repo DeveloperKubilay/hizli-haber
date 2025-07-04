@@ -65,7 +65,6 @@ function NewsCard({ item, index, viewMode = 'grid' }) {
               alt={item.name} 
               className="w-full h-full object-cover"
               onError={(e) => {
-                console.log("Resim yüklenemedi:", e);
                 e.target.onerror = null; 
                 e.target.src = "/imgs/logo.png"; // Fallback resim
               }} 
