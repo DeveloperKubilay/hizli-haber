@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../services/firebase';
+import { db, loadNewsInteractions } from '../services/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -94,38 +94,11 @@ function Home() {
     fetchNews();
   }, []);
 
-  // Like/dislike sayılarını yükle
+  // Like/dislike sayılarını verimli şekilde yükle
   const loadLikeDislikeCounts = async (newsData) => {
     try {
-      const newsWithCountsData = await Promise.all(
-        newsData.map(async (newsItem) => {
-          try {
-            // Like sayısını al
-            const likesRef = collection(db, 'news', newsItem.id, 'likes');
-            const allLikesSnapshot = await getDocs(likesRef);
-            const likesCount = allLikesSnapshot.size;
-
-            // Dislike sayısını al
-            const dislikesRef = collection(db, 'news', newsItem.id, 'dislikes');
-            const allDislikesSnapshot = await getDocs(dislikesRef);
-            const dislikesCount = allDislikesSnapshot.size;
-
-            return {
-              ...newsItem,
-              likes: likesCount,
-              dislikes: dislikesCount
-            };
-          } catch (error) {
-            console.error(`Haber ${newsItem.id} için like/dislike sayıları alınamadı:`, error);
-            return {
-              ...newsItem,
-              likes: 0,
-              dislikes: 0
-            };
-          }
-        })
-      );
-      
+      // Yeni verimli fonksiyonu kullan
+      const newsWithCountsData = await loadNewsInteractions(newsData);
       setNewsWithCounts(newsWithCountsData);
     } catch (error) {
       console.error('Like/dislike sayıları yüklenirken hata:', error);
