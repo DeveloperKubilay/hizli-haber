@@ -13,18 +13,12 @@ async function run(model, input) {
   return Buffer.from(result);
 }
 
-const model = "@cf/lykon/dreamshaper-8-lcm";
+const model = "@cf/stabilityai/stable-diffusion-xl-base-1.0";
 
 run(model, {
-    prompt: "SON DAKİKA! İsrail'e 'NAH!' Dediler! 🤯 Bölgede Tansiyon YÜKSELİYOR! Ne Oluyor Orada?!"
+  prompt: "🤯📱 Samsung Yine Şaşırttı! Galaxy S26 Ultra'da BÜYÜK Hayal Kırıklığı mı Var? 😱🔋📸"
 }).then((response) => {
-    console.log("Response: Image saved as output.png");
-    require("fs").writeFileSync("output.png", response);
+  console.log("Response: Image saved as output.png");
+  require("fs").writeFileSync("output.png", response);
 });
 
-run(model, {
-    prompt: "BREAKING NEWS! They said 'NAH!' to Israel! 🤯 Tension is RISING in the region! What's Happening There?!"
-}).then((response) => {
-    console.log("Response: Image saved as output.png");
-    require("fs").writeFileSync("output2.png", response);
-});

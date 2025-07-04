@@ -37,7 +37,7 @@ function NewsCard({ item, index, viewMode = 'grid' }) {
   return (
     <Link to={`/haberler/${item.id}`} className="block">
       <motion.div 
-        className={`bg-primary rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-primaryBG w-full cursor-pointer overflow-hidden ${
+        className={`news-card-fixed-height bg-primary rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-primaryBG w-full cursor-pointer overflow-hidden ${
           viewMode === 'grid' ? "p-3.5" : "p-4"
         }`}
         initial={{ y: 50, opacity: 0 }}
@@ -82,20 +82,18 @@ function NewsCard({ item, index, viewMode = 'grid' }) {
         
         {/* İçerik kısmı */}
         <div className={`flex-1 flex flex-col ${
-          viewMode === 'grid' ? "h-[250px]" : ""
+          viewMode === 'grid' ? "h-[250px]" : "h-[250px]"
         }`}>
           {/* Başlık */}
-          <h3 className={`font-bold mb-2 text-textHeading ${
-            viewMode === 'grid' ? 'text-lg line-clamp-3' : 'text-lg line-clamp-2'
-          }`}>
+          <h3 className={
+            `font-bold mb-2 text-textHeading text-lg line-clamp-2`
+          }>
             {item.name}
           </h3>
-          
           {/* Açıklama - Grid modunda göster, List modunda gösterme */}
           {viewMode === 'grid' && (
             <p className="text-sm text-textPrimary mb-2 line-clamp-3">{item.minides}</p>
           )}
-          
           {/* Etiketler */}
           <div className={`flex flex-wrap gap-1.5 ${viewMode === 'grid' ? 'mb-3' : 'mb-2'}`}>
             {item.tag && translateTagsToTurkish(item.tag).slice(0, viewMode === 'grid' ? 3 : 2).map((category, idx) => (
