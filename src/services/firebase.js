@@ -29,7 +29,7 @@ async function sendMessageToModel(message = "Hello") {
     return text;
   } catch (error) {
     console.error("Error communicating with Gemini model:", error);
-    return "Error generating response";
+    return "Bir sorundan dolayı cevap veremiyorum. Mesajın uzunluğundan dolayı olabilir.";
   }
 }
 

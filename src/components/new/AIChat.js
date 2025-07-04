@@ -16,6 +16,7 @@ const AIChat = ({ news }) => {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showText, setShowText] = useState(true);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -32,6 +33,18 @@ const AIChat = ({ news }) => {
       inputRef.current.focus();
     }
   }, [isOpen]);
+
+  // Mobilde yazıyı animasyonla gizle
+  useEffect(() => {
+    const isMobile = window.innerWidth <= 640;
+    if (isMobile) {
+      setShowText(true);
+      const timer = setTimeout(() => setShowText(false), 2000);
+      return () => clearTimeout(timer);
+    } else {
+      setShowText(true);
+    }
+  }, []);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
@@ -92,19 +105,31 @@ const AIChat = ({ news }) => {
       {/* AI Chat Button */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-8 right-8 z-50 flex items-center gap-3 bg-gradient-to-r from-primary to-secondary text-white px-6 py-4 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 text-lg font-semibold"
+        className="fixed bottom-8 right-8 z-50 flex items-center bg-gradient-to-r from-primary to-secondary text-white rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 text-lg font-semibold min-w-[44px] min-h-[44px] sm:min-w-[220px] sm:min-h-[unset] sm:gap-3 sm:px-6 sm:py-4"
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.97 }}
         initial={{ opacity: 0, y: 100 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        style={{ minWidth: 220 }}
       >
         {/* AI Robot Icon */}
-        <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-secondaryBG">
-          <BotMessageSquare className="w-5 h-5 text-white" />
+        <span className="inline-flex items-center justify-center w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-secondaryBG mx-auto sm:mx-0">
+          <BotMessageSquare className="w-6 h-6 sm:w-5 sm:h-5 text-white" />
         </span>
-        <span>Yapay Zekaya Sor</span>
+        <AnimatePresence>
+          {showText && (
+            <motion.span
+              key="ai-text"
+              initial={{ opacity: 1, x: 0 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 40 }}
+              transition={{ duration: 0.5 }}
+              className="ml-2 hidden sm:block"
+            >
+              Yapay Zekaya Sor
+            </motion.span>
+          )}
+        </AnimatePresence>
       </motion.button>
 
       {/* Chat Window */}
@@ -114,7 +139,18 @@ const AIChat = ({ news }) => {
             initial={{ opacity: 0, y: 100, scale: 0.8 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 100, scale: 0.8 }}
-            className="fixed bottom-32 right-8 z-50 w-[450px] max-w-[calc(100vw-2rem)] h-[600px] max-h-[calc(100vh-10rem)] bg-tbackground dark:bg-blackSelectBg rounded-3xl shadow-2xl border border-secondary/40 flex flex-col overflow-hidden sm:w-[450px] xs:w-[350px]"
+            className="fixed bottom-32 right-8 z-50 w-[450px] max-w-[calc(100vw-2rem)] h-[600px] max-h-[calc(100vh-10rem)] bg-tbackground dark:bg-blackSelectBg rounded-3xl shadow-2xl border border-secondary/40 flex flex-col overflow-hidden sm:w-[450px] xs:w-[350px]
+              sm:bottom-32 sm:right-8
+              xs:bottom-4 xs:right-2 xs:w-[95vw] xs:max-w-[360px] xs:h-[70vh] xs:max-h-[80vh]"
+            style={{
+              // Mobilde daha küçük ve ekrana tam oturacak şekilde
+              width: '100%',
+              maxWidth: '360px',
+              height: '70vh',
+              maxHeight: '80vh',
+              right: '8px',
+              bottom: '32px',
+            }}
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-primary to-secondary text-white p-5 flex items-center justify-between">

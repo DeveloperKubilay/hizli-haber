@@ -1,7 +1,8 @@
 name: 🔥 Skibidi tuvalet 🔥
 
 on:
-  workflow_dispatch:
+  schedule:
+    - cron: "0 */8 * * *"
 
 jobs:
   deploy:
