@@ -62,16 +62,11 @@ function Home() {
     }
   });
 
-  // Toplam sayfa sayısını hesapla
-  const totalPages = Math.ceil(
-    searchTerm ? filteredNews.length / itemsPerPage : totalCount / itemsPerPage
-  );
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
   
-  // Arama sonuçları her zaman sayfalandırılmalı
-  const paginatedNews = sortedNews.slice(
-    (currentPage - 1) * itemsPerPage, 
-    currentPage * itemsPerPage
-  );
+  // searchTerm varsa, zaten veri çekerken filtreleme yapılmış oluyor
+  // yani newsWithCounts (ve türevleri sortedNews, filteredNews) zaten filtrelenmiş veri
+  const paginatedNews = sortedNews;
   
   // Data fetching
   useEffect(() => {
@@ -80,7 +75,6 @@ function Home() {
       // Önbellek kullanımını tamamen kaldırıyoruz, her zaman Firebase'den veri çekeceğiz
       
       try {
-        console.log(`Veri çekiliyor: Sayfa ${currentPage}, Kategori: ${selectedCategory}, Sayfa başına: ${itemsPerPage}`);
         const newsCollection = collection(db, 'news');
         
         // Firestore sorgu hazırlama
@@ -92,8 +86,6 @@ function Home() {
           const engCat = translateCategoryToEnglish(selectedCategory);
           const normalizedEngCat = engCat.charAt(0).toUpperCase() + engCat.slice(1).toLowerCase();
           
-          console.log('Firebase sorgusu için kategori:', normalizedEngCat);
-          
           // Ana sorgu için kategori filtresi
           qArgs.push(where('tag', 'array-contains', normalizedEngCat));
           
@@ -101,20 +93,27 @@ function Home() {
           countQArgs.push(where('tag', 'array-contains', normalizedEngCat));
         }
         
+        // Eğer arama terimi varsa ve "Tümü" kategorisindeyse client-side yerine doğrudan Firebase'de filtreleme yapalım
+        if (searchTerm && selectedCategory === CATEGORIES.ALL) {
+          // Firebase arama indeksleri olmadığı için client-side filtreleme hala gerekecek, 
+          // ancak tüm verileri çekelim ki "Tümü" kategorisinde arama yapabilelim
+        }
+        
         // Sıralama ekle
         qArgs.push(orderBy('createdAt', 'desc'));
         
-        // Sayfalama için startAfter ekle (arama yapılırken tüm veri çekileceği için gerekmez)
-        if (!searchTerm && currentPage > 1 && lastDocs[currentPage - 2]) {
+        // Sayfalama için startAfter ekle
+        if (currentPage > 1 && lastDocs[currentPage - 2]) {
           qArgs.push(startAfter(lastDocs[currentPage - 2]));
         }
         
-        // Limit ekle (arama varsa limit yok, tüm sonuçlar çekilsin)
-        if (!searchTerm) {
-          qArgs.push(limit(itemsPerPage));
+        // Limit ekle - "Tümü" kategorisinde arama varsa, daha fazla veri çek
+        if (searchTerm && selectedCategory === CATEGORIES.ALL) {
+          // Arama varken "Tümü" kategorisinde daha fazla veri çekerek client filtreleme için kaynak sağla
+          const expandedLimit = itemsPerPage * 20; // 20 kat daha fazla veri çekelim (daha fazla sonuç için)
+          qArgs.push(limit(expandedLimit));
         } else {
-          // Arama yapılırken tüm sonuçları çekmek için limit yüksek olmalı (max 1000 çekebiliriz)
-          qArgs.push(limit(1000)); // Firestore limiti
+          qArgs.push(limit(itemsPerPage));
         }
         
         // Sorguları çalıştır
@@ -125,25 +124,31 @@ function Home() {
         
         let pageData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         
-        console.log(`Firebase'den ${pageData.length} haber alındı`);
-        console.log(`Toplam haber sayısı (kategori: ${selectedCategory}): ${countSnapshot.data().count}`);
-        
         // Client-side arama filtresi (sadece arama varsa)
         if (searchTerm) {
-          console.log(`Arama terimi: "${searchTerm}", filtreleme öncesi: ${pageData.length} sonuç`);
+          // "Tümü" kategorisinde daha fazla veri çekmemiz gerekebilir
+          if (selectedCategory === CATEGORIES.ALL && pageData.length < itemsPerPage * 3 && snapshot.docs.length === itemsPerPage) {
+            // Bu durumda filtreleme sonrası çok az sonuç kalabilir, kullanıcıya bilgi verilmeli
+          }
           
           pageData = pageData.filter(item =>
             item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             item.minides?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             item.tag?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
           );
-          
-          console.log(`Arama terimi: "${searchTerm}", filtreleme sonrası: ${pageData.length} sonuç bulundu`);
         }
         
         // State güncelleme
         setNewsWithCounts(pageData);
-        setTotalCount(countSnapshot.data().count);
+        
+        // Toplam sayfa sayısını güncelleme - arama yapılırken filtreli sonuçları kullan
+        if (searchTerm) {
+          // Arama varsa, filtrelenmiş veri sayısını kullan (client-side filtrelenmiş veriler)
+          setTotalCount(pageData.length);
+        } else {
+          // Arama yoksa, Firestore'dan gelen toplam sayıyı kullan
+          setTotalCount(countSnapshot.data().count);
+        }
         
         // Önbellek güncellemesini devre dışı bıraktık
         
@@ -157,12 +162,9 @@ function Home() {
         }
         
       } catch (error) {
-        console.error('❌ Haber verileri çekilirken hata:', error);
-        
         // Firebase indeks hatası için fallback
         if (error.message && error.message.includes('requires an index')) {
           try {
-            console.log('İndeks hatası nedeniyle basit sorguya geçiliyor...');
             
             // Basit sorgu - sadece zaman sıralaması ve limit
             const fallbackQuery = query(
@@ -178,8 +180,6 @@ function Home() {
             if (selectedCategory !== CATEGORIES.ALL) {
               const engCat = translateCategoryToEnglish(selectedCategory);
               const normalizedEngCat = engCat.charAt(0).toUpperCase() + engCat.slice(1).toLowerCase();
-              
-              console.log(`Fallback: Manuel kategori filtresi - ${normalizedEngCat}`);
               
               fallbackData = fallbackData.filter(item => {
                 return item.tag && Array.isArray(item.tag) && 
@@ -204,10 +204,7 @@ function Home() {
             setNewsWithCounts(paginatedFallbackData);
             setTotalCount(fallbackData.length);
             
-            console.log(`Fallback: ${paginatedFallbackData.length} haber gösteriliyor, toplam: ${fallbackData.length}`);
-            
           } catch (secondError) {
-            console.error('Fallback sorgu da başarısız oldu:', secondError);
             setNewsWithCounts([]);
             setTotalCount(0);
           }
@@ -230,25 +227,33 @@ function Home() {
     const hash = location.hash.replace('#', '');
     
     if (hash) {
-      // URL'de hash varsa kategori filtreleme yapalım
       const categoryKey = hash.toLowerCase();
-      console.log("URL'den alınan kategori:", categoryKey);
       
-      // Önce tam eşleşme deneyin
+      // Önce tam eşleşme deneyin - key adına göre (örn. TECHNOLOGY)
       let categoryEntry = Object.entries(CATEGORIES).find(
         ([key]) => key.toLowerCase() === categoryKey
       );
       
-      // Tam eşleşme yoksa, içeren bir key arayın
+      // Tam eşleşme yoksa, değere göre deneyin (örn. Teknoloji)
       if (!categoryEntry) {
         categoryEntry = Object.entries(CATEGORIES).find(
-          ([key]) => key.toLowerCase().includes(categoryKey) || categoryKey.includes(key.toLowerCase())
+          ([_, value]) => value.toLowerCase() === categoryKey
+        );
+      }
+      
+      // Hala bulunamadıysa, içeren bir key/value arayın
+      if (!categoryEntry) {
+        categoryEntry = Object.entries(CATEGORIES).find(
+          ([key, value]) => 
+            key.toLowerCase().includes(categoryKey) || 
+            categoryKey.includes(key.toLowerCase()) ||
+            value.toLowerCase().includes(categoryKey) ||
+            categoryKey.includes(value.toLowerCase())
         );
       }
       
       if (categoryEntry) {
         const categoryName = categoryEntry[1];
-        console.log("Eşleşen kategori bulundu:", categoryName);
         
         // Sadece kategori gerçekten değişmişse state'i güncelle
         if (selectedCategory !== categoryName) {
@@ -259,15 +264,14 @@ function Home() {
           setCurrentPage(1);
         }
       } else {
-        console.log("Eşleşen kategori bulunamadı");
+        // Eşleşen kategori bulunamadı
       }
     } else {
-      // URL'de hash yoksa "Tüm Haberler" kategorisini gösterelim
+      // URL'de hash yoksa (yani /haberler sayfasındaysa), "Tüm Haberler" kategorisine dön
       if (selectedCategory !== CATEGORIES.ALL) {
-        console.log("URL boş, Tüm Haberler gösteriliyor");
         setSelectedCategory(CATEGORIES.ALL);
-        setCurrentPage(1);
         setLastDocs([]);
+        setCurrentPage(1);
       }
     }
   }, [location, selectedCategory]);
@@ -347,17 +351,6 @@ function Home() {
     setSearchTerm(term);
     setCurrentPage(1); // Arama yapıldığında sayfayı sıfırla
     setLastDocs([]); // Cache'i temizle
-    
-    // Arama çubuğu boşsa ve URL'de kategori varsa, o kategoriye git
-    if (!term && selectedCategory !== CATEGORIES.ALL) {
-      const categoryKey = Object.entries(CATEGORIES).find(
-        ([key, value]) => value === selectedCategory
-      )?.[0];
-      
-      if (categoryKey) {
-        navigate(`/haberler#${categoryKey.toLowerCase()}`, { replace: true });
-      }
-    }
   };
 
   const handlePageChange = (page) => {
