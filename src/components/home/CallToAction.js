@@ -6,7 +6,7 @@ function CallToAction() {
     <div className="w-full h-[600px] bg-black flex flex-col items-center justify-center relative overflow-hidden">
       {/* Arka plan resmi */}
       <img 
-        src="https://upload.wikimedia.org/wikipedia/commons/6/6a/PNG_Test.png" 
+        src="/imgs/logo.png" 
         alt="Test"
         className="absolute inset-0 w-full h-full object-contain opacity-30"
         style={{
@@ -28,6 +28,7 @@ function CallToAction() {
           whileTap={{ scale: 0.92 }}
           transition={{ duration: 0.3 }}
           className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-base transition-colors duration-500 shadow-lg"
+          onClick={() => window.location.href = '/haberler'}
         >
           Siteyi Ziyaret Et
         </motion.button>

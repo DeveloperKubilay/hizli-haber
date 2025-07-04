@@ -9,7 +9,6 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import BackButton from '../components/new/BackButton';
 import NewsHeader from '../components/new/NewsHeader';
-import NewsImage from '../components/new/NewsImage';
 import NewsContent from '../components/new/NewsContent';
 import InteractionButtons from '../components/new/InteractionButtons';
 import CommentSection from '../components/new/CommentSection';
@@ -452,15 +451,7 @@ function NewsDetail() {
               <NewsHeader news={news} formatDate={formatDate} />
             </motion.div>
 
-            {/* Ana resim */}
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="mb-8"
-            >
-              <NewsImage image={news.image} name={news.name} />
-            </motion.div>
+
 
             {/* İçerik */}
             <motion.div
