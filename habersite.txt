@@ -1,14 +1,1 @@
-https://v3.tailwindcss.com/
-
-
-news.jsde firebasedeki tüm dataları çekiyor ya onun yerine o an kaç tane habere bakıyorsa o kadar çekmeli 
-haber sayısını gösterim sayısına bölüp gösterimin sağındaki 1 2 3 gibi diğer haberlere geçme kısmı var oranın sayısını ayarlamalı
-yeni sayfaya geçtiğinde bu sayede tekrar skeleton gelip belli kısmı alabilir ve bu sayede optimize olur
-
-news.js de kaç tane firebase isteği var
-
 telefona uyumluluk
-
-news.js ye bakarmısın bu sistem firebase sorgusununu limitleyip soruyor dimi tüm db yi çekmiyo
-gridlerdeki şey çok büyük
-aratma ve katagoride sıkıntılar var

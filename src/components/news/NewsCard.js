@@ -38,7 +38,7 @@ function NewsCard({ item, index, viewMode = 'grid' }) {
     <Link to={`/haberler/${item.id}`} className="block">
       <motion.div 
         className={`news-card-fixed-height bg-primary rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-primaryBG w-full cursor-pointer overflow-hidden ${
-          viewMode === 'grid' ? "p-3.5" : "p-4"
+          viewMode === 'grid' ? "p-3.5" : "p-3"
         }`}
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -55,7 +55,7 @@ function NewsCard({ item, index, viewMode = 'grid' }) {
       <div className={`flex ${viewMode === 'grid' ? "flex-col h-full" : "gap-4"}`}>
         {/* Görsel kısmı */}
         <div className={`${
-          viewMode === 'grid' ? "w-full h-[150px]" : "flex-shrink-0 w-[150px] h-[100px]"
+          viewMode === 'grid' ? "w-full h-[150px]" : "flex-shrink-0 w-[120px] h-[90px]"
         } bg-primaryBG rounded-lg overflow-hidden flex items-center justify-center ${
           viewMode === 'grid' ? "mb-3" : ""
         }`}>
@@ -81,22 +81,22 @@ function NewsCard({ item, index, viewMode = 'grid' }) {
         
         {/* İçerik kısmı */}
         <div className={`flex-1 flex flex-col ${
-          viewMode === 'grid' ? "h-[250px]" : "h-[250px]"
+          viewMode === 'grid' ? "h-[250px]" : "h-auto"
         }`}>
           {/* Başlık */}
           <h3 className={
-            `font-bold mb-2 text-textHeading text-lg line-clamp-2`
+            `font-bold mb-2 text-textHeading ${viewMode === 'grid' ? 'text-lg' : 'text-base'} line-clamp-2`
           }>
             {item.name}
           </h3>
-          {/* Açıklama - Grid modunda göster, List modunda gösterme */}
-          {viewMode === 'grid' && (
-            <p className="text-sm text-textPrimary mb-2 line-clamp-3">{item.minides}</p>
-          )}
+          {/* Açıklama - Her iki görünümde de göster */}
+          <p className={`text-sm text-textPrimary mb-2 ${viewMode === 'grid' ? 'line-clamp-3' : 'line-clamp-1'}`}>
+            {item.minides}
+          </p>
           {/* Etiketler */}
           <div className={`flex flex-wrap gap-1.5 ${viewMode === 'grid' ? 'mb-3' : 'mb-2'}`}>
             {item.tag && translateTagsToTurkish(item.tag).slice(0, viewMode === 'grid' ? 3 : 2).map((category, idx) => (
-              <span key={idx} className={`text-xs px-3 py-2 rounded-full inline-flex items-center gap-1.5 ${CATEGORY_COLORS[category] || 'bg-primaryBG text-textPrimary'}`}>
+              <span key={idx} className={`text-xs ${viewMode === 'grid' ? 'px-3 py-2' : 'px-2 py-1'} rounded-full inline-flex items-center gap-1.5 ${CATEGORY_COLORS[category] || 'bg-primaryBG text-textPrimary'}`}>
                 {CATEGORY_ICONS[category]} {category}
               </span>
             ))}
