@@ -10,6 +10,7 @@ var ai = new GoogleGenAI({
 async function generateImage(promt) {
     var fail = false;
     try {
+        console.log(config.IMG_promt.join("\n").replace("{DATA}", promt),config.IMG_MODEL);
         const response = await ai.models.generateImages({
             model: config.IMG_MODEL,
             prompt: config.IMG_promt.join("\n").replace("{DATA}", promt),

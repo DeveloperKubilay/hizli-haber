@@ -8,7 +8,7 @@
         "haber7.com"
     ],
     "MODEL": "gemini-2.5-flash",
-    "IMG_MODEL": "models/imagen-4.0-generate-preview-06-06",
+    "IMG_MODEL": "models/imagen-4.0-ultra-generate-preview-06-06",
     "IMG_promt": [
         "{DATA}"
     ],
