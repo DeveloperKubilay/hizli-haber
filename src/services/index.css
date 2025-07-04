@@ -18,9 +18,49 @@
     min-height: 100vh;
   }
   
+  /* Mobil için font boyutunu azalt */
+  @media (max-width: 640px) {
+    html, body {
+      font-size: 100%;
+    }
+  }
 }
 
+/* Mobil uyumlu responsive sınıfları */
+@layer components {
+  .container-responsive {
+    @apply w-full px-4 sm:px-6 lg:px-8 mx-auto;
+  }
 
+  .text-responsive {
+    @apply text-sm sm:text-base md:text-lg;
+  }
+
+  .heading-responsive {
+    @apply text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold;
+  }
+
+  .subheading-responsive {
+    @apply text-base sm:text-lg md:text-xl font-semibold;
+  }
+
+  /* Mobil ve tablet için esnek grid sınıfları */
+  .grid-responsive-1 {
+    @apply grid grid-cols-1 gap-4 sm:gap-6;
+  }
+
+  .grid-responsive-2 {
+    @apply grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6;
+  }
+
+  .grid-responsive-3 {
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6;
+  }
+
+  .grid-responsive-4 {
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6;
+  }
+}
 
 .Welcome_container {
   position: absolute;
@@ -48,16 +88,16 @@
   }
 }
 
-.text-shadow {
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-}
-
-* {
-  /* Smooth scrolling için hardware acceleration */
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  -webkit-perspective: 1000;
-  perspective: 1000;
+/* Dokunmatik cihazlar için iyileştirmeler */
+@media (hover: none) {
+  .hover-effect {
+    @apply transition-none;
+  }
+  
+  /* Tıklama alanlarını genişlet */
+  button, a, [role="button"], input[type="button"], input[type="submit"] {
+    @apply min-h-[44px] min-w-[44px];
+  }
 }
 
 img {

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion'; // eslint-disable-next-line no-unused-vars
 import { db, auth } from '../services/firebase';
 import { doc, getDoc, collection, getDocs, query, where, orderBy, limit, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
 
@@ -353,8 +352,16 @@ function NewsDetail() {
       });
     } else {
       // Fallback: URL'yi kopyala
-      navigator.clipboard.writeText(window.location.href);
-      alert('Haber linki kopyalandı!');
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(window.location.href);
+          alert('Haber linki kopyalandı!');
+        } else {
+          throw new Error('Kopyalama desteklenmiyor');
+        }
+      } catch (err) {
+        alert('Kopyalama desteklenmiyor veya bir hata oluştu. Link: ' + window.location.href);
+      }
     }
   };
 
@@ -379,7 +386,11 @@ function NewsDetail() {
   };
 
   const handleLike = async () => {
-    if (!auth.currentUser || !id) return;
+    if (!auth.currentUser) {
+      alert('Beğenmek için giriş yapmanız gerekmektedir.');
+      return;
+    }
+    if (!id) return;
 
     const userId = auth.currentUser.uid;
     const likesRef = collection(db, 'news', id, 'likes');
@@ -433,7 +444,11 @@ function NewsDetail() {
   };
 
   const handleDislike = async () => {
-    if (!auth.currentUser || !id) return;
+    if (!auth.currentUser) {
+      alert('Dislike için giriş yapmanız gerekmektedir.');
+      return;
+    }
+    if (!id) return;
 
     const userId = auth.currentUser.uid;
     const likesRef = collection(db, 'news', id, 'likes');
@@ -560,7 +575,7 @@ function NewsDetail() {
             </div>
 
             {/* Ekstra boşluk */}
-            <div style={{ height: '500px' }}></div>
+            <div className="hidden sm:block" style={{ height: '500px' }}></div>
           </div>
 
           {/* Yan panel */}

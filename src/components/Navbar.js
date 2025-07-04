@@ -3,8 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { signInWithGoogle, logoutUser } from '../services/authService';
 import { auth } from '../services/firebase';
 // eslint-disable-next-line no-unused-vars
-import { LogIn, Newspaper, Search, BookMarked, User, Bookmark, LogOut, ChevronDown } from "lucide-react";
-import { motion } from "motion/react";
+import { LogIn, Newspaper, Search, BookMarked, User, Bookmark, LogOut, ChevronDown, Menu, X } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import { CATEGORY_ICONS, NAVBAR_CATEGORIES } from '../services/categories';
 
 function Navbar() {
@@ -13,6 +13,7 @@ function Navbar() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
   const userDropdownRef = useRef(null);
   const timeoutRef = useRef(null);
@@ -28,6 +29,11 @@ function Navbar() {
     });
     return unsubscribe;
   }, []);
+
+  // Mobil menü kapatma için konum değişikliğini izleyelim
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -100,6 +106,10 @@ function Navbar() {
     setImageError(true);
   };
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   const aGroup = function(name, href, icon, delay = 0) {
     const isActive = location.pathname === href;
     const baseClasses = "flex items-center gap-2 md:gap-3 text-sm md:text-base text-opacity-100 font-medium py-2 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-200";
@@ -138,13 +148,25 @@ function Navbar() {
             <img
               src="/imgs/logo.png"
               alt="Logo"
-              className="h-10 md:h-12 w-auto" // 🔥 Responsive logo boyutu
+              className="h-8 md:h-10 lg:h-12 w-auto" // 🔥 Responsive logo boyutu
             />
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-opacity-100 text-shadow text-[#ecf9fb]">hızlı haber</h1>
+            <h1 className="text-xl md:text-2xl lg:text-4xl font-bold text-opacity-100 text-shadow text-[#ecf9fb]">hızlı haber</h1>
           </Link>
         </motion.div>
 
-        <nav className="flex space-x-2 md:space-x-4 items-center">
+        {/* Mobil menü buton */}
+        <div className="flex md:hidden">
+          <button
+            onClick={toggleMobileMenu}
+            className="p-2 rounded-lg bg-blackSelectBg hover:bg-blackSelectHover transition-colors"
+            aria-label={isMobileMenuOpen ? "Menüyü kapat" : "Menüyü aç"}
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+
+        {/* Desktop navigation */}
+        <nav className="hidden md:flex space-x-2 md:space-x-4 items-center">
           {aGroup("Son Haberler", "/haberler", <BookMarked size={16} />, 0.3)}
           <motion.div 
             className="relative group"
@@ -169,7 +191,7 @@ function Navbar() {
             {/* Kategoriler dropdown menüsü 🔥 */}
             {showCategories && (
               <motion.div 
-                className="absolute top-full left-0 mt-0.5 bg-blackSelectBg backdrop-blur-sm shadow-xl rounded-lg py-4 px-5 z-20 border-2 border-blackSelectHover w-[320px] md:w-[400px] h-auto overflow-auto scrollbar-none origin-top-left" // 🔥 Responsive boyut
+                className="absolute top-full left-0 mt-0.5 bg-blackSelectBg backdrop-blur-sm shadow-xl rounded-lg py-4 px-5 z-20 border-2 border-blackSelectHover w-[320px] md:w-[400px] h-auto max-h-[60vh] overflow-auto scrollbar-none origin-top-left" // 🔥 Responsive boyut
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -206,7 +228,9 @@ function Navbar() {
           {aGroup("Bir Haber ara", "/haberler?focus=search", <Search size={16} />, 0.5)}
         </nav>
 
+        {/* Desktop user area */}
         <motion.div
+          className="hidden md:block"
           initial={{ x: 30, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.7, delay: 0.6, ease: "easeOut" }}
@@ -296,6 +320,107 @@ function Navbar() {
           )}
         </motion.div>
       </div>
+
+      {/* Mobil menü - AnimatePresence ile animasyonlu geçiş */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden mt-4 bg-blackSelectBg backdrop-blur-sm rounded-lg overflow-hidden"
+          >
+            <div className="p-4 space-y-3">
+              <Link to="/haberler" className="flex items-center gap-2 text-sm font-medium py-3 px-4 rounded-lg transition-all duration-200 hover:bg-blackSelectHover">
+                <BookMarked size={18} />
+                Son Haberler
+              </Link>
+              
+              <div className="space-y-2">
+                <div className="flex items-center justify-between px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <Newspaper size={18} />
+                    <span className="text-sm font-medium">Kategoriler</span>
+                  </div>
+                </div>
+                
+                <div className="bg-background bg-opacity-20 rounded-lg p-3">
+                  <div className="flex flex-wrap gap-2">
+                    {categories.slice(0, 6).map((category, index) => (
+                      <Link 
+                        key={index}
+                        to={category.href}
+                        className={`flex items-center gap-1.5 text-white hover:opacity-90 text-xs rounded-full px-3 py-1.5 transition-all duration-200 ${category.bgColor}`}
+                      >
+                        {CATEGORY_ICONS[category.name]}
+                        {category.name}
+                      </Link>
+                    ))}
+                    <Link 
+                      to="/haberler"
+                      className="flex items-center gap-1.5 text-white hover:opacity-90 text-xs rounded-full px-3 py-1.5 transition-all duration-200 bg-blackSelectHover"
+                    >
+                      <ChevronDown size={14} />
+                      Tümü
+                    </Link>
+                  </div>
+                </div>
+              </div>
+              
+              <Link to="/haberler?focus=search" className="flex items-center gap-2 text-sm font-medium py-3 px-4 rounded-lg transition-all duration-200 hover:bg-blackSelectHover">
+                <Search size={18} />
+                Bir Haber ara
+              </Link>
+
+              {currentUser ? (
+                <>
+                  <div className="border-t border-gray-700 my-2"></div>
+                  <div className="flex items-center px-4 py-3">
+                    {currentUser.photoURL && !imageError ? (
+                      <img
+                        src={currentUser.photoURL}
+                        alt="Profile"
+                        className="w-8 h-8 rounded-full mr-3"
+                        onError={handleImageError}
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gray-300 mr-3 flex items-center justify-center text-gray-600 text-sm">
+                        {currentUser.displayName ? currentUser.displayName[0].toUpperCase() : 'U'}
+                      </div>
+                    )}
+                    <span className="text-sm font-medium text-opacity-100">
+                      {currentUser.displayName || currentUser.email}
+                    </span>
+                  </div>
+                  
+                  <Link to="/kaydettigim-haberler" className="flex items-center gap-2 text-sm font-medium py-3 px-4 rounded-lg transition-all duration-200 hover:bg-blackSelectHover">
+                    <Bookmark size={18} />
+                    Kaydettiğim Haberler
+                  </Link>
+                  
+                  <button
+                    onClick={handleSignOut}
+                    className="flex items-center gap-2 text-sm font-medium py-3 px-4 rounded-lg transition-all duration-200 hover:bg-red-600 w-full text-left"
+                  >
+                    <LogOut size={18} />
+                    Çıkış Yap
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={handleSignIn}
+                  className="flex items-center justify-center gap-2 bg-secondary text-black rounded-lg shadow-sm px-4 py-3 hover:bg-secondaryHover font-bold text-sm w-full mt-2"
+                >
+                  <LogIn size={18} strokeWidth={2} />
+                  Giriş yap
+                </button>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 }

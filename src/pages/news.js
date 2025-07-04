@@ -378,8 +378,8 @@ function Home() {
   return (
     <>
       <Navbar />
-      <div className="max-w-[1400px] mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <div className="space-y-8">
+      <div className="max-w-[1400px] mx-auto py-4 sm:py-6 px-3 sm:px-4 md:px-6 lg:px-8">
+        <div className="space-y-4 sm:space-y-6 md:space-y-8">
           {/* Kategoriler */}
           <CategoryFilter 
             selectedCategory={selectedCategory}
@@ -387,26 +387,28 @@ function Home() {
           />
 
           {/* Ana içerik - Sol reklam, Sağ haberler */}
-          <div className="flex gap-8">
-            {/* Sol reklam alanı */}
-            <AdSidebar />
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+            {/* Sol reklam alanı - mobilde gizle */}
+            <div className="hidden lg:block">
+              <AdSidebar />
+            </div>
 
-            {/* Sağ haberler alanı */}
+            {/* Haberler alanı */}
             <motion.div 
-              className="flex-1 mt-1"
-              initial={{ x: 100, opacity: 0 }}
+              className="flex-1 mt-0 sm:mt-1"
+              initial={{ x: 50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.7, ease: "easeOut", delay: 0.5 }}
             >
               {/* Arama ve Kontrol Paneli */}
-              <div className="bg-transparent px-0 pt-0 pb-6 mb-8">
+              <div className="bg-transparent px-0 pt-0 pb-3 sm:pb-4 md:pb-6 mb-4 sm:mb-6 md:mb-8">
                 <SearchBar 
                   searchTerm={searchTerm}
                   onSearchChange={handleSearchChange}
                   autoFocus={shouldAutoFocusSearch}
                 />
 
-                <div className="flex flex-wrap items-center justify-between gap-4 mt-4">
+                <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-between gap-3 sm:gap-4 mt-3 sm:mt-4">
                   <ControlPanel 
                     sortBy={sortBy}
                     setSortBy={setSortBy}
@@ -442,6 +444,22 @@ function Home() {
                 onClearSearch={handleClearSearch}
                 viewMode={viewMode}
               />
+              
+              {/* Mobilde alt sayfalama - sadece haber varsa göster */}
+              {!loading && paginatedNews.length > 0 && totalPages > 1 && (
+                <div className="mt-6 sm:hidden">
+                  <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                  />
+                </div>
+              )}
+              
+              {/* Mobilde alt reklam alanı */}
+              <div className="mt-6 lg:hidden">
+                <AdSidebar isMobile={true} />
+              </div>
             </motion.div>
           </div>
         </div>
@@ -449,8 +467,19 @@ function Home() {
       
       {/* Dinamik Spacer - Sadece içerik az ise boşluk ekle */}
       <div style={{ 
-        minHeight: paginatedNews.length < 5 ? '500px' : '50px' 
+        minHeight: paginatedNews.length < 5 ? '300px' : '30px' 
       }} className="bg-tbackground"></div>
+      
+      {/* Alt Sayfalama - Masaüstü için */}
+      {!loading && paginatedNews.length > 0 && totalPages > 1 && (
+        <div className="hidden sm:flex justify-center mb-6">
+          <Pagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      )}
       
       {/* Footer */}
       <Footer />
