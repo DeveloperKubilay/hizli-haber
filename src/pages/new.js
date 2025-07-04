@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { db, auth } from '../services/firebase';
-import { doc, getDoc, collection, getDocs, setDoc, deleteDoc, query, where, orderBy, limit } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, setDoc, deleteDoc, query, where, orderBy, limit, updateDoc, increment } from 'firebase/firestore';
 
 // Components
 import Navbar from '../components/Navbar';
@@ -123,26 +123,76 @@ function NewsDetail() {
       if (!id) return;
 
       try {
-        // Like sayısını al
-        const likesRef = collection(db, 'news', id, 'likes');
-        const allLikesSnapshot = await getDocs(likesRef);
-        setLikesCount(allLikesSnapshot.size);
-
-        // Dislike sayısını al
-        const dislikesRef = collection(db, 'news', id, 'dislikes');
-        const allDislikesSnapshot = await getDocs(dislikesRef);
-        setDislikesCount(allDislikesSnapshot.size);
+        // Önce haber dökümanından sayaçları kontrol et
+        const newsDoc = doc(db, 'news', id);
+        const newsSnapshot = await getDoc(newsDoc);
+        
+        if (newsSnapshot.exists()) {
+          // Haber dökümanında likeCount ve dislikeCount var mı kontrol et
+          const newsData = newsSnapshot.data();
+          
+          if (newsData.likeCount !== undefined) {
+            setLikesCount(newsData.likeCount);
+          } else {
+            // Yoksa koleksiyondan say
+            const likesRef = collection(db, 'news', id, 'likes');
+            const allLikesSnapshot = await getDocs(likesRef);
+            const likesCount = allLikesSnapshot.size;
+            setLikesCount(likesCount);
+            
+            // Ve dökümanı güncelle
+            try {
+              await updateDoc(newsDoc, {
+                likeCount: likesCount,
+                updatedAt: new Date()
+              });
+            } catch (updateError) {
+              console.error('Like sayacı güncellenirken hata:', updateError);
+            }
+          }
+          
+          if (newsData.dislikeCount !== undefined) {
+            setDislikesCount(newsData.dislikeCount);
+          } else {
+            // Yoksa koleksiyondan say
+            const dislikesRef = collection(db, 'news', id, 'dislikes');
+            const allDislikesSnapshot = await getDocs(dislikesRef);
+            const dislikesCount = allDislikesSnapshot.size;
+            setDislikesCount(dislikesCount);
+            
+            // Ve dökümanı güncelle
+            try {
+              await updateDoc(newsDoc, {
+                dislikeCount: dislikesCount,
+                updatedAt: new Date()
+              });
+            } catch (updateError) {
+              console.error('Dislike sayacı güncellenirken hata:', updateError);
+            }
+          }
+        } else {
+          // Eskisi gibi koleksiyonlardan say
+          const likesRef = collection(db, 'news', id, 'likes');
+          const allLikesSnapshot = await getDocs(likesRef);
+          setLikesCount(allLikesSnapshot.size);
+          
+          const dislikesRef = collection(db, 'news', id, 'dislikes');
+          const allDislikesSnapshot = await getDocs(dislikesRef);
+          setDislikesCount(allDislikesSnapshot.size);
+        }
 
         // User login'se durumunu da kontrol et
         if (auth.currentUser) {
           const userId = auth.currentUser.uid;
           
           // User'ın like durumunu kontrol et
+          const likesRef = collection(db, 'news', id, 'likes');
           const userLikeQuery = query(likesRef, where('__name__', '==', userId));
           const likeSnapshot = await getDocs(userLikeQuery);
           setLiked(!likeSnapshot.empty);
 
           // User'ın dislike durumunu kontrol et
+          const dislikesRef = collection(db, 'news', id, 'dislikes');
           const userDislikeQuery = query(dislikesRef, where('__name__', '==', userId));
           const dislikeSnapshot = await getDocs(userDislikeQuery);
           setDisliked(!dislikeSnapshot.empty);
@@ -335,7 +385,7 @@ function NewsDetail() {
     }
   };
 
-  // Beğeni işlemi - Instant response + backend update
+  // Beğeni işlemi - Instant response + backend update + sayaç güncelleme
   const handleLike = async () => {
     if (!auth.currentUser) {
       alert('Beğenmek için giriş yapmalısınız');
@@ -367,14 +417,37 @@ function NewsDetail() {
       const userId = auth.currentUser.uid;
       const likeRef = doc(db, 'news', news.id, 'likes', userId);
       const dislikeRef = doc(db, 'news', news.id, 'dislikes', userId);
+      const newsRef = doc(db, 'news', news.id);
 
       if (wasLiked) {
+        // Like'ı kaldır
         await deleteDoc(likeRef);
+        
+        // Ana haber dökümanında like sayacını azalt
+        await updateDoc(newsRef, {
+          likeCount: increment(-1),
+          updatedAt: new Date()
+        });
       } else {
         if (wasDisliked) {
+          // Dislike'ı kaldır
           await deleteDoc(dislikeRef);
+          
+          // Ana haber dökümanında dislike sayacını azalt
+          await updateDoc(newsRef, {
+            dislikeCount: increment(-1),
+            updatedAt: new Date()
+          });
         }
+        
+        // Like ekle
         await setDoc(likeRef, { likedAt: new Date() });
+        
+        // Ana haber dökümanında like sayacını artır
+        await updateDoc(newsRef, {
+          likeCount: increment(1),
+          updatedAt: new Date()
+        });
       }
       
     } catch (error) {
@@ -420,14 +493,37 @@ function NewsDetail() {
       const userId = auth.currentUser.uid;
       const likeRef = doc(db, 'news', news.id, 'likes', userId);
       const dislikeRef = doc(db, 'news', news.id, 'dislikes', userId);
+      const newsRef = doc(db, 'news', news.id);
 
       if (wasDisliked) {
+        // Dislike'ı kaldır
         await deleteDoc(dislikeRef);
+        
+        // Ana haber dökümanında dislike sayacını azalt
+        await updateDoc(newsRef, {
+          dislikeCount: increment(-1),
+          updatedAt: new Date()
+        });
       } else {
         if (wasLiked) {
+          // Like'ı kaldır
           await deleteDoc(likeRef);
+          
+          // Ana haber dökümanında like sayacını azalt
+          await updateDoc(newsRef, {
+            likeCount: increment(-1),
+            updatedAt: new Date()
+          });
         }
+        
+        // Dislike ekle
         await setDoc(dislikeRef, { dislikedAt: new Date() });
+        
+        // Ana haber dökümanında dislike sayacını artır
+        await updateDoc(newsRef, {
+          dislikeCount: increment(1),
+          updatedAt: new Date()
+        });
       }
       
     } catch (error) {
