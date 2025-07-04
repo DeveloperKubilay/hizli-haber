@@ -95,30 +95,30 @@ function Home() {
       </div>
       
       {/* Info Cards Section */}
-      <div ref={infoCardsRef} className="max-w-6xl mx-auto px-6 bg-transparent mb-12">
-        <InfoCard 
-          title="İlk Başlık"
-          description="Bu ilk kartın açıklama metnidir. Burada güzel bir açıklama yazısı bulunmakta."
-          image="https://upload.wikimedia.org/wikipedia/commons/6/6a/PNG_Test.png"
-          index={0}
-        />
+        <div ref={infoCardsRef} className="max-w-6xl mx-auto px-6 bg-transparent mb-12">
+          <InfoCard 
+            title="Zamanınız mı kısıtlı? Özetleri tercih edin!"
+            description="Haberleri baştan sona okumak zorunda değilsiniz. Yan tarafta sunduğumuz özetlerle zamandan tasarruf edin ve sadece önemli bilgilere odaklanın!"
+            image="/imgs/home/ozet.png"
+            index={0}
+          />
+          
+          <InfoCardReverse 
+            title="Haberleri anlamak hiç bu kadar kolay olmamıştı!"
+            description="Tüm içeriğimiz kolay okunabilir ve eğlenceli şekilde hazırlanmıştır. Önemli noktaları özel olarak vurguluyoruz, böylece haberleri daha hızlı kavrayabilirsiniz."
+            image="/imgs/home/kolaylık.png"
+            index={1}
+          />
+          
+          <InfoCard 
+            title="Yapay zeka ile güçlendirilmiş habercilik"
+            description="Aklınıza takılan sorular mı var? Yapay zeka destekli haberlerimizle sorularınıza anında yanıt alın ve güncel gelişmeleri kesintisiz takip edin!"
+            image="/imgs/home/ai_destek.png"
+            index={2}
+          />
+        </div>
         
-        <InfoCardReverse 
-          title="İkinci Başlık"
-          description="Bu ikinci kartın açıklama metnidir ve ters yönde görünmektedir. Solda resim sağda yazı."
-          image="https://upload.wikimedia.org/wikipedia/commons/6/6a/PNG_Test.png"
-          index={1}
-        />
-        
-        <InfoCard 
-          title="Üçüncü Başlık"
-          description="Bu üçüncü ve son kartın açıklama metnidir. Yine normal düzende sağda resim solda yazı."
-          image="https://upload.wikimedia.org/wikipedia/commons/6/6a/PNG_Test.png"
-          index={2}
-        />
-      </div>
-      
-      {/* Alt boşluk */}
+        {/* Alt boşluk */}
       <div className="h-20 bg-transparent"></div>
       
       {/* Call to Action */}
