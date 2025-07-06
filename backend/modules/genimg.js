@@ -64,7 +64,7 @@ async function generateAndUploadImage(newsTitle) {
         await uploadFile(imageResult.fileName, imageResult.buffer, 'image/jpeg');
 
         // CDN URL'ini oluştur
-        const imageUrl = `https://cdn.emailsunucusu.tech/${encodeURIComponent(imageResult.fileName)}`;
+        const imageUrl = `https://cdn.xn--hzl-haber-vpbc.com/${encodeURIComponent(imageResult.fileName)}`;
 
         return {
             success: true,
