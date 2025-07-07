@@ -580,6 +580,17 @@ function NewsDetail() {
 
           {/* Yan panel */}
           <div className="lg:col-span-1">
+            {/* Sağ üstte haberin ana fotoğrafı */}
+            {news?.image && (
+              <div className="w-full aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center mb-6">
+                <img
+                  src={news.image}
+                  alt={news.name || 'Haber görseli'}
+                  className="object-cover w-full h-full"
+                  style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                />
+              </div>
+            )}
             {/* Yan bilgiler ve benzer haberler */}
             <div className="mb-8">
               <RelatedNews 
