@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Helmet } from 'react-helmet';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db, auth } from '../services/firebase';
 import { doc, getDoc, collection, getDocs, query, where, orderBy, limit, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
@@ -537,6 +538,10 @@ function NewsDetail() {
 
   return (
     <>
+      <Helmet>
+        <title>{news?.name ? `${news.name} - Hızlı Haber` : 'Hızlı Haber'}</title>
+        <meta name="description" content={news?.summary || 'Hızlı Haber ile gündemi anında takip et! Son dakika haberleri, özetler ve daha fazlası burada.'} />
+      </Helmet>
       <Navbar />
       <div className="max-w-7xl mx-auto py-8 px-6 lg:px-8">
         {/* Geri dön butonu */}
