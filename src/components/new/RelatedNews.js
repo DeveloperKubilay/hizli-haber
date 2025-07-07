@@ -53,7 +53,7 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
         whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
       >
         <motion.div 
-          className="w-full h-56 bg-primaryBG rounded-lg overflow-hidden flex items-center justify-center mb-6"
+          className="w-full h-50 bg-primaryBG rounded-lg overflow-hidden flex items-center justify-center mb-6"
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.6 }}
@@ -62,7 +62,8 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
             <img
               src={currentNews.image}
               alt={currentNews.name}
-              className="w-full h-full object-cover"
+              className="max-w-full max-h-full object-contain"
+              style={{ width: '100%', height: '100%' }}
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = "/imgs/logo.png";
