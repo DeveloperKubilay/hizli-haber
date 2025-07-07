@@ -1,3 +1,5 @@
+#TR
+
 # Hızlı Haber 🚀
 
 https://hızlı-haber.com
@@ -66,3 +68,74 @@ https://hızlı-haber.com
 ---
 
 > DeveloperKubilay tarafından geliştirildi ❤️
+
+#EN
+
+# Hızlı Haber 🚀
+
+https://hızlı-haber.com
+
+> The news platform for Gen Z. Forget boring news sites, this one’s made just for you! 😎
+
+## ✨ Features
+- **Real-time news**: The latest content, instantly in front of you!
+- **AI-powered summaries**: Don’t waste time reading long articles—AI summarizes them for you.
+- **Dark theme & modern UI**: Eye-friendly dark theme that vibes with Gen Z.
+- **Mobile friendly**: Full performance on every device.
+- **Categories & filters**: Instantly switch any category you’re tired of.
+- **Login with Google**: No hassle creating accounts, just one-click login!
+- **Save, like, comment**: Save your favorite news, like, and comment easily.
+- **AI Chat**: Got any questions about the news? Chat with AI!
+
+## 🛠️ Technologies
+- **React** + **Tailwind CSS** + **Framer Motion**
+- **Firebase** (Auth, Firestore, Storage)
+- **Google Gemini AI** (Summarizing & image generation)
+- **Node.js Backend** (Fetching news, AI processing)
+- **AWS S3 / Cloudflare R2** (Image storage)
+- **Lucide-react** (Icons)
+
+## 📁 Project Structure
+/ (root)
+|-- backend/ # Node.js, AI, news fetching, image generation
+|-- public/ # Static files, images, favicon
+|-- src/ # React app, components, pages
+|-- components/ # Navbar, Footer, Home, News, New, etc.
+|-- pages/ # home, news, new, savednews, terms
+|-- services/ # auth, firebase, categories, css
+|-- color_palet.html # Color palette
+|-- tailwind.config.js
+|-- firestore.rules # Security rules
+
+
+## 🚦 Security
+- Protecting user data with Firestore rules
+- Only logged-in users can add/update data
+- Comments, likes, saves are user-specific
+
+## 🤖 AI Prompt Rules
+- Titles are clickbait but never fake, lots of emojis!
+- Summaries are short, explanations in markdown and Gen Z style
+- No humor in serious topics, full sincerity in fun stuff
+
+## 🚀 How to Run?
+1. `npm install` (in both root and backend folders)
+2. Add Firebase and News API keys into `.env` file
+3. For frontend: `npm start`
+4. For backend: `node backend/index.js`
+
+## 🎨 Color Palette
+- Background: `#16181c` (tbackground)
+- Main: `#1a1a1c` (background)
+- Cards: `#26292f` (primary)
+- Accent: `#1bd96a` (secondary)
+- Heading: `#ecf9fb` (textHeading)
+- Text: `#b0bac5` (textPrimary)
+- For more: check `tailwind.config.js` and `color_palet.html`
+
+## 👾 For Contributors
+- Leave an issue, code is open, community is young!
+---
+
+> Developed with ❤️ by DeveloperKubilay
+
