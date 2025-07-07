@@ -1,8 +1,12 @@
-#TR
+# [Hızlı Haber 🚀](https://hızlı-haber.com)
+<p align="center">
+  <img src="https://xn--hzl-haber-vpbc.com/imgs/logo.png" alt="Hızlı Haber Logo" />
+</p>
+<p align="center">
+  <a href="https://hızlı-haber.com">https://hızlı-haber.com</a>
+</p>
 
-# Hızlı Haber 🚀
-
-https://hızlı-haber.com
+# TR
 
 > Z kuşağının haber platformu. Sıkıcı haber sitelerini unut, burası tam sana göre! 😎
 
@@ -69,11 +73,7 @@ https://hızlı-haber.com
 
 > DeveloperKubilay tarafından geliştirildi ❤️
 
-#EN
-
-# Hızlı Haber 🚀
-
-https://hızlı-haber.com
+# En
 
 > The news platform for Gen Z. Forget boring news sites, this one’s made just for you! 😎
 
