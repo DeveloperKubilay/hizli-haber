@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Shield, AlertTriangle, Users, FileText, Eye, Cookie } from 'lucide-react';
@@ -21,6 +22,30 @@ function Terms() {
 
   return (
     <div className="min-h-screen bg-tbackground">
+      <Helmet>
+        <title>Hizmet Şartları ve Kullanım Koşulları - Hızlı Haber</title>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#16181c" />
+        <meta name="msapplication-navbutton-color" content="#16181c" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="description" content="Hızlı Haber hizmet şartları ve kullanım koşulları. Platformun sorumlulukları, kullanıcı hakları ve gizlilik politikası hakkında detaylı bilgi." />
+        <meta name="keywords" content="hizmet şartları, kullanım koşulları, gizlilik, telif hakkı, hızlı haber, kullanıcı sorumluluğu, veri koruma, yapay zeka haber, haber platformu" />
+        <meta property="og:title" content="Hizmet Şartları ve Kullanım Koşulları - Hızlı Haber" />
+        <meta property="og:description" content="Hızlı Haber platformunun kullanım şartları, gizlilik ve telif hakları hakkında detaylı bilgi alın." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://hizlihaber.com/terms" />
+        <meta property="og:image" content="https://hizlihaber.com/favicon.ico" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Hizmet Şartları ve Kullanım Koşulları - Hızlı Haber" />
+        <meta name="twitter:description" content="Hızlı Haber platformunun kullanım şartları, gizlilik ve telif hakları hakkında detaylı bilgi alın." />
+        <meta name="twitter:image" content="https://hizlihaber.com/favicon.ico" />
+        <meta name="author" content="Hızlı Haber Ekibi" />
+        <link rel="canonical" href="https://hizlihaber.com/terms" />
+        <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/favicon.ico" />
+        <link rel="manifest" href="/manifest.json" />
+      </Helmet>
       <Navbar />
       
       <motion.div 

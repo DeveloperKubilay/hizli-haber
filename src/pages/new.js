@@ -540,10 +540,27 @@ function NewsDetail() {
     <>
       <Helmet>
         <title>{news?.name ? `${news.name} - Hızlı Haber` : 'Hızlı Haber'}</title>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#16181c" />
+        <meta name="msapplication-navbutton-color" content="#16181c" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="description" content={news?.summary || 'Hızlı Haber ile gündemi anında takip et! Son dakika haberleri, özetler ve daha fazlası burada.'} />
-        {/* OG ve Twitter görseli */}
+        <meta name="keywords" content={news?.tag && Array.isArray(news.tag) && news.tag.length > 0 ? news.tag.join(', ') + ', haber, hızlı haber, son dakika, gündem, özet, trend, popüler' : 'haber, hızlı haber, son dakika, gündem, özet, trend, popüler'} />
+        <meta property="og:title" content={news?.name ? `${news.name} - Hızlı Haber` : 'Hızlı Haber'} />
+        <meta property="og:description" content={news?.summary || 'Hızlı Haber ile gündemi anında takip et! Son dakika haberleri, özetler ve daha fazlası burada.'} />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={typeof window !== 'undefined' ? window.location.href : 'https://hizlihaber.com'} />
         <meta property="og:image" content={news?.image || `${window.location.origin}/favicon.ico`} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={news?.name ? `${news.name} - Hızlı Haber` : 'Hızlı Haber'} />
+        <meta name="twitter:description" content={news?.summary || 'Hızlı Haber ile gündemi anında takip et! Son dakika haberleri, özetler ve daha fazlası burada.'} />
         <meta name="twitter:image" content={news?.image || `${window.location.origin}/favicon.ico`} />
+        <meta name="author" content="Hızlı Haber Ekibi" />
+        <link rel="canonical" href={typeof window !== 'undefined' ? window.location.href : 'https://hizlihaber.com'} />
+        <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/favicon.ico" />
+        <link rel="manifest" href="/manifest.json" />
         {/* OG ve Twitter taglar */}
         {news?.tag && Array.isArray(news.tag) && news.tag.length > 0 && (
           news.tag.map((tag, i) => (

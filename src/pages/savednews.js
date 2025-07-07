@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { 
@@ -132,6 +133,8 @@ function SavedNewsCard({ item, index, viewMode, onRemove, formatDate }) {
     </motion.div>
   );
 }
+
+
 
 function SavedNews() {
   const [savedNewsWithCounts, setSavedNewsWithCounts] = useState([]);
@@ -364,6 +367,30 @@ function SavedNews() {
 
   return (
     <>
+      <Helmet>
+        <title>Kaydedilen Haberlerim - Hızlı Haber</title>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#16181c" />
+        <meta name="msapplication-navbutton-color" content="#16181c" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="description" content="Kaydettiğin haberleri burada bul! Hızlı Haber ile favori haberlerini kaydet, istediğin zaman tekrar oku." />
+        <meta name="keywords" content="kaydedilen haberler, favori haberler, hızlı haber, haber kaydet, haber arşivi, haber platformu, haber listesi, haber özetleri, haber takip" />
+        <meta property="og:title" content="Kaydedilen Haberlerim - Hızlı Haber" />
+        <meta property="og:description" content="Kaydettiğin haberleri burada bul! Hızlı Haber ile favori haberlerini kaydet, istediğin zaman tekrar oku." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://hizlihaber.com/savednews" />
+        <meta property="og:image" content="https://hizlihaber.com/favicon.ico" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Kaydedilen Haberlerim - Hızlı Haber" />
+        <meta name="twitter:description" content="Kaydettiğin haberleri burada bul! Hızlı Haber ile favori haberlerini kaydet, istediğin zaman tekrar oku." />
+        <meta name="twitter:image" content="https://hizlihaber.com/favicon.ico" />
+        <meta name="author" content="Hızlı Haber Ekibi" />
+        <link rel="canonical" href="https://hizlihaber.com/savednews" />
+        <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/favicon.ico" />
+        <link rel="manifest" href="/manifest.json" />
+      </Helmet>
       <Navbar />
       <div className="max-w-[1400px] mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="space-y-8">

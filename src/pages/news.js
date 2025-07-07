@@ -15,11 +15,13 @@ import NewsGrid from '../components/news/NewsGrid';
 import AdSidebar from '../components/news/AdSidebar';
 
 // Services
-import { 
-  CATEGORIES, 
-  APP_CONFIG, 
+import {
+  CATEGORIES,
+  APP_CONFIG,
   translateCategoryToEnglish
 } from '../services/categories';
+
+import { Helmet } from 'react-helmet';
 
 function Home() {
   // State management
@@ -35,7 +37,7 @@ function Home() {
   const [viewMode, setViewMode] = useState('grid');
   const [totalCount, setTotalCount] = useState(0);
   const [lastDocs, setLastDocs] = useState([]); // Her sayfanın son dokümanı
-  
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -63,50 +65,50 @@ function Home() {
   });
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
-  
+
   // searchTerm varsa, zaten veri çekerken filtreleme yapılmış oluyor
   // yani newsWithCounts (ve türevleri sortedNews, filteredNews) zaten filtrelenmiş veri
   const paginatedNews = sortedNews;
-  
+
   // Data fetching
   useEffect(() => {
     const fetchNews = async () => {
       setLoading(true);
       // Önbellek kullanımını tamamen kaldırıyoruz, her zaman Firebase'den veri çekeceğiz
-      
+
       try {
         const newsCollection = collection(db, 'news');
-        
+
         // Firestore sorgu hazırlama
         let qArgs = [newsCollection];
         let countQArgs = [newsCollection];
-        
+
         // Kategori filtresi uygula
         if (selectedCategory !== CATEGORIES.ALL) {
           const engCat = translateCategoryToEnglish(selectedCategory);
           const normalizedEngCat = engCat.charAt(0).toUpperCase() + engCat.slice(1).toLowerCase();
-          
+
           // Ana sorgu için kategori filtresi
           qArgs.push(where('tag', 'array-contains', normalizedEngCat));
-          
+
           // Count sorgusu için kategori filtresi
           countQArgs.push(where('tag', 'array-contains', normalizedEngCat));
         }
-        
+
         // Eğer arama terimi varsa ve "Tümü" kategorisindeyse client-side yerine doğrudan Firebase'de filtreleme yapalım
         if (searchTerm && selectedCategory === CATEGORIES.ALL) {
           // Firebase arama indeksleri olmadığı için client-side filtreleme hala gerekecek, 
           // ancak tüm verileri çekelim ki "Tümü" kategorisinde arama yapabilelim
         }
-        
+
         // Sıralama ekle
         qArgs.push(orderBy('createdAt', 'desc'));
-        
+
         // Sayfalama için startAfter ekle
         if (currentPage > 1 && lastDocs[currentPage - 2]) {
           qArgs.push(startAfter(lastDocs[currentPage - 2]));
         }
-        
+
         // Limit ekle - "Tümü" kategorisinde arama varsa, daha fazla veri çek
         if (searchTerm && selectedCategory === CATEGORIES.ALL) {
           // Arama varken "Tümü" kategorisinde daha fazla veri çekerek client filtreleme için kaynak sağla
@@ -115,32 +117,32 @@ function Home() {
         } else {
           qArgs.push(limit(itemsPerPage));
         }
-        
+
         // Sorguları çalıştır
         const [snapshot, countSnapshot] = await Promise.all([
           getDocs(query(...qArgs)),
           getCountFromServer(query(...countQArgs))
         ]);
-        
+
         let pageData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        
+
         // Client-side arama filtresi (sadece arama varsa)
         if (searchTerm) {
           // "Tümü" kategorisinde daha fazla veri çekmemiz gerekebilir
           if (selectedCategory === CATEGORIES.ALL && pageData.length < itemsPerPage * 3 && snapshot.docs.length === itemsPerPage) {
             // Bu durumda filtreleme sonrası çok az sonuç kalabilir, kullanıcıya bilgi verilmeli
           }
-          
+
           pageData = pageData.filter(item =>
             item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             item.minides?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             item.tag?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
           );
         }
-        
+
         // State güncelleme
         setNewsWithCounts(pageData);
-        
+
         // Toplam sayfa sayısını güncelleme - arama yapılırken filtreli sonuçları kullan
         if (searchTerm) {
           // Arama varsa, filtrelenmiş veri sayısını kullan (client-side filtrelenmiş veriler)
@@ -149,9 +151,9 @@ function Home() {
           // Arama yoksa, Firestore'dan gelen toplam sayıyı kullan
           setTotalCount(countSnapshot.data().count);
         }
-        
+
         // Önbellek güncellemesini devre dışı bıraktık
-        
+
         // Last doc güncelleme
         if (snapshot.docs.length > 0) {
           setLastDocs(prev => {
@@ -160,33 +162,33 @@ function Home() {
             return newLastDocs;
           });
         }
-        
+
       } catch (error) {
         // Firebase indeks hatası için fallback
         if (error.message && error.message.includes('requires an index')) {
           try {
-            
+
             // Basit sorgu - sadece zaman sıralaması ve limit
             const fallbackQuery = query(
-              collection(db, 'news'), 
-              orderBy('createdAt', 'desc'), 
+              collection(db, 'news'),
+              orderBy('createdAt', 'desc'),
               limit(itemsPerPage * currentPage) // Daha fazla veri çek
             );
-            
+
             const fallbackSnapshot = await getDocs(fallbackQuery);
             let fallbackData = fallbackSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            
+
             // Client-side kategori filtresi
             if (selectedCategory !== CATEGORIES.ALL) {
               const engCat = translateCategoryToEnglish(selectedCategory);
               const normalizedEngCat = engCat.charAt(0).toUpperCase() + engCat.slice(1).toLowerCase();
-              
+
               fallbackData = fallbackData.filter(item => {
-                return item.tag && Array.isArray(item.tag) && 
+                return item.tag && Array.isArray(item.tag) &&
                   item.tag.some(tag => tag.toLowerCase() === normalizedEngCat.toLowerCase());
               });
             }
-            
+
             // Client-side arama filtresi
             if (searchTerm) {
               fallbackData = fallbackData.filter(item =>
@@ -195,15 +197,15 @@ function Home() {
                 item.tag?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
               );
             }
-            
+
             // Sayfalama için slice uygula
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = startIndex + itemsPerPage;
             const paginatedFallbackData = fallbackData.slice(startIndex, endIndex);
-            
+
             setNewsWithCounts(paginatedFallbackData);
             setTotalCount(fallbackData.length);
-            
+
           } catch (secondError) {
             setNewsWithCounts([]);
             setTotalCount(0);
@@ -216,50 +218,50 @@ function Home() {
         setLoading(false);
       }
     };
-    
+
     fetchNews();
     // lastDocs ve pageCache dependency olarak eklenmez çünkü sonsuz döngü yaratır
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, itemsPerPage, selectedCategory, searchTerm]);
 
   // URL handling
   useEffect(() => {
     const hash = location.hash.replace('#', '');
-    
+
     if (hash) {
       const categoryKey = hash.toLowerCase();
-      
+
       // Önce tam eşleşme deneyin - key adına göre (örn. TECHNOLOGY)
       let categoryEntry = Object.entries(CATEGORIES).find(
         ([key]) => key.toLowerCase() === categoryKey
       );
-      
+
       // Tam eşleşme yoksa, değere göre deneyin (örn. Teknoloji)
       if (!categoryEntry) {
         categoryEntry = Object.entries(CATEGORIES).find(
           ([_, value]) => value.toLowerCase() === categoryKey
         );
       }
-      
+
       // Hala bulunamadıysa, içeren bir key/value arayın
       if (!categoryEntry) {
         categoryEntry = Object.entries(CATEGORIES).find(
-          ([key, value]) => 
-            key.toLowerCase().includes(categoryKey) || 
+          ([key, value]) =>
+            key.toLowerCase().includes(categoryKey) ||
             categoryKey.includes(key.toLowerCase()) ||
             value.toLowerCase().includes(categoryKey) ||
             categoryKey.includes(value.toLowerCase())
         );
       }
-      
+
       if (categoryEntry) {
         const categoryName = categoryEntry[1];
-        
+
         // Sadece kategori gerçekten değişmişse state'i güncelle
         if (selectedCategory !== categoryName) {
           // Kategori değişimi için lastDocs'u temizleyin
           setLastDocs([]);
-          
+
           setSelectedCategory(categoryName);
           setCurrentPage(1);
         }
@@ -279,27 +281,27 @@ function Home() {
   // Reset page when search/sort changes (but not when only category changes)
   const prevSearchTerm = useRef(searchTerm);
   const prevSortBy = useRef(sortBy);
-  
+
   useEffect(() => {
     // Sadece arama terimi veya sıralama değiştiğinde sayfa sıfırlansın
     if (prevSearchTerm.current !== searchTerm || prevSortBy.current !== sortBy) {
       setCurrentPage(1);
-      
+
       // Arama veya sıralama değiştiğinde lastDocs'u sıfırla
       setLastDocs([]);
-      
+
       // Arama veya sıralama değişirken URL'deki kategoriyi koru
       if (selectedCategory !== CATEGORIES.ALL) {
         const categoryKey = Object.entries(CATEGORIES).find(
           ([key, value]) => value === selectedCategory
         )?.[0];
-        
+
         if (categoryKey) {
           navigate(`/haberler#${categoryKey.toLowerCase()}`, { replace: true });
         }
       }
     }
-    
+
     // Ref'leri güncelle
     prevSearchTerm.current = searchTerm;
     prevSortBy.current = sortBy;
@@ -318,7 +320,7 @@ function Home() {
       setShowSortDropdown(false);
       setShowViewDropdown(false);
     };
-    
+
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
@@ -330,7 +332,7 @@ function Home() {
     // Kategori değiştiğinde son belgeleri sıfırla
     setLastDocs([]);
     // Kategori değiştiğinde önbelleği temizle işlemi kaldırıldı
-    
+
     // URL'yi güncelle
     if (category === CATEGORIES.ALL) {
       // "Tüm Haberler" seçilince # kaldır
@@ -340,7 +342,7 @@ function Home() {
       const categoryKey = Object.entries(CATEGORIES).find(
         ([key, value]) => value === category
       )?.[0];
-      
+
       if (categoryKey) {
         navigate(`/haberler#${categoryKey.toLowerCase()}`, { replace: true });
       }
@@ -355,13 +357,13 @@ function Home() {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    
+
     // Sayfa değişirken de URL'deki kategoriyi koru
     if (selectedCategory !== CATEGORIES.ALL) {
       const categoryKey = Object.entries(CATEGORIES).find(
         ([key, value]) => value === selectedCategory
       )?.[0];
-      
+
       if (categoryKey) {
         navigate(`/haberler#${categoryKey.toLowerCase()}`, { replace: true });
       }
@@ -377,11 +379,35 @@ function Home() {
 
   return (
     <>
+      <Helmet>
+        <title>Hızlı Haber - Tüm Haberler</title>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#16181c" />
+        <meta name="msapplication-navbutton-color" content="#16181c" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="description" content="Hızlı Haber ile gündemi anında takip et! Son dakika haberleri, özetler ve daha fazlası burada. Türkiye ve dünyadan en güncel haberler, trend başlıklar ve kategorilere göre filtreleme imkanı." />
+        <meta name="keywords" content="haber, hızlı haber, son dakika, gündem, Türkiye haberleri, dünya haberleri, ekonomi, spor, magazin, teknoloji, politika, güncel, sıcak gelişme, flaş haber, haber sitesi, online haber, mobil haber, haber oku, haber uygulaması, haber platformu, haber portalı, haberler, güncel haberler, son dakika haberleri, popüler haberler, trend haberler, haber başlıkları, haber özetleri, haber analizi, haber takip, haber paylaş, haber yorum, haber video, haber fotoğraf, haber arşivi, haber kaynağı, haber sitesi öneri, haber sitesi tavsiye, haber sitesi en iyi, haber sitesi güvenilir, haber sitesi hızlı, haber sitesi mobil, haber sitesi ücretsiz, haber sitesi güncel, haber sitesi popüler, haber sitesi trend, haber sitesi son dakika, haber sitesi gündem, haber sitesi ekonomi, haber sitesi spor, haber sitesi magazin, haber sitesi teknoloji, haber sitesi politika, haber sitesi sıcak gelişme, haber sitesi flaş haber, haber sitesi online, haber sitesi mobil, haber sitesi oku, haber sitesi uygulama, haber sitesi platform, haber sitesi portal, haber sitesi haberler, haber sitesi güncel haberler, haber sitesi son dakika haberleri, haber sitesi popüler haberler, haber sitesi trend haberler, haber sitesi başlıkları, haber sitesi özetleri, haber sitesi analizi, haber sitesi takip, haber sitesi paylaş, haber sitesi yorum, haber sitesi video, haber sitesi fotoğraf, haber sitesi arşivi, haber sitesi kaynağı" />
+        <meta property="og:title" content="Hızlı Haber - Tüm Haberler" />
+        <meta property="og:description" content="Hızlı Haber ile gündemi anında takip et! Son dakika haberleri, özetler ve daha fazlası burada. Türkiye ve dünyadan en güncel haberler, trend başlıklar ve kategorilere göre filtreleme imkanı." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://hizlihaber.com/haberler" />
+        <meta property="og:image" content="https://hizlihaber.com/favicon.ico" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Hızlı Haber - Tüm Haberler" />
+        <meta name="twitter:description" content="Hızlı Haber ile gündemi anında takip et! Son dakika haberleri, özetler ve daha fazlası burada. Türkiye ve dünyadan en güncel haberler, trend başlıklar ve kategorilere göre filtreleme imkanı." />
+        <meta name="twitter:image" content="https://hizlihaber.com/favicon.ico" />
+        <meta name="author" content="Hızlı Haber Ekibi" />
+        <link rel="canonical" href="https://hizlihaber.com/haberler" />
+        <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/favicon.ico" />
+        <link rel="manifest" href="/manifest.json" />
+      </Helmet>
       <Navbar />
       <div className="max-w-[1400px] mx-auto py-4 sm:py-6 px-3 sm:px-4 md:px-6 lg:px-8">
         <div className="space-y-4 sm:space-y-6 md:space-y-8">
           {/* Kategoriler */}
-          <CategoryFilter 
+          <CategoryFilter
             selectedCategory={selectedCategory}
             onCategoryChange={handleCategoryChange}
           />
@@ -394,7 +420,7 @@ function Home() {
             </div>
 
             {/* Haberler alanı */}
-            <motion.div 
+            <motion.div
               className="flex-1 mt-0 sm:mt-1"
               initial={{ x: 50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
@@ -402,14 +428,14 @@ function Home() {
             >
               {/* Arama ve Kontrol Paneli */}
               <div className="bg-transparent px-0 pt-0 pb-3 sm:pb-4 md:pb-6 mb-4 sm:mb-6 md:mb-8">
-                <SearchBar 
+                <SearchBar
                   searchTerm={searchTerm}
                   onSearchChange={handleSearchChange}
                   autoFocus={shouldAutoFocusSearch}
                 />
 
                 <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-between gap-3 sm:gap-4 mt-3 sm:mt-4">
-                  <ControlPanel 
+                  <ControlPanel
                     sortBy={sortBy}
                     setSortBy={setSortBy}
                     itemsPerPage={itemsPerPage}
@@ -426,7 +452,7 @@ function Home() {
 
                   {/* Sayfalama - Sadece haber varsa göster */}
                   {!loading && paginatedNews.length > 0 && totalPages > 1 && (
-                    <Pagination 
+                    <Pagination
                       currentPage={currentPage}
                       totalPages={totalPages}
                       onPageChange={handlePageChange}
@@ -436,7 +462,7 @@ function Home() {
               </div>
 
               {/* Haber Grid */}
-              <NewsGrid 
+              <NewsGrid
                 news={paginatedNews}
                 loading={loading}
                 searchTerm={searchTerm}
@@ -444,18 +470,18 @@ function Home() {
                 onClearSearch={handleClearSearch}
                 viewMode={viewMode}
               />
-              
+
               {/* Mobilde alt sayfalama - sadece haber varsa göster */}
               {!loading && paginatedNews.length > 0 && totalPages > 1 && (
                 <div className="mt-6 sm:hidden">
-                  <Pagination 
+                  <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
                   />
                 </div>
               )}
-              
+
               {/* Mobilde alt reklam alanı */}
               <div className="mt-6 lg:hidden">
                 <AdSidebar isMobile={true} />
@@ -464,23 +490,23 @@ function Home() {
           </div>
         </div>
       </div>
-      
+
       {/* Dinamik Spacer - Sadece içerik az ise boşluk ekle */}
-      <div style={{ 
-        minHeight: paginatedNews.length < 5 ? '300px' : '30px' 
+      <div style={{
+        minHeight: paginatedNews.length < 5 ? '300px' : '30px'
       }} className="bg-tbackground"></div>
-      
+
       {/* Alt Sayfalama - Masaüstü için */}
       {!loading && paginatedNews.length > 0 && totalPages > 1 && (
         <div className="hidden sm:flex justify-center mb-6">
-          <Pagination 
+          <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={handlePageChange}
           />
         </div>
       )}
-      
+
       {/* Footer */}
       <Footer />
     </>
