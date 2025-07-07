@@ -86,39 +86,32 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
             />
           )}
         </motion.div>
-        
         {/* Like/Dislike ve Tarih */}
         <div className="space-y-4 text-center">
           {/* Like/Dislike Butonları */}
-          <motion.div 
+          <div 
             className="flex items-center justify-center gap-6"
-            variants={itemVariants}
           >
-            <motion.div 
+            <div 
               className="flex items-center gap-3 text-textPrimary"
-              whileHover={{ scale: 1.05 }}
             >
               <Heart size={20} className="text-red-500" />
               <span className="font-medium text-base">{currentNews?.likes || 0} Beğeni</span>
-            </motion.div>
-            <motion.div 
+            </div>
+            <div 
               className="flex items-center gap-3 text-textPrimary"
-              whileHover={{ scale: 1.05 }}
             >
               <ThumbsDown size={20} className="text-blue-500" />
               <span className="font-medium text-base">{currentNews?.dislikes || 0} Beğenmeme</span>
-            </motion.div>
-          </motion.div>
-          
+            </div>
+          </div>
           {/* Tarih */}
-          <motion.div 
+          <div 
             className="flex items-center justify-center gap-3 text-textPrimary"
-            variants={itemVariants}
-            whileHover={{ scale: 1.05 }}
           >
             <Calendar size={20} className="text-secondary" />
             <span className="font-medium text-base">{formatDate(currentNews?.createdAt)}</span>
-          </motion.div>
+          </div>
         </div>
       </motion.div>
 
