@@ -542,12 +542,8 @@ function NewsDetail() {
         <title>{news?.name ? `${news.name} - Hızlı Haber` : 'Hızlı Haber'}</title>
         <meta name="description" content={news?.summary || 'Hızlı Haber ile gündemi anında takip et! Son dakika haberleri, özetler ve daha fazlası burada.'} />
         {/* OG ve Twitter görseli */}
-        {news?.image && (
-          <>
-            <meta property="og:image" content={news.image} />
-            <meta name="twitter:image" content={news.image} />
-          </>
-        )}
+        <meta property="og:image" content={news?.image || `${window.location.origin}/favicon.ico`} />
+        <meta name="twitter:image" content={news?.image || `${window.location.origin}/favicon.ico`} />
         {/* OG ve Twitter taglar */}
         {news?.tag && Array.isArray(news.tag) && news.tag.length > 0 && (
           news.tag.map((tag, i) => (
