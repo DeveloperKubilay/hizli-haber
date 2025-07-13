@@ -557,7 +557,7 @@ function NewsDetail() {
         <meta name="twitter:description" content={news?.summary || 'Hızlı Haber ile gündemi anında takip et! Son dakika haberleri, özetler ve daha fazlası burada.'} />
         <meta name="twitter:image" content={news?.image || `${window.location.origin}/favicon.ico`} />
         <meta name="author" content="Hızlı Haber Ekibi" />
-        <link rel="canonical" href={typeof window !== 'undefined' ? window.location.href : 'https://hizlihaber.com'} />
+        <link href={typeof window !== 'undefined' ? window.location.href : 'https://hizlihaber.com'} />
         <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.json" />
