@@ -41,7 +41,7 @@ function Terms() {
         <meta name="twitter:description" content="Hızlı Haber platformunun kullanım şartları, gizlilik ve telif hakları hakkında detaylı bilgi alın." />
         <meta name="twitter:image" content="https://hizlihaber.com/favicon.ico" />
         <meta name="author" content="Hızlı Haber Ekibi" />
-        <link rel="canonical" href="https://hizlihaber.com/terms" />
+        <link href="https://hizlihaber.com/terms" />
         <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.json" />

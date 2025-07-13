@@ -90,7 +90,7 @@ function Home() {
         <meta name="twitter:description" content="Yeni nesil Haberler, Türkiye ve dünyadan en güncel haberler, son dakika gelişmeleri ve daha fazlası Hızlı Haber'de!" />
         <meta name="twitter:image" content="https://hizlihaber.com/favicon.ico" />
         <meta name="author" content="Hızlı Haber Ekibi" />
-        <link rel="canonical" href="https://hizlihaber.com/" />
+        <link href="https://hizlihaber.com/" />
         <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <meta name="google-signin-client_id" content="866369173209-9ridifjkd5a7v3kl8hb8g0j9hucn93q4.apps.googleusercontent.com" />
         <link rel="apple-touch-icon" href="/favicon.ico" />

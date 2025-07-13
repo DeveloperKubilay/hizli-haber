@@ -398,7 +398,7 @@ function Home() {
         <meta name="twitter:description" content="Hızlı Haber ile gündemi anında takip et! Son dakika haberleri, özetler ve daha fazlası burada. Türkiye ve dünyadan en güncel haberler, trend başlıklar ve kategorilere göre filtreleme imkanı." />
         <meta name="twitter:image" content="https://hizlihaber.com/favicon.ico" />
         <meta name="author" content="Hızlı Haber Ekibi" />
-        <link rel="canonical" href="https://hizlihaber.com/haberler" />
+        <link href="https://hizlihaber.com/haberler" />
         <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.json" />

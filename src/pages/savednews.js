@@ -386,7 +386,7 @@ function SavedNews() {
         <meta name="twitter:description" content="Kaydettiğin haberleri burada bul! Hızlı Haber ile favori haberlerini kaydet, istediğin zaman tekrar oku." />
         <meta name="twitter:image" content="https://hizlihaber.com/favicon.ico" />
         <meta name="author" content="Hızlı Haber Ekibi" />
-        <link rel="canonical" href="https://hizlihaber.com/savednews" />
+        <link href="https://hizlihaber.com/savednews" />
         <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/favicon.ico" />
         <link rel="manifest" href="/manifest.json" />
