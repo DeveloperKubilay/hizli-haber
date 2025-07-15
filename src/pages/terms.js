@@ -30,7 +30,7 @@ function Terms() {
         <meta name="msapplication-navbutton-color" content="#16181c" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="description" content="Hızlı Haber hizmet şartları ve kullanım koşulları. Platformun sorumlulukları, kullanıcı hakları ve gizlilik politikası hakkında detaylı bilgi." />
-        <meta name="keywords" content="hizmet şartları, kullanım koşulları, gizlilik, telif hakkı, hızlı haber, kullanıcı sorumluluğu, veri koruma, yapay zeka haber, haber platformu" />
+        <meta name="keywords" content="haber, hızlı haber, son dakika, gündem" />
         <meta property="og:title" content="Hizmet Şartları ve Kullanım Koşulları - Hızlı Haber" />
         <meta property="og:description" content="Hızlı Haber platformunun kullanım şartları, gizlilik ve telif hakları hakkında detaylı bilgi alın." />
         <meta property="og:type" content="website" />
@@ -47,8 +47,8 @@ function Terms() {
         <link rel="manifest" href="/manifest.json" />
       </Helmet>
       <Navbar />
-      
-      <motion.div 
+
+      <motion.div
         className="max-w-4xl mx-auto px-6 py-12"
         variants={pageVariants}
         initial="initial"
@@ -57,21 +57,21 @@ function Terms() {
         transition={{ duration: 0.6 }}
       >
         {/* Başlık ve Geri Dönüş */}
-        <motion.div 
+        <motion.div
           className="mb-8"
           variants={sectionVariants}
           initial="initial"
           animate="animate"
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="inline-flex items-center text-secondary hover:text-secondaryHover transition-colors mb-6 group"
           >
             <ArrowLeft size={20} className="mr-2 group-hover:-translate-x-1 transition-transform" />
             Ana Sayfaya Dön
           </Link>
-          
+
           <h1 className="text-4xl font-bold text-textHeading mb-4">
             Hizmet Şartları ve Kullanım Koşulları
           </h1>
@@ -81,7 +81,7 @@ function Terms() {
         </motion.div>
 
         {/* Yapay Zeka İçerik Uyarısı */}
-        <motion.div 
+        <motion.div
           className="bg-primaryBG border border-secondaryBG rounded-lg p-6 mb-8"
           variants={sectionVariants}
           initial="initial"
@@ -95,11 +95,11 @@ function Terms() {
                 Önemli: Yapay Zeka İçerik Uyarısı
               </h2>
               <p className="text-textPrimary leading-relaxed mb-3">
-                Bu platformdaki haber içerikleri gerçek kaynaklardan alınmakta ancak yapay zeka teknolojileri tarafından işlenmekte ve düzenlenmektedir. 
+                Bu platformdaki haber içerikleri gerçek kaynaklardan alınmakta ancak yapay zeka teknolojileri tarafından işlenmekte ve düzenlenmektedir.
                 Bu işlem sırasında içeriklerde değişiklikler, eksiklikler veya yanlışlıklar oluşabilir.
               </p>
               <p className="text-textPrimary leading-relaxed">
-                <strong className="text-textHeading">Önemli Not:</strong> Yapay zeka işleme sürecinde gerçeklikten sapma tesadüfidir. 
+                <strong className="text-textHeading">Önemli Not:</strong> Yapay zeka işleme sürecinde gerçeklikten sapma tesadüfidir.
                 Kritik kararlar alırken lütfen orijinal kaynaklardan doğrulama yapınız.
               </p>
             </div>
@@ -108,9 +108,9 @@ function Terms() {
 
         {/* Ana İçerik Bölümleri */}
         <div className="space-y-8">
-          
+
           {/* Sorumluluk Reddi */}
-          <motion.section 
+          <motion.section
             className="bg-primary rounded-lg p-6"
             variants={sectionVariants}
             initial="initial"
@@ -138,7 +138,7 @@ function Terms() {
           </motion.section>
 
           {/* Kullanım Şartları */}
-          <motion.section 
+          <motion.section
             className="bg-primary rounded-lg p-6"
             variants={sectionVariants}
             initial="initial"
@@ -166,7 +166,7 @@ function Terms() {
           </motion.section>
 
           {/* Kullanıcı Sorumlulukları */}
-          <motion.section 
+          <motion.section
             className="bg-primary rounded-lg p-6"
             variants={sectionVariants}
             initial="initial"
@@ -194,7 +194,7 @@ function Terms() {
           </motion.section>
 
           {/* Gizlilik */}
-          <motion.section 
+          <motion.section
             className="bg-primary rounded-lg p-6"
             variants={sectionVariants}
             initial="initial"
@@ -222,7 +222,7 @@ function Terms() {
           </motion.section>
 
           {/* Telif Hakları */}
-          <motion.section 
+          <motion.section
             className="bg-primary rounded-lg p-6"
             variants={sectionVariants}
             initial="initial"
@@ -250,7 +250,7 @@ function Terms() {
           </motion.section>
 
           {/* Değişiklikler */}
-          <motion.section 
+          <motion.section
             className="bg-primaryBG rounded-lg p-6"
             variants={sectionVariants}
             initial="initial"
@@ -267,7 +267,7 @@ function Terms() {
           </motion.section>
 
           {/* İletişim */}
-          <motion.section 
+          <motion.section
             className="bg-secondaryBG rounded-lg p-6"
             variants={sectionVariants}
             initial="initial"
@@ -278,8 +278,8 @@ function Terms() {
             <div className="text-textPrimary">
               <p>
                 Bu şartlar hakkında sorularınız için:{' '}
-                <a 
-                  href="mailto:info@hizlihaber.com" 
+                <a
+                  href="mailto:info@hizlihaber.com"
                   className="text-secondary hover:text-secondaryHover transition-colors underline"
                 >
                   info@hizlihaber.com
@@ -291,7 +291,7 @@ function Terms() {
         </div>
 
         {/* Alt Bilgi */}
-        <motion.div 
+        <motion.div
           className="mt-12 text-center text-textPrimary"
           variants={sectionVariants}
           initial="initial"
@@ -299,13 +299,13 @@ function Terms() {
           transition={{ duration: 0.6, delay: 1.0 }}
         >
           <p className="bg-primary rounded-lg p-4">
-            <strong className="text-secondary">Unutmayın:</strong> Bu platform gerçek haberlerden yapay zeka ile işlenmiş içerik sunar. 
+            <strong className="text-secondary">Unutmayın:</strong> Bu platform gerçek haberlerden yapay zeka ile işlenmiş içerik sunar.
             İyi haber okumalar!
           </p>
         </motion.div>
 
       </motion.div>
-      
+
       <Footer />
     </div>
   );
