@@ -375,7 +375,7 @@ function SavedNews() {
         <meta name="msapplication-navbutton-color" content="#16181c" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="description" content="Kaydettiğin haberleri burada bul! Hızlı Haber ile favori haberlerini kaydet, istediğin zaman tekrar oku." />
-        <meta name="keywords" content="kaydedilen haberler, favori haberler, hızlı haber, haber kaydet, haber arşivi, haber platformu, haber listesi, haber özetleri, haber takip" />
+        <meta name="keywords" content="haber, hızlı haber, son dakika, gündem" />
         <meta property="og:title" content="Kaydedilen Haberlerim - Hızlı Haber" />
         <meta property="og:description" content="Kaydettiğin haberleri burada bul! Hızlı Haber ile favori haberlerini kaydet, istediğin zaman tekrar oku." />
         <meta property="og:type" content="website" />

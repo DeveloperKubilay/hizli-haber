@@ -546,7 +546,7 @@ function NewsDetail() {
         <meta name="msapplication-navbutton-color" content="#16181c" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="description" content={news?.summary || 'Hızlı Haber ile gündemi anında takip et! Son dakika haberleri, özetler ve daha fazlası burada.'} />
-        <meta name="keywords" content={news?.tag && Array.isArray(news.tag) && news.tag.length > 0 ? news.tag.join(', ') + ', haber, hızlı haber, son dakika, gündem, özet, trend, popüler' : 'haber, hızlı haber, son dakika, gündem, özet, trend, popüler'} />
+        <meta name="keywords" content={news?.tag && Array.isArray(news.tag) && news.tag.length > 0 ? news.tag.join(', ') + ', haber, hızlı haber, son dakika, gündem' : 'haber, hızlı haber, son dakika, gündem'} />
         <meta property="og:title" content={news?.name ? `${news.name} - Hızlı Haber` : 'Hızlı Haber'} />
         <meta property="og:description" content={news?.summary || 'Hızlı Haber ile gündemi anında takip et! Son dakika haberleri, özetler ve daha fazlası burada.'} />
         <meta property="og:type" content="article" />
