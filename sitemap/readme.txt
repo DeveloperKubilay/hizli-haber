@@ -1,0 +1,1 @@
+I'm redirecting this place so it can be updated with cloudflare workers.
