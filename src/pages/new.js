@@ -540,6 +540,7 @@ function NewsDetail() {
     <>
       <Helmet>
         <title>{news?.name ? `${news.name} - Hızlı Haber` : 'Hızlı Haber'}</title>
+        <link rel="canonical" href={typeof window !== 'undefined' ? window.location.href : 'https://hizlihaber.com'} />
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#16181c" />
