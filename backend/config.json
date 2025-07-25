@@ -1,11 +1,12 @@
 {
     "urls": [
-        "shiftdelete.net",
-        "donanimhaber.com",
+        "bbc.com",
         "hurriyet.com.tr",
         "ntv.com.tr",
         "haberturk.com",
-        "haber7.com"
+        "haber7.com",
+        "shiftdelete.net",
+        "donanimhaber.com"
     ],
     "MODEL": "gemini-2.5-flash",
     "IMG_MODEL": "gemini-2.0-flash-preview-image-generation",
