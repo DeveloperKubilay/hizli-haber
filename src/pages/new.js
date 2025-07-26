@@ -559,8 +559,12 @@ function NewsDetail() {
         <meta name="twitter:image" content={news?.image || `${window.location.origin}/favicon.ico`} />
         <meta name="author" content="Hızlı Haber Ekibi" />
         <link href={typeof window !== 'undefined' ? window.location.href : 'https://hizlihaber.com'} />
-        <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/favicon.ico" />
+        <link rel="icon" href="/imgs/logos/logo64.png" sizes="64x64" type="image/png" />
+        <link rel="icon" href="/imgs/logos/logo128.png" sizes="128x128" type="image/png" />
+        <link rel="icon" href="/imgs/logos/logo180.png" sizes="180x180" type="image/png" />
+        <link rel="icon" href="/imgs/logos/logo192.png" sizes="192x192" type="image/png" />
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="apple-touch-icon" href="/imgs/logos/logo180.png" />
         <link rel="manifest" href="/manifest.json" />
         {/* OG ve Twitter taglar */}
         {news?.tag && Array.isArray(news.tag) && news.tag.length > 0 && (
