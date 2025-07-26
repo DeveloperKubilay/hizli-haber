@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { Helmet } from 'react-helmet';
 
 // Home Components
 import HeroSection from '../components/home/HeroSection';
@@ -71,31 +70,6 @@ function Home() {
 
   return (
     <div className="bg-background min-h-screen">
-      <Helmet>
-        <title>Hızlı Haber</title>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#16181c" />
-        <meta name="msapplication-navbutton-color" content="#16181c" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="description" content="Hızlı Haber - Yeni nesil haberler! En güncel haberleri hızlı ve kolay bir şekilde takip et. Türkiye ve dünya gündeminden anında haberdar ol." />
-        <meta name="keywords" content="haber, hızlı haber, son dakika, gündem" />
-        <meta property="og:title" content="Hızlı Haber - Yeni nesil Haberler" />
-        <meta property="og:description" content="Yeni nesil Haberler, Türkiye ve dünyadan en güncel haberler, son dakika gelişmeleri ve daha fazlası Hızlı Haber'de!" />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://hizlihaber.com" />
-        <meta property="og:image" content="https://hizlihaber.com/favicon.ico" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Hızlı Haber - Yeni nesil Haberler" />
-        <meta name="twitter:description" content="Yeni nesil Haberler, Türkiye ve dünyadan en güncel haberler, son dakika gelişmeleri ve daha fazlası Hızlı Haber'de!" />
-        <meta name="twitter:image" content="https://hizlihaber.com/favicon.ico" />
-        <meta name="author" content="Hızlı Haber Ekibi" />
-        <link href="https://hizlihaber.com/" />
-        <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <meta name="google-signin-client_id" content="866369173209-9ridifjkd5a7v3kl8hb8g0j9hucn93q4.apps.googleusercontent.com" />
-        <link rel="apple-touch-icon" href="/favicon.ico" />
-        <link rel="manifest" href="/manifest.json" />
-      </Helmet>
       <Navbar />
       <div ref={welcomeContainerRef} className="Welcome_container"></div>
       <div className="max-w-6xl mx-auto py-8 sm:px-6 lg:px-8 relative">
