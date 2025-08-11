@@ -13,7 +13,6 @@ import NewsContent from '../components/new/NewsContent';
 import InteractionButtons from '../components/new/InteractionButtons';
 import CommentSection from '../components/new/CommentSection';
 import RelatedNews from '../components/new/RelatedNews';
-import AdSection from '../components/new/AdSection';
 import LoadingState from '../components/new/LoadingState';
 import ErrorState from '../components/new/ErrorState';
 import NotFoundState from '../components/new/NotFoundState';
@@ -626,10 +625,6 @@ function NewsDetail() {
               />
             </div>
 
-            {/* Reklam alanı */}
-            <div>
-              <AdSection />
-            </div>
           </div>
         </div>
       </div>

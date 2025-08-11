@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { Tag, FileText, Heart, ThumbsDown, Calendar, Newspaper } from 'lucide-react';
+import { Tag, FileText, Heart, ThumbsDown, Calendar, Newspaper, Megaphone } from 'lucide-react';
 import { CATEGORY_COLORS, CATEGORY_ICONS, translateTagsToTurkish, CATEGORIES } from '../../services/categories';
 
 function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
@@ -114,6 +114,36 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
           </div>
         </div>
       </motion.div>
+
+      {/* Reklam Alanı 
+      <motion.div 
+        className="bg-primary p-5 rounded-lg text-center w-full"
+        variants={itemVariants}
+        whileHover={{ 
+          scale: 1.02,
+          boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+          transition: { duration: 0.2 }
+        }}
+      >
+        <motion.div 
+          className="flex items-center gap-3 mb-4"
+          variants={itemVariants}
+        >
+          <Megaphone className="text-secondary" size={22} />
+          <h3 className="text-lg md:text-xl font-bold text-textHeading">
+            Reklam Alanı
+          </h3>
+        </motion.div>
+        <motion.div 
+          className="bg-primaryBG rounded-lg p-8 md:p-10 min-h-[220px] md:min-h-[280px] flex items-center justify-center w-full"
+          variants={itemVariants}
+        >
+          <p className="text-textPrimary text-base md:text-lg">
+            Bu alan reklam için ayrılmıştır
+          </p>
+        </motion.div>
+      </motion.div>
+      */}
 
       {/* Etiketler */}
       {currentNews?.tag && currentNews.tag.length > 0 && (

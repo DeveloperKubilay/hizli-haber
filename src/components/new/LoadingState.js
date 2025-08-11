@@ -134,6 +134,18 @@ function LoadingState() {
                 </div>
               </div>
 
+              {/* Reklam Alanı kartı */}
+              <div className="bg-primary p-5 md:p-6 rounded-lg text-center w-full">
+                {/* Başlık */}
+                <div className="flex items-center gap-3 mb-4">
+                  <SkeletonItem className="h-6 w-6 rounded" />
+                  <SkeletonItem className="h-6 w-24" />
+                </div>
+                
+                {/* Reklam alanı - min-h-[280px] */}
+                <SkeletonItem className="w-full min-h-[280px] rounded-lg" />
+              </div>
+
               {/* Etiketler kartı */}
               <div className="bg-primary p-5 rounded-lg">
                 {/* Başlık */}
@@ -187,18 +199,6 @@ function LoadingState() {
                     </div>
                   ))}
                 </div>
-              </div>
-
-              {/* Reklam Alanı kartı */}
-              <div className="bg-primary p-5 md:p-6 rounded-lg text-center w-full">
-                {/* Başlık */}
-                <div className="flex items-center gap-3 mb-4">
-                  <SkeletonItem className="h-6 w-6 rounded" />
-                  <SkeletonItem className="h-6 w-24" />
-                </div>
-                
-                {/* Reklam alanı - min-h-[280px] */}
-                <SkeletonItem className="w-full min-h-[280px] rounded-lg" />
               </div>
             </div>
           </div>
