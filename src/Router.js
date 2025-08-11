@@ -5,6 +5,7 @@ import News from './pages/news';
 import New from './pages/new';
 import SavedNews from './pages/savednews';
 import Terms from './pages/terms';
+import NotFound from './pages/notfound';
 import './services/index.css';
 
 // Scroll to top component
@@ -31,6 +32,7 @@ function App() {
           <Route path="/haber/:id" element={<New />} /> {/* Eski URL'ler için redirect */}
           <Route path="/kaydettigim-haberler" element={<SavedNews />} />
           <Route path="/hizmet-sartlari" element={<Terms />} />
+          <Route path="*" element={<NotFound />} /> {/* 404 sayfası - catch all route */}
         </Routes>
       </div>
     </Router>
