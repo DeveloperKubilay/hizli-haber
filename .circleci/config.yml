@@ -23,12 +23,16 @@ jobs:
   deploy:
     docker:
       - image: cimg/node:20.0
-    resource_class: medium
+    resource_class: small
     steps:
       - checkout
       - run:
           name: Fix private key
           command: echo "$FIREBASE_PRIVATE_KEY" > private-key.txt
+      - run:
+          name: Test
+          command: echo "$test"
+      - run:
       - run:
           name: Build Project
           working_directory: backend
