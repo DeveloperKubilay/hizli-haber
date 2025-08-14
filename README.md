@@ -42,6 +42,8 @@
   |-- firestore.rules  # Güvenlik kuralları
 ```
 
+[Circle ci](https://app.circleci.com/pipelines/github/DeveloperKubilay/hizli-haber?branch=main)
+
 ## 🚦 Güvenlik
 - Firestore kuralları ile kullanıcı verisi koruma
 - Sadece giriş yapan kullanıcılar veri ekleyebilir/değiştirebilir
@@ -107,6 +109,7 @@
 |-- tailwind.config.js
 |-- firestore.rules # Security rules
 
+[Circle ci](https://app.circleci.com/pipelines/github/DeveloperKubilay/hizli-haber?branch=main)
 
 ## 🚦 Security
 - Protecting user data with Firestore rules
