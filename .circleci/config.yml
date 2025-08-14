@@ -28,10 +28,7 @@ jobs:
       - checkout
       - run:
           name: Fix private key
-          command: echo "$FIREBASE_PRIVATE_KEY" > private-key.txt
-      - run:
-          name: Test
-          command: echo "$test"
+          command: echo "$FIREBASE_PRIVATE_KEY" > private-key.txt  
       - run:
           name: Build Project
           working_directory: backend
