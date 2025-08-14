@@ -29,9 +29,9 @@ async function processSinglePrompt(ainame, data, uploadFile) {
             model: ainame,
             contents: [content],
             config: {
-                thinkingConfig: {
+               /* thinkingConfig: {
                     thinkingBudget: -1,
-                },
+                },*/
                 tools: [{ urlContext: {} }],
                 responseMimeType: 'text/plain',
             },
