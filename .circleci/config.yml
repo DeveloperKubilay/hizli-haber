@@ -33,7 +33,6 @@ jobs:
           name: Test
           command: echo "$test"
       - run:
-      - run:
           name: Build Project
           working_directory: backend
           command: |
