@@ -8,8 +8,16 @@
         "shiftdelete.net",
         "donanimhaber.com"
     ],
-    "MODEL": "gemini-2.0-flash",
-    "IMG_MODEL": "gemini-2.0-flash-preview-image-generation",
+    "MODEL": [
+        "gemini-2.0-flash",
+        "gemini-1.5-flash",
+        "gemini-1.5-pro"
+    ],
+    "IMG_MODEL": [
+        "imagen-4.0-generate-001",
+        "imagen-4.0-fast-generate-001", 
+        "imagen-3.0-generate-002"
+    ],
     "IMG_promt": [
         "{DATA}"
     ],
