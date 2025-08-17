@@ -50,11 +50,12 @@ async function main() {
                     console.log(`🎨 ${batchIndex * batchSize + i + 1}. haber için görsel oluşturuluyor...`);
                     const imageResult = await generateAndUploadImage(parsedNews.name);
                     let imageUrl = "https://i.imgur.com/qB16SCf.png";
+                    
                     if (imageResult.success) {
                         imageUrl = imageResult.imageUrl;
                         console.log(`✅ Görsel başarıyla oluşturuldu: ${imageResult.fileName}`);
                     } else {
-                        console.warn(`⚠️ Görsel oluşturulamadı: ${imageResult.message}`);
+                        console.warn(`⚠️ Görsel oluşturulamadı, default resim kullanılıyor: ${imageResult.message}`);
                     }
                     
                     const newsId = await firebase.addWithAdmin('news', {
@@ -85,3 +86,8 @@ async function main() {
 }
 
 main()
+
+setTimeout(() => {
+    console.log("⏰ 7 dakika geçti, process sonlandırılıyor...");
+    process.exit(0);
+}, 7 * 60 * 1000);
