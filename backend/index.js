@@ -7,6 +7,10 @@ const config = require("./config.json");
 //https://gnews.io/dashboard
 //https://newsapi.org/
 
+setTimeout(() => {
+process.exit(0)
+},5 * 60 *1000)
+
 async function main() {
     console.log("🚀 Haber getirme işlemi başlatılıyor...");
     const news = (await getNews()).slice(0, 25);
@@ -31,7 +35,7 @@ async function main() {
         );
         
         try {
-            // 5 prompt'ı aynı anda gönder
+            // 5 prompt'ı aynı anda gönder - artık model array'i kullanıyoruz
             const responses = await ai.processMultiple(config.MODEL, prompts);
             console.log(`✅ Batch ${batchIndex + 1} AI işlemi tamamlandı`);
             
