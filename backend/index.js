@@ -7,10 +7,6 @@ const config = require("./config.json");
 //https://gnews.io/dashboard
 //https://newsapi.org/
 
-setTimeout(() => {
-process.exit(0)
-},5 * 60 *1000)
-
 async function main() {
     console.log("🚀 Haber getirme işlemi başlatılıyor...");
     const news = (await getNews()).slice(0, 25);

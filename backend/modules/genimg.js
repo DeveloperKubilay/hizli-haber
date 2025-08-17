@@ -1,13 +1,13 @@
 var GoogleGenAI = require('@google/genai').GoogleGenAI;
-const { PersonGeneration } = require('@google/genai');
 const config = require('../config.json');
+var mime = require('mime');
 const uploadFile = require('./s3');
 
 var ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
 });
 
-// Retry sistemi ile görsel oluşturma (Yeni Imagen API)
+// Retry sistemi ile görsel oluşturma
 async function generateImageWithRetry(promt, maxRetries = 5) {
     let lastError;
     
@@ -20,37 +20,40 @@ async function generateImageWithRetry(promt, maxRetries = 5) {
             try {
                 console.log(`🤖 ${model} ile görsel oluşturuluyor...`);
                 
-                const response = await ai.models.generateImages({
+                const response = await ai.models.generateContent({
                     model: model,
-                    prompt: config.IMG_promt.join("\n").replace("{DATA}", promt),
                     config: {
-                        numberOfImages: 1,
-                        aspectRatio: '16:9',
-                        personGeneration: PersonGeneration.ALLOW_ADULT,
-                        outputMimeType: 'image/jpeg',
-                        includeRaiReason: true,
+                        responseModalities: [
+                            "TEXT",
+                            'IMAGE'
+                        ],
                     },
+                    contents: [
+                        {
+                            role: 'user',
+                            parts: [
+                                {
+                                    text: config.IMG_promt.join("\n").replace("{DATA}", promt),
+                                },
+                            ],
+                        },
+                    ]
                 });
+                
+                let fileData = (response.candidates[0] || []).content?.parts?.[0]?.inlineData;
 
-                if (response?.generatedImages && response.generatedImages.length > 0) {
-                    const generatedImage = response.generatedImages[0];
+                if (fileData && fileData.data) {
+                    const fileExtension = mime.getExtension(fileData.mimeType || '');
+                    var fileName = 'image_' + Date.now() + '.' + fileExtension;
+                    var buffer = Buffer.from(fileData.data || '', 'base64');
                     
-                    if (generatedImage.image?.imageBytes) {
-                        var fileName = 'image_' + Date.now() + '.jpeg';
-                        var buffer = Buffer.from(generatedImage.image.imageBytes, 'base64');
-                        
-                        console.log(`✅ ${model} ile görsel başarıyla oluşturuldu!`);
-                        return {
-                            fileName: fileName,
-                            buffer: buffer
-                        };
-                    } else if (generatedImage.raiFilteredReason) {
-                        throw new Error(`İçerik filtrelendi: ${generatedImage.raiFilteredReason}`);
-                    } else {
-                        throw new Error("Görsel data'sı bulunamadı");
-                    }
+                    console.log(`✅ ${model} ile görsel başarıyla oluşturuldu!`);
+                    return {
+                        fileName: fileName,
+                        buffer: buffer
+                    };
                 } else {
-                    throw new Error("Görsel oluşturulamadı");
+                    throw new Error("Görsel data'sı bulunamadı");
                 }
                 
             } catch (error) {
