@@ -83,36 +83,49 @@ async function generateImage(promt) {
 }
 
 // Görsel oluşturup S3'e yüklemek için (yeni fonksiyon)
-async function generateAndUploadImage(newsTitle) {
-    try {
-        // Önce görseli oluştur
-        const imageResult = await generateImage(newsTitle);
+async function generateAndUploadImage(newsTitle, maxAttempts = 2) {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+            console.log(`🎨 Görsel oluşturma ${attempt}/${maxAttempts}. deneme...`);
+            
+            // Önce görseli oluştur
+            const imageResult = await generateImage(newsTitle);
 
-        if (imageResult.error) {
+            if (imageResult.error) {
+                console.warn(`⚠️ ${attempt}. denemede görsel oluşturulamadı: ${imageResult.message}`);
+                if (attempt === maxAttempts) {
+                    console.log("🚫 Maksimum deneme sayısına ulaşıldı, resimsiz devam ediliyor");
+                    return {
+                        success: false,
+                        message: "Görsel oluşturulamadı, resimsiz devam ediliyor"
+                    };
+                }
+                continue;
+            }
+
+            // S3'e yükle
+            await uploadFile(imageResult.fileName, imageResult.buffer, 'image/jpeg');
+
+            // CDN URL'ini oluştur
+            const imageUrl = `https://cdn.xn--hzl-haber-vpbc.com/${encodeURIComponent(imageResult.fileName)}`;
+
+            console.log(`✅ ${attempt}. denemede görsel başarıyla oluşturuldu!`);
             return {
-                error: true,
-                message: "Görsel oluşturulamadı"
+                success: true,
+                fileName: imageResult.fileName,
+                imageUrl: imageUrl
             };
+
+        } catch (error) {
+            console.error(`💥 ${attempt}. denemede hata:`, error.message);
+            if (attempt === maxAttempts) {
+                console.log("🚫 Tüm denemeler başarısız, resimsiz devam ediliyor");
+                return {
+                    success: false,
+                    message: "Görsel oluşturma başarısız, resimsiz devam ediliyor"
+                };
+            }
         }
-
-        // S3'e yükle
-        await uploadFile(imageResult.fileName, imageResult.buffer, 'image/jpeg');
-
-        // CDN URL'ini oluştur
-        const imageUrl = `https://cdn.xn--hzl-haber-vpbc.com/${encodeURIComponent(imageResult.fileName)}`;
-
-        return {
-            success: true,
-            fileName: imageResult.fileName,
-            imageUrl: imageUrl
-        };
-
-    } catch (error) {
-        console.error('Görsel oluşturma ve yükleme hatası:', error);
-        return {
-            error: true,
-            message: "Görsel oluşturma veya yükleme sırasında hata oluştu"
-        };
     }
 }
 
