@@ -36,3 +36,4 @@ jobs:
             npm install
             export FIREBASE_PRIVATE_KEY=$(cat ../private-key.txt)
             node index.js
+          no_output_timeout: 420
