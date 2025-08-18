@@ -83,6 +83,12 @@ async function main() {
     }
     
     console.log("🎉 Tüm haberler işlendi!");
+    process.exit(0);
 }
 
 main()
+
+setTimeout(() => {
+    console.log("⏰ 7 dakika geçti, process sonlandırılıyor...");
+    process.exit(0);
+}, 7 * 60 * 1000);
