@@ -86,8 +86,3 @@ async function main() {
 }
 
 main()
-
-setTimeout(() => {
-    console.log("⏰ 7 dakika geçti, process sonlandırılıyor...");
-    process.exit(0);
-}, 7 * 60 * 1000);
