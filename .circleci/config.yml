@@ -1,5 +1,10 @@
 version: 2.1
 
+parameters:
+  environment:
+    type: string
+    default: "auto"
+
 workflows:
   version: 2
   scheduled-deploy:
