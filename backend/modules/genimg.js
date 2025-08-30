@@ -7,64 +7,96 @@ var ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
 });
 
+// Yardımcı fonksiyon: Belirli bir model ile görsel oluşturmayı dene
+async function tryGenerateImage(model, promt) {
+    try {
+        console.log(`🤖 ${model} ile görsel oluşturuluyor...`);
+        
+        const response = await ai.models.generateContent({
+            model: model,
+            config: {
+                responseModalities: [
+                    "TEXT",
+                    'IMAGE'
+                ],
+            },
+            contents: [
+                {
+                    role: 'user',
+                    parts: [
+                        {
+                            text: config.IMG_promt.join("\n").replace("{DATA}", promt),
+                        },
+                    ],
+                },
+            ]
+        });
+        
+        let fileData = (response.candidates[0] || []).content?.parts?.[0]?.inlineData;
+        if (fileData && fileData.data) {
+            const fileExtension = mime.getExtension(fileData.mimeType || '');
+            let fileName = 'image_' + Date.now() + '.' + fileExtension;
+            let buffer = Buffer.from(fileData.data || '', 'base64');
+            
+            console.log(`✅ ${model} ile görsel başarıyla oluşturuldu!`);
+            return {
+                success: true,
+                fileName: fileName,
+                buffer: buffer
+            };
+        } else {
+            throw new Error("Görsel data'sı bulunamadı");
+        }
+        
+    } catch (error) {
+        console.warn(`⚠️ ${model} başarısız: ${error.message}`);
+        
+        // Rate limit hatası ise biraz bekle
+        if (error.status === 429) {
+            console.log("💤 Rate limit! 10 saniye bekleniyor...");
+            await new Promise(resolve => setTimeout(resolve, 10000));
+        }
+        
+        return {
+            success: false,
+            error: error
+        };
+    }
+}
+
 // Retry sistemi ile görsel oluşturma
 async function generateImageWithRetry(promt, maxRetries = 5) {
     let lastError;
     
+    // Önce 2.5 modelini bir kez dene
+    const primaryModel = config.IMG_MODEL[0];
+    console.log(`🎨 Birincil model ${primaryModel} ile görsel oluşturuluyor...`);
+    
+    const primaryResult = await tryGenerateImage(primaryModel, promt);
+    if (primaryResult.success) {
+        return {
+            fileName: primaryResult.fileName,
+            buffer: primaryResult.buffer
+        };
+    } else {
+        lastError = primaryResult.error;
+    }
+    
+    // 2.5 başarısız olursa, diğer modelleri retry ile dene
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        console.log(`🎨 Görsel oluşturma denemesi ${attempt}/${maxRetries}...`);
+        console.log(`🎨 Diğer modellerle görsel oluşturma denemesi ${attempt}/${maxRetries}...`);
         
-        for (let modelIndex = 0; modelIndex < config.IMG_MODEL.length; modelIndex++) {
+        for (let modelIndex = 1; modelIndex < config.IMG_MODEL.length; modelIndex++) {
             const model = config.IMG_MODEL[modelIndex];
             
-            try {
-                console.log(`🤖 ${model} ile görsel oluşturuluyor...`);
-                
-                const response = await ai.models.generateContent({
-                    model: model,
-                    config: {
-                        responseModalities: [
-                            "TEXT",
-                            'IMAGE'
-                        ],
-                    },
-                    contents: [
-                        {
-                            role: 'user',
-                            parts: [
-                                {
-                                    text: config.IMG_promt.join("\n").replace("{DATA}", promt),
-                                },
-                            ],
-                        },
-                    ]
-                });
-                
-                let fileData = (response.candidates[0] || []).content?.parts?.[0]?.inlineData;
-
-                if (fileData && fileData.data) {
-                    const fileExtension = mime.getExtension(fileData.mimeType || '');
-                    var fileName = 'image_' + Date.now() + '.' + fileExtension;
-                    var buffer = Buffer.from(fileData.data || '', 'base64');
-                    
-                    console.log(`✅ ${model} ile görsel başarıyla oluşturuldu!`);
-                    return {
-                        fileName: fileName,
-                        buffer: buffer
-                    };
-                } else {
-                    throw new Error("Görsel data'sı bulunamadı");
-                }
-                
-            } catch (error) {
-                lastError = error;
-                console.warn(`⚠️ ${model} başarısız: ${error.message}`);
-                
-                // Rate limit hatası ise biraz bekle
-                if (error.status === 429) {
-                    console.log("💤 Rate limit! 10 saniye bekleniyor...");
-                    await new Promise(resolve => setTimeout(resolve, 10000));
-                }
+            const result = await tryGenerateImage(model, promt);
+            if (result.success) {
+                return {
+                    fileName: result.fileName,
+                    buffer: result.buffer
+                };
+            } else {
+                lastError = result.error;
             }
         }
         
