@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pipeline Tetikleyici 🚀</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -55,33 +56,20 @@
             messageP.textContent = '⏳ Tetikleniyor...';
 
             try {
-                const token = ""
-                const definition_id = ""
-                const response = await fetch('https://circleci.com/api/v2/project/gh/DeveloperKubilay/hizli-haber/pipeline/run', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        "Authorization": token,
-                    },
-                    body: JSON.stringify({
-                        config: { branch: "main" },
-                        checkout: {
-                            branch: "main",
-                        },
-                        definition_id: definition_id,
-                        parameters: {
-                            environment: url
+                const response = await axios.post("/trigger-pipeline",
+                    {
+                        url: url
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
                         }
-                    }),
-                });
+                    });
 
-                const data = await response.json();
-
-                if (data.ok) {
+                if (response.data.ok) {
                     messageP.textContent = '✅ Pipeline başarıyla tetiklendi! 🎉';
                     messageP.className = 'text-lg text-green-600';
                 } else {
-                    messageP.textContent = `❌ Hata: ${data.error || 'Bilinmeyen hata'}`;
+                    messageP.textContent = `❌ Hata: ${response.data.error || 'Bilinmeyen hata'}`;
                     messageP.className = 'text-lg text-red-600';
                 }
             } catch (error) {

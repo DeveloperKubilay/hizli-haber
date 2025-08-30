@@ -93,4 +93,4 @@ main()
 setTimeout(() => {
     console.log("⏰ 7 dakika geçti, process sonlandırılıyor...");
     process.exit(0);
-}, 7 * 60 * 1000);
+}, process.env.DEPLOY_ENV ? 2 * 60 * 1000 : 7 * 60 * 1000);

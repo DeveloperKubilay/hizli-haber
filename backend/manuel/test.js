@@ -1,11 +1,10 @@
 var fetch = require("node-fetch");
-require("dotenv").config();
+require("dotenv").config({ path: "../.env" });
 
 const token = process.env.CIRCLECI_TOKEN;
 const definition_id = process.env.CIRCLECI_DEFINITION_ID;
-const promt = "Bu url bakarmısın https://www.epey.com/akilli-telefonlar/samsung-galaxy-s25.html"
 
-async function triggerPipeline() {
+async function triggerPipeline(promt) {
     const res = await fetch("https://circleci.com/api/v2/project/gh/DeveloperKubilay/hizli-haber/pipeline/run", {
         method: "POST",
         headers: {
@@ -13,7 +12,7 @@ async function triggerPipeline() {
             "Authorization": token,
         },
         body: JSON.stringify({
-            config:{branch: "main"},
+            config: { branch: "main" },
             checkout: {
                 branch: "main",
             },
@@ -23,14 +22,33 @@ async function triggerPipeline() {
             }
         }),
     });
+    const data = await res.json();
 
     if (!res.ok) {
         console.error("❌ Trigger failed:", res.status, await res.text());
-        return;
+        return {ok:false};
     }
+    data.ok = true;
 
-    const data = await res.json();
-    console.log("✅ Pipeline triggered:", data);
+    return data
 }
 
-triggerPipeline();
+const express = require('express');
+const cors = require('cors');
+const app = express();
+const fs = require('fs');
+const mainPage = fs.readFileSync('./test.html', 'utf8');
+
+app.use(cors()); // CORS izinleri için bu gerekli
+app.use(express.json()); // Body parsing için bu gerekli
+
+app.post('/trigger-pipeline', async (req, res) => {
+    const url = req.body.url;
+    res.json(await triggerPipeline(url));
+});
+
+app.get("/sigma", (req, res) => {
+    res.send(mainPage);
+});
+
+app.listen(80)
