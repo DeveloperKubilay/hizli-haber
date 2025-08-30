@@ -29,14 +29,17 @@ jobs:
     docker:
       - image: cimg/node:20.0
     resource_class: small
+    environment:
+      DEPLOY_ENV: << pipeline.parameters.environment >>
     steps:
       - checkout
       - run:
           name: Fix private key
           command: echo "$FIREBASE_PRIVATE_KEY" > private-key.txt  
-      -run:
-          name: test
-          command:  node -e 'console.log("process.env.DEPLOY_ENV =", process.env.DEPLOY_ENV)
+      - run:
+          name: Test param
+          command: |
+            node -e 'console.log("process.env.DEPLOY_ENV =", process.env.DEPLOY_ENV)'
       - run:
           name: Build Project
           working_directory: backend
