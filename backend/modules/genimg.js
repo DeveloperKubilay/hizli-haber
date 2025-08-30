@@ -97,7 +97,7 @@ async function tryGenerateImage(model, promt) {
 }
 
 // Retry sistemi ile görsel oluşturma
-async function generateImageWithRetry(promt, maxRetries = 5) {
+async function generateImageWithRetry(promt, maxRetries = config.MaxImgTry || 3) {
     let lastError;
     
     // Önce 2.5 modelini bir kez dene

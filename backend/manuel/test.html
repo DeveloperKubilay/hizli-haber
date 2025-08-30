@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipeline Tetikleyici 🚀</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card p-8 max-w-md w-full mx-4">
+        <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">🔥 Pipeline Tetikleyici</h1>
+        <form id="triggerForm" class="space-y-4">
+            <div>
+                <label for="urlInput" class="block text-sm font-medium text-gray-700 mb-2">Promt Girin:</label>
+                <textarea id="urlInput" name="url" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="https://example.com/haber" rows="4"></textarea>
+            </div>
+            <button type="submit"
+                class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all transform hover:scale-105 active:scale-95">
+                🚀 Pipeline'ı Tetikle
+            </button>
+        </form>
+        <div id="result" class="mt-6 text-center hidden">
+            <p id="message" class="text-lg"></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('triggerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const url = document.getElementById('urlInput').value;
+            const resultDiv = document.getElementById('result');
+            const messageP = document.getElementById('message');
+
+            resultDiv.classList.add('hidden');
+            messageP.textContent = '⏳ Tetikleniyor...';
+
+            try {
+                const token = ""
+                const definition_id = ""
+                const response = await fetch('https://circleci.com/api/v2/project/gh/DeveloperKubilay/hizli-haber/pipeline/run', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        "Authorization": token,
+                    },
+                    body: JSON.stringify({
+                        config: { branch: "main" },
+                        checkout: {
+                            branch: "main",
+                        },
+                        definition_id: definition_id,
+                        parameters: {
+                            environment: url
+                        }
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (data.ok) {
+                    messageP.textContent = '✅ Pipeline başarıyla tetiklendi! 🎉';
+                    messageP.className = 'text-lg text-green-600';
+                } else {
+                    messageP.textContent = `❌ Hata: ${data.error || 'Bilinmeyen hata'}`;
+                    messageP.className = 'text-lg text-red-600';
+                }
+            } catch (error) {
+                messageP.textContent = `💥 Bağlantı hatası: ${error.message}`;
+                messageP.className = 'text-lg text-red-600';
+            }
+
+            resultDiv.classList.remove('hidden');
+        });
+    </script>
+</body>
+
+</html>

@@ -61,7 +61,7 @@ async function main() {
 
                     const newsId = await firebase.addWithAdmin('news', {
                         ...parsedNews,
-                        createdAt: batch[i].publishedAt,
+                        createdAt: batch[i].publishedAt || new Date().toISOString(),
                         image: imageUrl
                     });
 
