@@ -51,10 +51,42 @@ async function tryGenerateImage(model, promt) {
     } catch (error) {
         console.warn(`⚠️ ${model} başarısız: ${error.message}`);
         
-        // Rate limit hatası ise biraz bekle
+        // Rate limit hatası ise RetryInfo'dan bekleme süresini al
         if (error.status === 429) {
-            console.log("💤 Rate limit! 10 saniye bekleniyor...");
-            await new Promise(resolve => setTimeout(resolve, 10000));
+            // Günlük quota tükendi ise bekleme, direkt başarısız dön
+            if (error.details) {
+                const quotaFailure = error.details.find(d => d['@type'] === 'type.googleapis.com/google.rpc.QuotaFailure');
+                if (quotaFailure && quotaFailure.violations) {
+                    const dailyQuota = quotaFailure.violations.find(v => v.quotaId.includes('PerDay') && v.quotaValue === '100');
+                    if (dailyQuota) {
+                        console.log("🚫 Günlük quota tükendi, beklemeye gerek yok, başarısız dönülüyor...");
+                        return {
+                            success: false,
+                            error: error
+                        };
+                    }
+                }
+            }
+            
+            let retryDelay = 10; // varsayılan 10 saniye
+            if (error.details) {
+                const retryInfo = error.details.find(d => d['@type'] === 'type.googleapis.com/google.rpc.RetryInfo');
+                if (retryInfo && retryInfo.retryDelay) {
+                    const delayStr = retryInfo.retryDelay;
+                    const match = delayStr.match(/(\d+)s/);
+                    if (match) {
+                        retryDelay = parseInt(match[1]);
+                        console.log(`💤 Rate limit! ${retryDelay} saniye bekleniyor...`);
+                    } else {
+                        console.log("💤 Rate limit! 10 saniye bekleniyor...");
+                    }
+                } else {
+                    console.log("💤 Rate limit! 10 saniye bekleniyor...");
+                }
+            } else {
+                console.log("💤 Rate limit! 10 saniye bekleniyor...");
+            }
+            await new Promise(resolve => setTimeout(resolve, retryDelay * 1000));
         }
         
         return {
@@ -115,7 +147,7 @@ async function generateImage(promt) {
 }
 
 // Görsel oluşturup S3'e yüklemek için (yeni fonksiyon)
-async function generateAndUploadImage(newsTitle, maxAttempts = 2) {
+async function generateAndUploadImage(newsTitle, maxAttempts = 1) {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
             console.log(`🎨 Görsel oluşturma ${attempt}/${maxAttempts}. deneme...`);
