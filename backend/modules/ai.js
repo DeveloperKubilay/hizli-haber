@@ -97,6 +97,9 @@ async function processMultiplePrompts(models, prompts, uploadFiles = []) {
         
         const promises = prompts.map((prompt, index) => {
             const uploadFile = uploadFiles[index] || null;
+            if(prompt.includes("undefined")){
+                return new Promise((resolve) => resolve("undefined"));
+            }
             return processSinglePrompt(models, prompt, uploadFile);
         });
 
