@@ -83,6 +83,7 @@ async function main() {
         }
     }
 
+    await new Promise(resolve => setTimeout(resolve, 2000));
     console.log("🎉 Tüm haberler işlendi!");
     process.exit(0);
 }
