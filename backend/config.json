@@ -20,6 +20,7 @@
     "IMG_promt": [
         "{DATA}"
     ],
+    "MaxImgTry": 3,
     "promt": [
         "Senden JSON formatında yanıt vermeni istiyorum. Format şu şekilde olacak:",
         "{name: string, minides: string, summary: string, des: string, tag: array}",

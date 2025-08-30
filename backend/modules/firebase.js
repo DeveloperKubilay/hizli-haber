@@ -36,6 +36,7 @@ admin.initializeApp({
   credential: admin.credential.cert(adminConfig)
 });
 const adminDb = admin.firestore();
+adminDb.settings({ ignoreUndefinedProperties: true });
 
 // Client başlatma
 const app = initializeApp(firebaseConfig);
