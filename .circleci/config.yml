@@ -28,7 +28,7 @@ jobs:
   deploy:
     docker:
       - image: cimg/node:20.0
-    resource_class: small
+    resource_class: arm.medium
     environment:
       DEPLOY_ENV: << pipeline.parameters.environment >>
     steps:
