@@ -25,7 +25,6 @@ async function main() {
         const batch = batches[batchIndex];
         console.log(`🔄 Batch ${batchIndex + 1}/${batches.length} işleniyor... (${batch.length} haber)`);
 
-        // Bu batch için prompt'ları hazırla
         const prompts = batch.map(article =>
             config.promt.join("\n").replace("{PROMT}", article.url)
         );
