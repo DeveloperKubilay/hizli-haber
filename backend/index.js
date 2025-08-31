@@ -72,7 +72,6 @@ async function main() {
                 }
             }
 
-            // Batch'ler arası kısa bekleme (rate limiting için)
             if (batchIndex < batches.length - 1) {
                 console.log("⏳ Sonraki batch için 2 saniye bekleniyor...");
                 await new Promise(resolve => setTimeout(resolve, 2000));
