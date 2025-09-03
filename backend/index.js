@@ -89,6 +89,6 @@ async function main() {
 main()
 
 setTimeout(() => {
-    console.log("⏰ 7 dakika geçti, process sonlandırılıyor...");
+    console.log("⏰ 12 dakika geçti, process sonlandırılıyor...");
     process.exit(0);
-}, process.env.DEPLOY_ENV !== "auto" ? 2 * 60 * 1000 : 10 * 60 * 1000);
+}, process.env.DEPLOY_ENV !== "auto" ? 2 * 60 * 1000 : 12 * 60 * 1000);
