@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Tag, FileText, Heart, ThumbsDown, Calendar, Newspaper, Megaphone } from 'lucide-react';
@@ -6,6 +6,24 @@ import { CATEGORY_COLORS, CATEGORY_ICONS, translateTagsToTurkish, CATEGORIES } f
 
 function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
   const navigate = useNavigate();
+  
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.innerHTML = `
+      atOptions = {
+        'key': '77c6d7d37e8c7612e593a9d4629fbcfd',
+        'format': 'iframe',
+        'height': 300,
+        'width': 160,
+        'params': {}
+      };
+    `;
+    document.head.appendChild(script);
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
   
   // Kategori tıklama handler'ı
   const handleCategoryClick = (category) => {
