@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Tag, FileText, Heart, ThumbsDown, Calendar, Newspaper, Megaphone } from 'lucide-react';
@@ -6,32 +6,14 @@ import { CATEGORY_COLORS, CATEGORY_ICONS, translateTagsToTurkish, CATEGORIES } f
 
 function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
   const navigate = useNavigate();
-  
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.innerHTML = `
-      atOptions = {
-        'key': '77c6d7d37e8c7612e593a9d4629fbcfd',
-        'format': 'iframe',
-        'height': 300,
-        'width': 160,
-        'params': {}
-      };
-    `;
-    document.head.appendChild(script);
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, []);
-  
+
   // Kategori tıklama handler'ı
   const handleCategoryClick = (category) => {
     // Kategori adından kategori key'ini bul
     const categoryKey = Object.entries(CATEGORIES).find(
       ([key, value]) => value === category
     )?.[0];
-    
+
     if (categoryKey && categoryKey !== 'ALL') {
       navigate(`/haberler#${categoryKey.toLowerCase()}`);
     } else {
@@ -58,19 +40,19 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="space-y-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
       {/* Haber Resmi ve Bilgiler */}
-      <motion.div 
+      <motion.div
         className="bg-primary p-5 rounded-lg"
         variants={itemVariants}
         whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
       >
-        <motion.div 
+        <motion.div
           className="w-full h-50 bg-primaryBG rounded-lg overflow-hidden flex items-center justify-center mb-6"
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
@@ -92,11 +74,11 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
               src="/imgs/logo.png"
               alt="Site Logosu"
               className="w-32 h-32 object-contain opacity-60"
-              animate={{ 
+              animate={{
                 scale: [1, 1.05, 1],
                 rotate: [0, 2, -2, 0]
               }}
-              transition={{ 
+              transition={{
                 duration: 4,
                 repeat: Infinity,
                 ease: "easeInOut"
@@ -107,16 +89,16 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
         {/* Like/Dislike ve Tarih */}
         <div className="space-y-4 text-center">
           {/* Like/Dislike Butonları */}
-          <div 
+          <div
             className="flex items-center justify-center gap-6"
           >
-            <div 
+            <div
               className="flex items-center gap-3 text-textPrimary"
             >
               <Heart size={20} className="text-red-500" />
               <span className="font-medium text-base">{currentNews?.likes || 0} Beğeni</span>
             </div>
-            <div 
+            <div
               className="flex items-center gap-3 text-textPrimary"
             >
               <ThumbsDown size={20} className="text-blue-500" />
@@ -124,7 +106,7 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
             </div>
           </div>
           {/* Tarih */}
-          <div 
+          <div
             className="flex items-center justify-center gap-3 text-textPrimary"
           >
             <Calendar size={20} className="text-secondary" />
@@ -163,21 +145,49 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
       </motion.div>
       */}
 
+      {//!debug
+        <motion.div
+          className="bg-primary p-5 rounded-lg text-center w-full"
+          variants={itemVariants}
+          whileHover={{
+            scale: 1.02,
+            boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+            transition: { duration: 0.2 }
+          }}
+        >
+          <motion.div
+            className="flex items-center gap-3 mb-4"
+            variants={itemVariants}
+          >
+            <Megaphone className="text-secondary" size={22} />
+            <h3 className="text-lg md:text-xl font-bold text-textHeading">
+              Reklam Alanı
+            </h3>
+          </motion.div>
+          <motion.div
+            className="bg-primaryBG rounded-lg p-1 md:p-10 min-h-[220px] md:min-h-[280px] flex items-center justify-center w-full"
+            variants={itemVariants}
+            id="container-8d83ee9f40ec5d85768edd636fef5225"
+          >
+          </motion.div>
+        </motion.div>
+      }
+
       {/* Etiketler */}
       {currentNews?.tag && currentNews.tag.length > 0 && (
-        <motion.div 
+        <motion.div
           className="bg-primary p-5 rounded-lg"
           variants={itemVariants}
           whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
         >
-          <motion.div 
+          <motion.div
             className="flex items-center gap-3 mb-6"
             variants={itemVariants}
           >
             <Tag className="text-secondary" size={22} />
             <h3 className="text-xl font-bold text-textHeading">Etiketler</h3>
           </motion.div>
-          <motion.div 
+          <motion.div
             className="flex flex-wrap gap-3"
             variants={containerVariants}
             initial="hidden"
@@ -201,19 +211,19 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
 
       {/* Özet */}
       {currentNews?.summary && (
-        <motion.div 
+        <motion.div
           className="bg-primary p-5 rounded-lg"
           variants={itemVariants}
           whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
         >
-          <motion.div 
+          <motion.div
             className="flex items-center gap-3 mb-6"
             variants={itemVariants}
           >
             <FileText className="text-secondary" size={22} />
             <h3 className="text-xl font-bold text-textHeading">Özet</h3>
           </motion.div>
-          <motion.p 
+          <motion.p
             className="text-textPrimary leading-relaxed text-base w-full"
             variants={itemVariants}
           >
@@ -223,20 +233,20 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
       )}
 
       {/* Benzer Haberler */}
-      <motion.div 
+      <motion.div
         className="bg-primary p-5 rounded-lg"
         variants={itemVariants}
         whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
       >
-        <motion.div 
+        <motion.div
           className="flex items-center gap-3 mb-6"
           variants={itemVariants}
         >
           <Newspaper className="text-secondary" size={22} />
           <h3 className="text-xl font-bold text-textHeading">Benzer Haberler</h3>
         </motion.div>
-        
-        <motion.div 
+
+        <motion.div
           className="space-y-4"
           variants={containerVariants}
           initial="hidden"
@@ -244,8 +254,8 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
         >
           {relatedLoading ? (
             Array.from({ length: 3 }).map((_, index) => (
-              <motion.div 
-                key={index} 
+              <motion.div
+                key={index}
                 className="animate-pulse"
                 variants={itemVariants}
               >
@@ -272,13 +282,13 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
                 >
                   <div className="flex gap-3">
                     <div className="flex-1">
-                      <motion.h4 
+                      <motion.h4
                         className="text-sm font-semibold text-textHeading group-hover:text-secondary transition-colors line-clamp-2"
                         whileHover={{ y: -1 }}
                       >
                         {item.name}
                       </motion.h4>
-                      <motion.p 
+                      <motion.p
                         className="text-xs text-textPrimary mt-1"
                         initial={{ opacity: 0.7 }}
                         whileHover={{ opacity: 1 }}
@@ -291,7 +301,7 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
               </motion.div>
             ))
           ) : (
-            <motion.p 
+            <motion.p
               className="text-textPrimary text-sm"
               variants={itemVariants}
             >
