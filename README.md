@@ -6,6 +6,15 @@
   <a href="https://hızlı-haber.com">https://hızlı-haber.com</a>
 </p>
 
+<p style="display: flex; gap: 10px; align-items: center;">
+  <a href="https://dl.circleci.com/status-badge/redirect/gh/DeveloperKubilay/hizli-haber/tree/main" style="text-decoration: none;">
+    <img src="https://dl.circleci.com/status-badge/img/gh/DeveloperKubilay/hizli-haber/tree/main.svg" alt="CircleCI" />
+  </a>
+  <a href="https://app.circleci.com/pipelines/github/DeveloperKubilay/hizli-haber?branch=main" style="text-decoration: none; color: inherit;">
+    Circle CI
+  </a>
+</p>
+
 # TR
 
 > Z kuşağının haber platformu. Sıkıcı haber sitelerini unut, burası tam sana göre! 😎
@@ -41,8 +50,6 @@
   |-- tailwind.config.js
   |-- firestore.rules  # Güvenlik kuralları
 ```
-
-[Circle ci](https://app.circleci.com/pipelines/github/DeveloperKubilay/hizli-haber?branch=main)
 
 ## 🚦 Güvenlik
 - Firestore kuralları ile kullanıcı verisi koruma
@@ -108,8 +115,6 @@
 |-- color_palet.html # Color palette
 |-- tailwind.config.js
 |-- firestore.rules # Security rules
-
-[Circle ci](https://app.circleci.com/pipelines/github/DeveloperKubilay/hizli-haber?branch=main)
 
 ## 🚦 Security
 - Protecting user data with Firestore rules
