@@ -145,34 +145,6 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
       </motion.div>
       */}
 
-      {//!debug
-        <motion.div
-          className="bg-primary p-5 rounded-lg text-center w-full"
-          variants={itemVariants}
-          whileHover={{
-            scale: 1.02,
-            boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-            transition: { duration: 0.2 }
-          }}
-        >
-          <motion.div
-            className="flex items-center gap-3 mb-4"
-            variants={itemVariants}
-          >
-            <Megaphone className="text-secondary" size={22} />
-            <h3 className="text-lg md:text-xl font-bold text-textHeading">
-              Reklam Alanı
-            </h3>
-          </motion.div>
-          <motion.div
-            className="bg-primaryBG rounded-lg p-1 md:p-10 min-h-[220px] md:min-h-[280px] flex items-center justify-center w-full"
-            variants={itemVariants}
-            id="container-8d83ee9f40ec5d85768edd636fef5225"
-          >
-          </motion.div>
-        </motion.div>
-      }
-
       {/* Etiketler */}
       {currentNews?.tag && currentNews.tag.length > 0 && (
         <motion.div
