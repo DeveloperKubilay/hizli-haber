@@ -76,28 +76,6 @@ function AdSidebar({ isMobile = false }) {
         </div>
       </motion.div>*/}
 
-      {//!debug
-        <motion.div
-          className={`${isMobile ? 'w-full' : 'w-[250px] sm:w-[280px] md:w-[320px]'} flex-shrink-0`}
-          initial={{ opacity: 0, [isMobile ? 'y' : 'x']: isMobile ? 30 : -100 }}
-          animate={{ opacity: 1, [isMobile ? 'y' : 'x']: 0 }}
-          transition={{ duration: 0.7, ease: "easeOut", delay: 0.3 }}
-        >
-          <div className={`bg-primary p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl shadow-lg ${!isMobile ? 'sticky top-6' : ''}`}>
-            <div className="text-center text-textPrimary">
-
-              <div className="flex items-center justify-center gap-2 mb-4 sm:mb-6">
-                <Megaphone size={isMobile ? 18 : 22} className="text-textHeading" />
-                <h3 className="text-base sm:text-lg md:text-xl font-semibold text-textHeading">Reklam Alanı</h3>
-              </div>
-              <div className={`bg-primaryBG rounded-lg sm:rounded-xl ${isMobile ? 'min-h-[100px] sm:min-h-[120px]' : 'min-h-[200px] sm:min-h-[250px] md:min-h-[300px]'} flex items-center justify-center`}
-              id="container-8d83ee9f40ec5d85768edd636fef5225">
-              </div>
-              
-            </div>
-          </div>
-        </motion.div>
-      }
       <motion.div
         className={`${isMobile ? 'w-full mt-4' : 'w-[250px] sm:w-[280px] md:w-[320px] mt-6'} flex-shrink-0`}
         initial={{ opacity: 0, [isMobile ? 'y' : 'x']: isMobile ? 30 : -100 }}
