@@ -2,7 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Shield, AlertTriangle, Users, FileText, Eye, Cookie } from 'lucide-react';
+import { ArrowLeft, Users, FileText, Eye, Cookie } from 'lucide-react';
 
 // Components
 import Navbar from '../components/Navbar';
@@ -85,7 +85,7 @@ function Terms() {
         </motion.div>
 
         {/* Yapay Zeka İçerik Uyarısı */}
-        <motion.div
+        {/* <motion.div
           className="bg-primaryBG border border-secondaryBG rounded-lg p-6 mb-8"
           variants={sectionVariants}
           initial="initial"
@@ -108,13 +108,13 @@ function Terms() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </motion.div> */}
 
         {/* Ana İçerik Bölümleri */}
         <div className="space-y-8">
 
           {/* Sorumluluk Reddi */}
-          <motion.section
+          {/* <motion.section
             className="bg-primary rounded-lg p-6"
             variants={sectionVariants}
             initial="initial"
@@ -139,7 +139,7 @@ function Terms() {
                 <strong className="text-textHeading">1.4.</strong> İşlenmiş içeriklerin orijinal kaynak ile tam uyumu konusunda hiçbir garanti verilmez.
               </p>
             </div>
-          </motion.section>
+          </motion.section> */}
 
           {/* Kullanım Şartları */}
           <motion.section
@@ -161,10 +161,10 @@ function Terms() {
                 <strong className="text-textHeading">2.2.</strong> Platform sadece yasal amaçlarla kullanılmalıdır.
               </p>
               <p>
-                <strong className="text-textHeading">2.3.</strong> İçerikleri paylaşırken, bunların yapay zeka tarafından işlendiğini ve orijinal kaynaktan farklılık gösterebileceğini belirtmeniz gerekmektedir.
+                <strong className="text-textHeading">2.3.</strong> Platform üzerinden zararlı, yanıltıcı veya yasa dışı aktivitelerde bulunmak yasaktır.
               </p>
               <p>
-                <strong className="text-textHeading">2.4.</strong> Platform üzerinden zararlı, yanıltıcı veya yasa dışı aktivitelerde bulunmak yasaktır.
+                {/* <strong className="text-textHeading">2.4.</strong> İçerikleri paylaşırken, bunların yapay zeka tarafından işlendiğini ve orijinal kaynaktan farklılık gösterebileceğini belirtmeniz gerekmektedir. */}
               </p>
             </div>
           </motion.section>
@@ -186,7 +186,7 @@ function Terms() {
                 <strong className="text-textHeading">3.1.</strong> Kullanıcılar, platformu kendi sorumluluklarında kullanır.
               </p>
               <p>
-                <strong className="text-textHeading">3.2.</strong> İçeriklerin yapay zeka işleme sürecinden geçtiğini belirtmeden paylaşılması kullanıcının sorumluluğundadır.
+                {/* <strong className="text-textHeading">3.2.</strong> İçeriklerin yapay zeka işleme sürecinden geçtiğini belirtmeden paylaşılması kullanıcının sorumluluğundadır. */}
               </p>
               <p>
                 <strong className="text-textHeading">3.3.</strong> Üçüncü şahıslara verilecek zararlardan kullanıcı sorumludur.
@@ -239,13 +239,13 @@ function Terms() {
             </div>
             <div className="space-y-4 text-textPrimary">
               <p>
-                <strong className="text-textHeading">5.1.</strong> İçerikler gerçek kaynaklardan alınarak yapay zeka tarafından işlenmiştir.
+                {/* <strong className="text-textHeading">5.1.</strong> İçerikler gerçek kaynaklardan alınarak yapay zeka tarafından işlenmiştir. */}
               </p>
               <p>
                 <strong className="text-textHeading">5.2.</strong> Platform tasarımı ve kodları telif hakkı koruması altındadır.
               </p>
               <p>
-                <strong className="text-textHeading">5.3.</strong> İşlenmiş içeriklerin ticari amaçlı kullanımı önceden izin alınarak yapılmalıdır.
+                {/* <strong className="text-textHeading">5.3.</strong> İşlenmiş içeriklerin ticari amaçlı kullanımı önceden izin alınarak yapılmalıdır. */}
               </p>
               <p>
                 <strong className="text-textHeading">5.4.</strong> Logo ve marka unsurları izinsiz kullanılamaz.
@@ -295,7 +295,7 @@ function Terms() {
         </div>
 
         {/* Alt Bilgi */}
-        <motion.div
+        {/* <motion.div
           className="mt-12 text-center text-textPrimary"
           variants={sectionVariants}
           initial="initial"
@@ -306,7 +306,7 @@ function Terms() {
             <strong className="text-secondary">Unutmayın:</strong> Bu platform gerçek haberlerden yapay zeka ile işlenmiş içerik sunar.
             İyi haber okumalar!
           </p>
-        </motion.div>
+        </motion.div> */}
 
       </motion.div>
 
