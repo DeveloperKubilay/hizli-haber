@@ -16,6 +16,8 @@
     "axios": "^1.10.0",
     "dotenv": "^17.0.0",
     "firebase": "^11.9.1",
-    "firebase-admin": "^13.4.0"
+    "firebase-admin": "^13.4.0",
+    "kubitdb": "^1.5.5",
+    "pear3": "^1.1.1"
   }
 }
