@@ -204,6 +204,48 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
         </motion.div>
       )}
 
+      {/* Yazar Bilgisi */}
+      <motion.div
+        className="bg-primary p-5 rounded-lg"
+        variants={itemVariants}
+        whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+      >
+        <motion.div
+          className="flex items-center gap-3 mb-6"
+          variants={itemVariants}
+        >
+          <Megaphone className="text-secondary" size={22} />
+          <h3 className="text-xl font-bold text-textHeading">Yazar</h3>
+        </motion.div>
+        <motion.div
+          className="flex items-center gap-4"
+          variants={itemVariants}
+        >
+          <motion.img
+            src="https://avatars.githubusercontent.com/u/107062509?v=4"
+            alt="Kubilay"
+            className="w-16 h-16 rounded-full object-cover border-2 border-secondary"
+            whileHover={{ scale: 1.1 }}
+            transition={{ duration: 0.2 }}
+          />
+          <div>
+            <motion.h4
+              className="text-lg font-bold text-textHeading"
+              whileHover={{ y: -1 }}
+            >
+              Kubilay
+            </motion.h4>
+            <motion.p
+              className="text-sm text-textPrimary"
+              initial={{ opacity: 0.7 }}
+              whileHover={{ opacity: 1 }}
+            >
+              Hızlı Haber Editörü
+            </motion.p>
+          </div>
+        </motion.div>
+      </motion.div>
+
       {/* Benzer Haberler */}
       <motion.div
         className="bg-primary p-5 rounded-lg"
