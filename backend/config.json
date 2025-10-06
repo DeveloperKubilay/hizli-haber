@@ -17,8 +17,8 @@
         "gemini-2.5-pro"
     ],
     "IMG_MODEL": [
-        "gemini-2.5-flash-image-preview",
-        "gemini-2.0-flash-preview-image-generation"
+        "gemini-2.5-flash-image",
+        "gemini-2.5-flash-image-preview"
     ],
     "IMG_promt": [
         "{DATA}"
