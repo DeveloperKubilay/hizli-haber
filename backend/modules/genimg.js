@@ -258,21 +258,36 @@ async function generateAndUploadImageFixNews(newsTitle, maxAttempts = 3) {
         } catch (error) {
             console.error(`💥 ${attempt}. denemede görsel oluşturulamadı`);
             
-            if (error.status === 429 && error.details) {
-                const retryInfo = error.details.find(d => d['@type'] === 'type.googleapis.com/google.rpc.RetryInfo');
-                if (retryInfo && retryInfo.retryDelay) {
-                    const delayStr = retryInfo.retryDelay;
-                    const match = delayStr.match(/(\d+)s/);
-                    if (match) {
-                        const retryDelay = parseInt(match[1]);
-                        console.log(`💤 Rate limit! ${retryDelay} saniye bekleniyor...`);
-                        await new Promise(resolve => setTimeout(resolve, retryDelay * 1000));
-                        continue;
+            if (error.status === 429) {
+                if (error.error?.details) {
+                    const retryInfo = error.error.details.find(d => d['@type'] === 'type.googleapis.com/google.rpc.RetryInfo');
+                    if (retryInfo && retryInfo.retryDelay) {
+                        const delayStr = retryInfo.retryDelay;
+                        const match = delayStr.match(/(\d+)s/);
+                        if (match) {
+                            const retryDelay = parseInt(match[1]);
+                            console.log(`💤 Rate limit! ${retryDelay} saniye bekleniyor...`);
+                            await new Promise(resolve => setTimeout(resolve, retryDelay * 1000));
+                            if (attempt < maxAttempts) continue;
+                        }
+                    }
+                } else if (error.details) {
+                    const retryInfo = error.details.find(d => d['@type'] === 'type.googleapis.com/google.rpc.RetryInfo');
+                    if (retryInfo && retryInfo.retryDelay) {
+                        const delayStr = retryInfo.retryDelay;
+                        const match = delayStr.match(/(\d+)s/);
+                        if (match) {
+                            const retryDelay = parseInt(match[1]);
+                            console.log(`💤 Rate limit! ${retryDelay} saniye bekleniyor...`);
+                            await new Promise(resolve => setTimeout(resolve, retryDelay * 1000));
+                            if (attempt < maxAttempts) continue;
+                        }
                     }
                 }
+                
                 console.log(`💤 Rate limit ama delay bulunamadı! 10 saniye bekleniyor...`);
                 await new Promise(resolve => setTimeout(resolve, 10000));
-                continue;
+                if (attempt < maxAttempts) continue;
             }
             
             if (attempt === maxAttempts) {
