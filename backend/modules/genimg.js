@@ -2,6 +2,8 @@ var GoogleGenAI = require('@google/genai').GoogleGenAI;
 const config = require('../config.json');
 var mime = require('mime');
 const uploadFile = require('./s3');
+const fs = require('fs');
+const path = require('path');
 
 var ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
@@ -32,7 +34,16 @@ async function tryGenerateImage(model, promt) {
             ]
         });
         
-        let fileData = (response.candidates[0] || []).content?.parts?.[0]?.inlineData;
+        let fileData = null;
+        const parts = response.candidates?.[0]?.content?.parts || [];
+        
+        for (const part of parts) {
+            if (part.inlineData) {
+                fileData = part.inlineData;
+                break;
+            }
+        }
+        
         if (fileData && fileData.data) {
             const fileExtension = mime.getExtension(fileData.mimeType || '');
             let fileName = 'image_' + Date.now() + '.' + fileExtension;
@@ -193,7 +204,112 @@ async function generateAndUploadImage(newsTitle, maxAttempts = 1) {
     }
 }
 
+async function generateAndUploadImageFixNews(newsTitle, maxAttempts = 3) {
+    const FIXED_MODEL = 'gemini-2.0-flash-preview-image-generation';
+    
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+            console.log(`🎨 Görsel oluşturma ${attempt}/${maxAttempts}. deneme (Model: ${FIXED_MODEL})...`);
+            
+            const response = await ai.models.generateContent({
+                model: FIXED_MODEL,
+                config: {
+                    responseModalities: ['IMAGE', 'TEXT'],
+                    responseMimeType: 'text/plain',
+                },
+                contents: [
+                    {
+                        role: 'user',
+                        parts: [
+                            {
+                                text: newsTitle,
+                            },
+                        ],
+                    },
+                ]
+            });
+            
+            let fileData = null;
+            const parts = response.candidates?.[0]?.content?.parts || [];
+            
+            for (const part of parts) {
+                if (part.inlineData) {
+                    fileData = part.inlineData;
+                    break;
+                }
+            }
+            
+            if (fileData && fileData.data) {
+                const fileExtension = mime.getExtension(fileData.mimeType || '');
+                let fileName = 'image_' + Date.now() + '.' + fileExtension;
+                let buffer = Buffer.from(fileData.data || '', 'base64');
+                
+                await uploadFile(fileName, buffer, 'image/jpeg');
+                const imageUrl = `https://cdn.xn--hzl-haber-vpbc.com/${encodeURIComponent(fileName)}`;
+                
+                console.log(`✅ ${attempt}. denemede görsel başarıyla oluşturuldu!`);
+                return {
+                    success: true,
+                    fileName: fileName,
+                    imageUrl: imageUrl
+                };
+            } else {
+                const logFileName = `failed_response_${Date.now()}.txt`;
+                const logPath = path.join(__dirname, '../logs', logFileName);
+                const logContent = `Başlık: ${newsTitle}\n\nDeneme: ${attempt}/${maxAttempts}\n\nModel: ${FIXED_MODEL}\n\nTam Response:\n${JSON.stringify(response, null, 2)}`;
+                
+                if (!fs.existsSync(path.join(__dirname, '../logs'))) {
+                    fs.mkdirSync(path.join(__dirname, '../logs'), { recursive: true });
+                }
+                fs.writeFileSync(logPath, logContent, 'utf8');
+                console.log(`📄 Response kaydedildi: ${logFileName}`);
+                
+                throw new Error("Görsel data'sı bulunamadı");
+            }
+            
+        } catch (error) {
+            const logFileName = `error_${Date.now()}.txt`;
+            const logPath = path.join(__dirname, '../logs', logFileName);
+            const logContent = `Başlık: ${newsTitle}\n\nDeneme: ${attempt}/${maxAttempts}\n\nModel: ${FIXED_MODEL}\n\nHata:\n${JSON.stringify(error, null, 2)}`;
+            
+            if (!fs.existsSync(path.join(__dirname, '../logs'))) {
+                fs.mkdirSync(path.join(__dirname, '../logs'), { recursive: true });
+            }
+            fs.writeFileSync(logPath, logContent, 'utf8');
+            console.log(`📄 Hata logu kaydedildi: ${logFileName}`);
+            
+            console.error(`💥 ${attempt}. denemede görsel oluşturulamadı: ${JSON.stringify(error)}`);
+            
+            if (error.status === 429 && error.details) {
+                const retryInfo = error.details.find(d => d['@type'] === 'type.googleapis.com/google.rpc.RetryInfo');
+                if (retryInfo && retryInfo.retryDelay) {
+                    const delayStr = retryInfo.retryDelay;
+                    const match = delayStr.match(/(\d+)s/);
+                    if (match) {
+                        const retryDelay = parseInt(match[1]);
+                        console.log(`💤 Rate limit! ${retryDelay} saniye bekleniyor...`);
+                        await new Promise(resolve => setTimeout(resolve, retryDelay * 1000));
+                        continue;
+                    }
+                }
+                console.log(`💤 Rate limit ama delay bulunamadı! 10 saniye bekleniyor...`);
+                await new Promise(resolve => setTimeout(resolve, 10000));
+                continue;
+            }
+            
+            if (attempt === maxAttempts) {
+                console.log("🚫 Maksimum deneme sayısına ulaşıldı, resimsiz devam ediliyor");
+                return {
+                    success: false,
+                    message: error.message || "Görsel oluşturulamadı"
+                };
+            }
+        }
+    }
+}
+
 module.exports = {
     generateImage,
-    generateAndUploadImage
+    generateAndUploadImage,
+    generateAndUploadImageFixNews
 };
