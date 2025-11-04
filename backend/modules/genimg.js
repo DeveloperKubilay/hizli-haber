@@ -2,8 +2,6 @@ var GoogleGenAI = require('@google/genai').GoogleGenAI;
 const config = require('../config.json');
 var mime = require('mime');
 const uploadFile = require('./s3');
-const fs = require('fs');
-const path = require('path');
 
 var ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
@@ -254,31 +252,11 @@ async function generateAndUploadImageFixNews(newsTitle, maxAttempts = 3) {
                     imageUrl: imageUrl
                 };
             } else {
-                const logFileName = `failed_response_${Date.now()}.txt`;
-                const logPath = path.join(__dirname, '../logs', logFileName);
-                const logContent = `Başlık: ${newsTitle}\n\nDeneme: ${attempt}/${maxAttempts}\n\nModel: ${FIXED_MODEL}\n\nTam Response:\n${JSON.stringify(response, null, 2)}`;
-                
-                if (!fs.existsSync(path.join(__dirname, '../logs'))) {
-                    fs.mkdirSync(path.join(__dirname, '../logs'), { recursive: true });
-                }
-                fs.writeFileSync(logPath, logContent, 'utf8');
-                console.log(`📄 Response kaydedildi: ${logFileName}`);
-                
                 throw new Error("Görsel data'sı bulunamadı");
             }
             
         } catch (error) {
-            const logFileName = `error_${Date.now()}.txt`;
-            const logPath = path.join(__dirname, '../logs', logFileName);
-            const logContent = `Başlık: ${newsTitle}\n\nDeneme: ${attempt}/${maxAttempts}\n\nModel: ${FIXED_MODEL}\n\nHata:\n${JSON.stringify(error, null, 2)}`;
-            
-            if (!fs.existsSync(path.join(__dirname, '../logs'))) {
-                fs.mkdirSync(path.join(__dirname, '../logs'), { recursive: true });
-            }
-            fs.writeFileSync(logPath, logContent, 'utf8');
-            console.log(`📄 Hata logu kaydedildi: ${logFileName}`);
-            
-            console.error(`💥 ${attempt}. denemede görsel oluşturulamadı: ${JSON.stringify(error)}`);
+            console.error(`💥 ${attempt}. denemede görsel oluşturulamadı`);
             
             if (error.status === 429 && error.details) {
                 const retryInfo = error.details.find(d => d['@type'] === 'type.googleapis.com/google.rpc.RetryInfo');
