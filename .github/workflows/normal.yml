@@ -1,11 +1,11 @@
-name: 🔥 Skibidi tuvalet 🔥
+name: 🔥 Add News 🔥
 
 on:
   workflow_dispatch:
 
 jobs:
   deploy:
-    timeout-minutes: 8
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
