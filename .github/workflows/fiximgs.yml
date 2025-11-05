@@ -2,10 +2,12 @@ name: 🔥 Fix images 🔥
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 0 1 * *'
 
 jobs:
   deploy:
-    timeout-minutes: 8
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -16,10 +18,12 @@ jobs:
           node-version: 20
       - name: Fix private key
         run: echo "${{ secrets.FIREBASE_PRIVATE_KEY }}" > private-key.txt
-      - name: Build Project
+      - name: Install Dependencies
+        working-directory: backend
+        run: npm install
+      - name: Run Fix Images
         working-directory: backend
         run: |
-          npm install
           export FIREBASE_PRIVATE_KEY=$(cat ../private-key.txt)
           cd try && node fixnews.js
         env:
