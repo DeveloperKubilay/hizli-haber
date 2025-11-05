@@ -285,8 +285,8 @@ async function generateAndUploadImageFixNews(newsTitle, maxAttempts = 3) {
                     }
                 }
                 
-                console.log(`💤 Rate limit ama delay bulunamadı! 10 saniye bekleniyor...`);
-                await new Promise(resolve => setTimeout(resolve, 10000));
+                console.log(`💤 Rate limit ama delay bulunamadı! 50 saniye bekleniyor...`);
+                await new Promise(resolve => setTimeout(resolve, 50000));
                 if (attempt < maxAttempts) continue;
             }
             
