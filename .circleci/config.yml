@@ -10,7 +10,7 @@ workflows:
   scheduled-deploy:
     triggers:
       - schedule:
-          cron: "0 0 */5 * *"
+          cron: "0 0 1,6,11,16,21,26,31 * *"
           filters:
             branches:
               only:
