@@ -2,7 +2,7 @@ require("dotenv").config({ path: "../.env" });
 
 async function run(model, input) {
   const response = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/a05057577967c7503e88f8229c93d296/ai/run/${model}`,
+    `https://api.cloudflare.com/client/v4/accounts/e3f79c3e5b58c6db06154c46d9fb6943/ai/run/${model}`,
     {
       headers: { Authorization: "Bearer " + process.env.CLOUDFLARE_API_KEY },
       method: "POST",

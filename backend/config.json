@@ -16,11 +16,14 @@
         "gemini-2.0-flash-lite",
         "gemini-2.5-pro"
     ],
+    "CLOUDFLARE_ACCOUNT_ID": "e3f79c3e5b58c6db06154c46d9fb6943",
     "IMG_MODEL": [
-        "gemini-2.5-flash-image"
+        "@cf/stabilityai/stable-diffusion-xl-base-1.0",
+        "@cf/bytedance/stable-diffusion-xl-lightning",
+        "@cf/black-forest-labs/flux-1-schnell"
     ],
     "IMG_promt": [
-        "{DATA}"
+        "High quality, professional news image for: {DATA}. Photorealistic, 4K, sharp focus, professional lighting."
     ],
     "MaxImgTry": 3,
     "promt": [
