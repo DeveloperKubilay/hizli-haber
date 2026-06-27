@@ -76,8 +76,7 @@
 - Yazı: `#b0bac5` (textPrimary)
 - Daha fazlası için: `tailwind.config.js` ve `color_palet.html`
 
-## 👾 Katkı Sağlamak İsteyenlere
-- issue bırak, Kodlar açık, topluluk genç!
+## 👾 Katkı Sağlamtabilirsiniz
 ---
 
 > DeveloperKubilay tarafından geliştirildi ❤️
@@ -141,8 +140,7 @@
 - Text: `#b0bac5` (textPrimary)
 - For more: check `tailwind.config.js` and `color_palet.html`
 
-## 👾 For Contributors
-- Leave an issue, code is open, community is young!
+## 👾 You Can Contribute
 ---
 
 > Developed with ❤️ by DeveloperKubilay
