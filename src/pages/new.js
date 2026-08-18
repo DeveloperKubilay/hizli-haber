@@ -91,6 +91,33 @@ function NewsDetail() {
     setCurrentRelatedIndex(idx === -1 ? 0 : idx);
   }, [relatedNews, news]);
 
+  useEffect(() => {
+    if (!id) return;
+    const interval = setInterval(() => {
+      const currentScroll = window.pageYOffset || document.documentElement.scrollTop || 0;
+      sessionStorage.setItem(`autoReloadScroll_${id}`, currentScroll.toString());
+      window.location.reload();
+    }, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, [id]);
+
+  useEffect(() => {
+    if (!loading && news) {
+      const savedScrollPos = sessionStorage.getItem(`autoReloadScroll_${id}`);
+      if (savedScrollPos !== null) {
+        sessionStorage.removeItem(`autoReloadScroll_${id}`);
+        const targetScroll = parseInt(savedScrollPos, 10);
+        setTimeout(() => {
+          window.scrollTo({
+            top: targetScroll,
+            behavior: 'instant'
+          });
+        }, 150);
+      }
+    }
+  }, [loading, news, id]);
+
   // Sadece relatedNews üzerinden yeni haber yükle
   const loadNextRelatedNews = useCallback(async () => {
     if (currentRelatedIndex >= relatedNews.length - 1) return;
