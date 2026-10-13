@@ -1,15 +1,14 @@
-const { GoogleGenAI } = require('@google/genai');
 const config = require('../config.json');
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // Model fallback sistemi
 async function tryWithFallback(models, operation) {
     let lastError;
+    const modelList = Array.isArray(models) && models.length > 0 ? models : (config.MODEL || ['eniyi']);
     
-    for (let i = 0; i < models.length; i++) {
-        const model = models[i];
+    for (let i = 0; i < modelList.length; i++) {
+        const model = modelList[i];
         try {
-            console.log(`🤖 ${model} modeli deneniyor... (${i + 1}/${models.length})`);
+            console.log(`🤖 ${model} modeli deneniyor... (${i + 1}/${modelList.length})`);
             const result = await operation(model);
             console.log(`✅ ${model} ile başarılı!`);
             return result;
@@ -17,95 +16,88 @@ async function tryWithFallback(models, operation) {
             lastError = error;
             console.warn(`⚠️ ${model} başarısız: ${error.message}`);
             
-            // Rate limit hatası ise biraz bekle
-            if (error.status === 429) {
+            // Rate limit (429) durumunda bekle
+            if (error.status === 429 || error.message?.includes('429')) {
                 console.log("💤 Rate limit! 5 saniye bekleniyor...");
                 await new Promise(resolve => setTimeout(resolve, 5000));
             }
         }
     }
     
-    throw lastError;
+    throw lastError || new Error("Hiçbir model yanıt vermedi.");
 }
 
 // Tek prompt işleme fonksiyonu
-async function processSinglePrompt(models, data, uploadFile) {
-    return await tryWithFallback(models, async (ainame) => {
-        try {
-            let content = data;
+async function processSinglePrompt(models, promptText) {
+    return await tryWithFallback(models, async (modelName) => {
+        const apiUrl = (process.env.AI_API_URL || "https://ai.randdcodes.com/v1").replace(/\/+$/, '');
+        const apiKey = process.env.AI_API_KEY || process.env.GEMINI_API_KEY;
 
-            if (uploadFile && uploadFile.length) {
-                const filePromises = uploadFile.map(file => ai.files.upload({ file: file }));
-                const files = await Promise.all(filePromises);
-                content = {
-                    role: 'user',
-                    parts: [
-                        { text: data }
-                    ]
-                };
-                for (const file of files) {
-                    content.parts.push({
-                        fileData: {
-                            fileUri: file.uri,
-                            mimeType: file.mimeType
-                        }
-                    });
-                }
-            }
+        const headers = {
+            "Content-Type": "application/json"
+        };
 
-            const response = await ai.models.generateContent({
-                model: ainame,
-                contents: [content],
-                config: {
-                   /* thinkingConfig: {
-                        thinkingBudget: -1,
-                    },*/
-                    tools: [{ urlContext: {} }],
-                    responseMimeType: 'text/plain',
-                },
-                thinkingConfig: {
-                    thinkingBudget: 24576,
-                },
-                responseMimeType: 'text/plain'
-            });
-
-            let responseText = response.text.replace(/[()]/g, '');
-            
-            if (data.includes('JSON') || data.includes('json')) {
-                responseText = responseText.replace(/```json|```/g, '').trim();
-                const startIndex = responseText.indexOf('{');
-                const endIndex = responseText.lastIndexOf('}') + 1;
-                
-                if (startIndex >= 0 && endIndex > 0) {
-                    responseText = responseText.substring(startIndex, endIndex);
-                    console.log("🔄 AI'dan gelen JSON temizlendi");
-                }
-            }
-            
-            return responseText;
-        } catch (err) {
-            console.error("🤖 AI Error:", err);
-            throw err;
+        if (apiKey) {
+            headers["Authorization"] = `Bearer ${apiKey}`;
         }
+        if (process.env.CF_ACCESS_CLIENT_ID) {
+            headers["CF-Access-Client-Id"] = process.env.CF_ACCESS_CLIENT_ID;
+        }
+        if (process.env.CF_ACCESS_CLIENT_SECRET) {
+            headers["CF-Access-Client-Secret"] = process.env.CF_ACCESS_CLIENT_SECRET;
+        }
+
+        const response = await fetch(`${apiUrl}/chat/completions`, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+                model: modelName,
+                messages: [
+                    {
+                        role: "user",
+                        content: promptText
+                    }
+                ],
+                stream: false
+            })
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(`AI API hatası [${response.status}]: ${errText}`);
+        }
+
+        const jsonRes = await response.json();
+        let responseText = jsonRes.choices?.[0]?.message?.content || "";
+
+        if (promptText.includes('JSON') || promptText.includes('json')) {
+            responseText = responseText.replace(/```json|```/gi, '').trim();
+            const startIndex = responseText.indexOf('{');
+            const endIndex = responseText.lastIndexOf('}') + 1;
+            
+            if (startIndex >= 0 && endIndex > 0) {
+                responseText = responseText.substring(startIndex, endIndex);
+            }
+        }
+
+        return responseText;
     });
 }
 
-// Çoklu prompt işleme fonksiyonu (5 adet paralel)
-async function processMultiplePrompts(models, prompts, uploadFiles = []) {
+// Çoklu prompt işleme fonksiyonu
+async function processMultiplePrompts(models, prompts) {
     try {
         console.log(`🚀 ${prompts.length} adet prompt paralel olarak işleniyor...`);
         
-        const promises = prompts.map((prompt, index) => {
-            const uploadFile = uploadFiles[index] || null;
-            if(prompt.includes("undefined")){
-                return new Promise((resolve) => resolve("undefined"));
+        const promises = prompts.map((prompt) => {
+            if (!prompt || prompt.includes("undefined")) {
+                return Promise.resolve("undefined");
             }
-            return processSinglePrompt(models, prompt, uploadFile);
+            return processSinglePrompt(models, prompt);
         });
 
         const results = await Promise.all(promises);
         console.log(`✅ Tüm prompt'lar başarıyla işlendi!`);
-        
         return results;
     } catch (err) {
         console.error("🤖 Çoklu AI Error:", err);
@@ -113,9 +105,6 @@ async function processMultiplePrompts(models, prompts, uploadFiles = []) {
     }
 }
 
-// Ana export fonksiyonu - geriye uyumluluk için
 module.exports = processSinglePrompt;
-
-// Çoklu işlem için export
 module.exports.processMultiple = processMultiplePrompts;
 module.exports.processSingle = processSinglePrompt;

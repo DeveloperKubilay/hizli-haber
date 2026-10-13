@@ -43,9 +43,8 @@ function NewsDetail() {
   const [scrollCooldown, setScrollCooldown] = useState(false);
 
   const canonicalUrl = useMemo(() => {
-    if (!news) return 'https://hızlı-haber.com';
-    const slugOrId = news.slug || news.id;
-    return `https://hızlı-haber.com/haberler/${slugOrId}`;
+    if (!news) return 'https://xn--hzl-haber-vpbc.com';
+    return `https://xn--hzl-haber-vpbc.com/haberler/${news.id}`;
   }, [news]);
 
   // Haber detayını çek
@@ -58,17 +57,41 @@ function NewsDetail() {
       }
       try {
         setLoading(true);
-        const newsDoc = doc(db, 'news', id);
-        const newsSnapshot = await getDoc(newsDoc);
-        if (!newsSnapshot.exists()) {
+        let newsData = null;
+
+        // Önce doğrudan doküman ID'si ile dene
+        try {
+          const newsDoc = doc(db, 'news', id);
+          const newsSnapshot = await getDoc(newsDoc);
+          if (newsSnapshot.exists()) {
+            newsData = {
+              id: newsSnapshot.id,
+              ...newsSnapshot.data()
+            };
+          }
+        } catch (e) {
+          // ID formatı geçersiz olabilir (slug ise)
+        }
+
+        // Eğer bulunamadıysa slug ile ara
+        if (!newsData) {
+          const slugQuery = query(collection(db, 'news'), where('slug', '==', id), limit(1));
+          const querySnapshot = await getDocs(slugQuery);
+          if (!querySnapshot.empty) {
+            const firstDoc = querySnapshot.docs[0];
+            newsData = {
+              id: firstDoc.id,
+              ...firstDoc.data()
+            };
+          }
+        }
+
+        if (!newsData) {
           setError('Haber bulunamadı');
           setLoading(false);
           return;
         }
-        const newsData = {
-          id: newsSnapshot.id,
-          ...newsSnapshot.data()
-        };
+
         setNews(newsData);
         setLoading(false);
         setRelatedLoading(true);
@@ -584,11 +607,11 @@ function NewsDetail() {
         <meta property="og:description" content={news?.summary || 'Hızlı Haber ile gündemi anında takip et! Son dakika haberleri, özetler ve daha fazlası burada.'} />
         <meta property="og:type" content="article" />
   <meta property="og:url" content={canonicalUrl} />
-  <meta property="og:image" content={news?.image || 'https://hızlı-haber.com/favicon.ico'} />
+  <meta property="og:image" content={news?.image || 'https://xn--hzl-haber-vpbc.com/imgs/logos/logo192.png'} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={news?.name ? `${news.name} - Hızlı Haber` : 'Hızlı Haber'} />
         <meta name="twitter:description" content={news?.summary || 'Hızlı Haber ile gündemi anında takip et! Son dakika haberleri, özetler ve daha fazlası burada.'} />
-  <meta name="twitter:image" content={news?.image || 'https://hızlı-haber.com/favicon.ico'} />
+  <meta name="twitter:image" content={news?.image || 'https://xn--hzl-haber-vpbc.com/imgs/logos/logo192.png'} />
         <meta name="author" content="Hızlı Haber Ekibi" />
         <link rel="icon" href="/imgs/logos/logo64.png" sizes="64x64" type="image/png" />
         <link rel="icon" href="/imgs/logos/logo128.png" sizes="128x128" type="image/png" />

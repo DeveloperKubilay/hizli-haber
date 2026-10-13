@@ -7,6 +7,29 @@ const config = require("./config.json");
 //https://gnews.io/dashboard
 //https://newsapi.org/
 
+function slugify(text) {
+    if (!text) return "haber-" + Date.now();
+    const trMap = {
+        'ç': 'c', 'Ç': 'c',
+        'ğ': 'g', 'Ğ': 'g',
+        'ı': 'i', 'I': 'i', 'İ': 'i',
+        'ö': 'o', 'Ö': 'o',
+        'ş': 's', 'Ş': 's',
+        'ü': 'u', 'Ü': 'u'
+    };
+    let slug = text;
+    for (const key in trMap) {
+        slug = slug.split(key).join(trMap[key]);
+    }
+    return slug
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .slice(0, 80);
+}
+
 async function main() {
     console.log("🚀 Haber getirme işlemi başlatılıyor...");
     const news = process.env.DEPLOY_ENV !== "auto" ? [{url: process.env.DEPLOY_ENV}] : (await getNews()).slice(0, 25);
@@ -58,8 +81,12 @@ async function main() {
                         console.warn(`⚠️ Görsel oluşturulamadı, default resim kullanılıyor: ${imageResult.message}`);
                     }
 
+                    const cleanSlug = parsedNews.slug ? slugify(parsedNews.slug) : slugify(parsedNews.name);
+
                     const newsId = await firebase.addWithAdmin('news', {
                         ...parsedNews,
+                        slug: cleanSlug,
+                        sourceUrl: batch[i]?.url || "",
                         createdAt: batch[i].publishedAt || new Date().toISOString(),
                         image: imageUrl
                     });
