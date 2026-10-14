@@ -2,7 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Users, FileText, Eye, Cookie } from 'lucide-react';
+import { ArrowLeft, Users, FileText, Eye, Cookie, AlertTriangle, Shield } from 'lucide-react';
 
 // Components
 import Navbar from '../components/Navbar';
@@ -84,9 +84,9 @@ function Terms() {
           </p>
         </motion.div>
 
-        {/* Yapay Zeka İçerik Uyarısı */}
-        {/* <motion.div
-          className="bg-primaryBG border border-secondaryBG rounded-lg p-6 mb-8"
+        {/* Yapay Zeka ve Otomasyon İçerik Uyarısı */}
+        <motion.div
+          className="bg-primary border border-secondary/20 rounded-lg p-6 mb-8 shadow-md"
           variants={sectionVariants}
           initial="initial"
           animate="animate"
@@ -96,25 +96,23 @@ function Terms() {
             <AlertTriangle className="text-secondary mt-1 flex-shrink-0" size={24} />
             <div>
               <h2 className="text-xl font-bold text-textHeading mb-3">
-                Önemli: Yapay Zeka İçerik Uyarısı
+                Önemli Bilgilendirme: Otomasyon ve Yapay Zeka Süreçleri
               </h2>
               <p className="text-textPrimary leading-relaxed mb-3">
-                Bu platformdaki haber içerikleri gerçek kaynaklardan alınmakta ancak yapay zeka teknolojileri tarafından işlenmekte ve düzenlenmektedir.
-                Bu işlem sırasında içeriklerde değişiklikler, eksiklikler veya yanlışlıklar oluşabilir.
+                Hızlı Haber platformunda sunulan haberler, kamuya açık güvenilir bağımsız kaynaklardan ve RSS akışlarından toplanmakta; yapay zeka ve otomasyon teknolojileri kullanılarak tarafsız biçimde derlenip özetlenmektedir.
               </p>
-              <p className="text-textPrimary leading-relaxed">
-                <strong className="text-textHeading">Önemli Not:</strong> Yapay zeka işleme sürecinde gerçeklikten sapma tesadüfidir.
-                Kritik kararlar alırken lütfen orijinal kaynaklardan doğrulama yapınız.
+              <p className="text-textPrimary leading-relaxed text-sm opacity-90">
+                <strong className="text-textHeading">Teyit Tavsiyesi:</strong> Otomatik işleme ve dil modelleri sürecinde oluşabilecek anlam kaymaları veya eksiklikler tamamen teknik süreç kaynaklıdır. Hayati, hukuki veya finansal kararlar alırken bilgilerin resmi ve birincil kaynaklardan teyit edilmesi tavsiye edilir.
               </p>
             </div>
           </div>
-        </motion.div> */}
+        </motion.div>
 
         {/* Ana İçerik Bölümleri */}
         <div className="space-y-8">
 
           {/* Sorumluluk Reddi */}
-          {/* <motion.section
+          <motion.section
             className="bg-primary rounded-lg p-6"
             variants={sectionVariants}
             initial="initial"
@@ -123,23 +121,26 @@ function Terms() {
           >
             <div className="flex items-center mb-4">
               <Shield className="text-secondary mr-3" size={24} />
-              <h2 className="text-2xl font-bold text-textHeading">1. Sorumluluk Reddi</h2>
+              <h2 className="text-2xl font-bold text-textHeading">1. Sorumluluk Reddi ve Muafiyet</h2>
             </div>
-            <div className="space-y-4 text-textPrimary">
+            <div className="space-y-4 text-textPrimary leading-relaxed">
               <p>
-                <strong className="text-textHeading">1.1.</strong> Hızlı Haber platformu, gerçek haber kaynaklarından alınan içerikleri yapay zeka teknolojileri kullanarak işlemektedir.
+                <strong className="text-textHeading">1.1. İçerik Doğruluğu:</strong> Hızlı Haber, üçüncü taraf haber kaynaklarından ve kamuya açık veri akışlarından yapay zeka aracılığıyla derlenen haberlerin mutlak doğruluğunu, eksiksizliğini, güncelliğini veya belirli bir amaca uygunluğunu açık veya zımni olarak garanti etmez.
               </p>
               <p>
-                <strong className="text-textHeading">1.2.</strong> Yapay zeka işleme sürecinde içeriklerde değişiklikler, çeviriler veya yorumlamalar yapılabilir ve bu değişikliklerden kaynaklanan yanlışlıklar tesadüfidir.
+                <strong className="text-textHeading">1.2. Teknik İşleme ve Hatalar:</strong> Yapay zeka işleme sürecinde içeriklerde yapılabilecek çeviri, yeniden anlatım veya özetleme işlemlerinden kaynaklanabilecek yanlışlıklar tesadüfidir ve teknolojik sınırların bir sonucudur.
               </p>
               <p>
-                <strong className="text-textHeading">1.3.</strong> Platform yöneticileri, yapay zeka işleme sürecinde oluşan değişiklikler veya hatalardan kaynaklanan herhangi bir zarar, maddi veya manevi hasardan sorumlu tutulamaz.
+                <strong className="text-textHeading">1.3. Zararlardan Muafiyet:</strong> Hızlı Haber platformu, yöneticileri ve editörleri; sitede yayınlanan bilgilerin kullanımından, sitedeki içeriklere dayanılarak alınan kişisel/ticari kararlardan veya sitede yer alan harici bağlantılardan kaynaklanan doğrudan ya da dolaylı hiçbir maddi, manevi, cezai veya hukuki zarardan sorumlu tutulamaz.
               </p>
               <p>
-                <strong className="text-textHeading">1.4.</strong> İşlenmiş içeriklerin orijinal kaynak ile tam uyumu konusunda hiçbir garanti verilmez.
+                <strong className="text-textHeading">1.4. Yatırım ve Sağlık Tavsiyesi Değildir:</strong> Sitemizde yer alan ekonomi, finans, borsa veya sağlık haberleri kesinlikle yatırım veya medikal tavsiye niteliği taşımamaktadır.
+              </p>
+              <p>
+                <strong className="text-textHeading">1.5. Telif Hakları ve Bildirim (Uyar-Kaldır):</strong> Kamuya açık kaynaklardan derlenen içeriklerde hak sahipliği iddiasında bulunan tüzel veya gerçek kişiler, iletişim kanallarımız üzerinden başvurarak ilgili içeriğin incelenmesini ve kaldırılmasını talep edebilir.
               </p>
             </div>
-          </motion.section> */}
+          </motion.section>
 
           {/* Kullanım Şartları */}
           <motion.section
