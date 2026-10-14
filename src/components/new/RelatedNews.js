@@ -46,14 +46,22 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
       initial="hidden"
       animate="visible"
     >
-      {/* Beğeni ve Tarih Bilgisi */}
+      {/* Bilgiler (Like/Dislike, Tarih ve Etiketler) */}
       <motion.div
         className="bg-primary p-5 rounded-lg"
         variants={itemVariants}
         whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
       >
+        <motion.div
+          className="flex items-center gap-3 mb-6"
+          variants={itemVariants}
+        >
+          <Tag className="text-secondary" size={22} />
+          <h3 className="text-xl font-bold text-textHeading">Bilgiler</h3>
+        </motion.div>
+
         {/* Like/Dislike ve Tarih */}
-        <div className="space-y-4 text-center">
+        <div className="space-y-4 text-center mb-6">
           {/* Like/Dislike Butonları */}
           <div
             className="flex items-center justify-center gap-6"
@@ -79,52 +87,9 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
             <span className="font-medium text-base">{formatDate(currentNews?.createdAt)}</span>
           </div>
         </div>
-      </motion.div>
 
-      {/* Reklam Alanı 
-      <motion.div 
-        className="bg-primary p-5 rounded-lg text-center w-full"
-        variants={itemVariants}
-        whileHover={{ 
-          scale: 1.02,
-          boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-          transition: { duration: 0.2 }
-        }}
-      >
-        <motion.div 
-          className="flex items-center gap-3 mb-4"
-          variants={itemVariants}
-        >
-          <Megaphone className="text-secondary" size={22} />
-          <h3 className="text-lg md:text-xl font-bold text-textHeading">
-            Reklam Alanı
-          </h3>
-        </motion.div>
-        <motion.div 
-          className="bg-primaryBG rounded-lg p-8 md:p-10 min-h-[220px] md:min-h-[280px] flex items-center justify-center w-full"
-          variants={itemVariants}
-        >
-          <p className="text-textPrimary text-base md:text-lg">
-            Bu alan reklam için ayrılmıştır
-          </p>
-        </motion.div>
-      </motion.div>
-      */}
-
-      {/* Etiketler */}
-      {currentNews?.tag && currentNews.tag.length > 0 && (
-        <motion.div
-          className="bg-primary p-5 rounded-lg"
-          variants={itemVariants}
-          whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-        >
-          <motion.div
-            className="flex items-center gap-3 mb-6"
-            variants={itemVariants}
-          >
-            <Tag className="text-secondary" size={22} />
-            <h3 className="text-xl font-bold text-textHeading">Etiketler</h3>
-          </motion.div>
+        {/* Etiketler */}
+        {currentNews?.tag && currentNews.tag.length > 0 && (
           <motion.div
             className="flex flex-wrap gap-3"
             variants={containerVariants}
@@ -144,8 +109,8 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
               </motion.button>
             ))}
           </motion.div>
-        </motion.div>
-      )}
+        )}
+      </motion.div>
 
       {/* Özet */}
       {currentNews?.summary && (

@@ -42,7 +42,7 @@ function SavedNewsCard({ item, index, viewMode, onRemove, formatDate }) {
         <div className={`${
           viewMode === 'grid' ? "w-full h-[150px]" : "flex-shrink-0 w-[150px] h-[100px]"
         } bg-primaryBG rounded-lg overflow-hidden flex items-center justify-center`}>
-          {item.image ? (
+          {item.image && !item.image.includes('logo.png') ? (
             <Link to={`/haberler/${item.newsId}`}>
               <img 
                 src={item.image} 
@@ -50,7 +50,7 @@ function SavedNewsCard({ item, index, viewMode, onRemove, formatDate }) {
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   e.target.onerror = null; 
-                  e.target.src = "/imgs/logo.png"; // Fallback resim
+                  e.target.parentElement.parentElement.innerHTML = '<div class="flex flex-col items-center justify-center text-textPrimary"><span class="text-xs opacity-60">Görsel yok</span></div>';
                 }} 
               />
             </Link>

@@ -96,13 +96,13 @@ async function main() {
                     // Haber başlığından görsel oluştur ve S3'e yükle
                     console.log(`🎨 ${batchIndex * batchSize + i + 1}. haber için görsel oluşturuluyor...`);
                     const imageResult = await generateAndUploadImage(parsedNews.name);
-                    let imageUrl = "https://xn--hzl-haber-vpbc.com/imgs/logo.png";
+                    let imageUrl = "";
 
                     if (imageResult.success) {
                         imageUrl = imageResult.imageUrl;
                         console.log(`✅ Görsel başarıyla oluşturuldu: ${imageResult.fileName}`);
                     } else {
-                        console.warn(`⚠️ Görsel oluşturulamadı, default resim kullanılıyor: ${imageResult.message}`);
+                        console.warn(`⚠️ Görsel oluşturulamadı: ${imageResult.message}`);
                     }
 
                     const cleanSlug = parsedNews.slug ? slugify(parsedNews.slug) : slugify(parsedNews.name);

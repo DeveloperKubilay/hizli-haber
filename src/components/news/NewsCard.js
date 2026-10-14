@@ -59,14 +59,14 @@ function NewsCard({ item, index, viewMode = 'grid' }) {
         } bg-primaryBG rounded-lg overflow-hidden flex items-center justify-center ${
           viewMode === 'grid' ? "mb-2 sm:mb-3" : ""
         }`}>
-          {item.image ? (
+          {item.image && !item.image.includes('logo.png') ? (
             <img 
               src={item.image} 
               alt={item.name} 
               className="w-full h-full object-cover"
               onError={(e) => {
                 e.target.onerror = null; 
-                e.target.src = "/imgs/logo.png"; // Fallback resim
+                e.target.parentElement.innerHTML = '<div class="flex flex-col items-center justify-center text-textPrimary"><span class="text-xs opacity-60">Görsel yok</span></div>';
               }} 
             />
           ) : (
