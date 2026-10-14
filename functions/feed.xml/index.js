@@ -9,6 +9,15 @@ function escapeXml(unsafe) {
 }
 
 export async function onRequest(context) {
+  if (context.request.method === "OPTIONS") {
+    return new Response(null, {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "*"
+      }
+    });
+  }
   try {
     const url = "https://firestore.googleapis.com/v1/projects/hizli-haber-f1210/databases/(default)/documents:runQuery";
     const body = {
@@ -80,19 +89,22 @@ export async function onRequest(context) {
     <description>Yeni nesil bağımsız dijital haber platformu - Hızlı Haber</description>
     <language>tr</language>
     <lastBuildDate>${nowRfc}</lastBuildDate>
-    <atom:link href="https://xn--hzl-haber-vpbc.com/rss" rel="self" type="application/rss+xml" />
+    <atom:link href="https://xn--hzl-haber-vpbc.com/rss.xml" rel="self" type="application/rss+xml" />
 ${itemsXml}  </channel>
 </rss>`;
 
     return new Response(xml, {
       headers: {
         "Content-Type": "application/rss+xml; charset=utf-8",
-        "Cache-Control": "public, max-age=600, s-maxage=1200"
+        "Cache-Control": "public, max-age=600, s-maxage=1200",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+        "Access-Control-Allow-Headers": "*"
       }
     });
   } catch (err) {
     return new Response(`<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Hızlı Haber</title><link>https://xn--hzl-haber-vpbc.com</link></channel></rss>`, {
-      headers: { "Content-Type": "application/rss+xml; charset=utf-8" }
+      headers: { "Content-Type": "application/rss+xml; charset=utf-8", "Access-Control-Allow-Origin": "*" }
     });
   }
 }
