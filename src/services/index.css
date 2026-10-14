@@ -104,3 +104,15 @@ img {
   content-visibility: auto;
   contain-intrinsic-size: 300px 200px;
 }
+
+/* Google Reader Revenue Manager (SWG) - Popup Engelleyici: Sadece satır içi gömülü bülteni göster, ekran ortasına açılan popup modalı gizle */
+body > .swg-container,
+body > div.swg-container,
+body > iframe[src*="news.google.com"],
+div.swg-popup,
+div[class*="swg-dialog"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}

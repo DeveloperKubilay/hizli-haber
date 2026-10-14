@@ -42,23 +42,27 @@ function SavedNewsCard({ item, index, viewMode, onRemove, formatDate }) {
         <div className={`${
           viewMode === 'grid' ? "w-full h-[150px]" : "flex-shrink-0 w-[150px] h-[100px]"
         } bg-primaryBG rounded-lg overflow-hidden flex items-center justify-center`}>
-          {item.image && !item.image.includes('logo.png') ? (
-            <Link to={`/haberler/${item.newsId}`}>
+          {item.image && !item.image.includes('logo') ? (
+            <Link to={`/haberler/${item.newsId}`} className="w-full h-full">
               <img 
                 src={item.image} 
                 alt={item.name} 
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                  e.target.onerror = null; 
-                  e.target.parentElement.parentElement.innerHTML = '<div class="flex flex-col items-center justify-center text-textPrimary"><span class="text-xs opacity-60">Görsel yok</span></div>';
+                  e.target.onerror = null;
+                  e.target.src = '/imgs/logos/logo192.png';
+                  e.target.className = 'w-16 h-16 object-contain opacity-60 p-2 mx-auto';
                 }} 
               />
             </Link>
           ) : (
-            <div className="flex flex-col items-center justify-center text-textPrimary">
-              <Image size={30} className="opacity-40 mb-1" />
-              <span className="text-xs opacity-60">Görsel yok</span>
-            </div>
+            <Link to={`/haberler/${item.newsId}`} className="w-full h-full flex items-center justify-center bg-primaryBG/50 p-2">
+              <img 
+                src="/imgs/logos/logo192.png" 
+                alt="Hızlı Haber" 
+                className="w-16 h-16 object-contain opacity-60" 
+              />
+            </Link>
           )}
         </div>
         

@@ -18,7 +18,6 @@
     "firebase": "^11.9.1",
     "firebase-admin": "^13.4.0",
     "kubitdb": "^1.5.5",
-    "pear3": "^1.1.1",
-    "twitter-api-v2": "^1.29.1"
+    "pear3": "^1.1.1"
   }
 }

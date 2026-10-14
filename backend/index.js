@@ -4,7 +4,6 @@ const ai = require("./modules/ai");
 const firebase = require("./modules/firebase");
 const { generateAndUploadImage } = require("./modules/genimg");
 const { notifySearchEngines } = require("./modules/indexer");
-const { postTweet } = require("./modules/twitter");
 const config = require("./config.json");
 //https://gnews.io/dashboard
 //https://newsapi.org/
@@ -125,14 +124,6 @@ async function main() {
                         const newsUrl = `https://xn--hzl-haber-vpbc.com/haberler/${catSlug}/${cleanSlug}-${newsId}`;
                         addedUrls.push(newsUrl);
                         addedUrls.push(`https://xn--hzl-haber-vpbc.com/haberler/${newsId}`);
-
-                        // X (Twitter) paylaşımı yap
-                        await postTweet({
-                            name: parsedNews.name,
-                            minides: parsedNews.minides,
-                            url: newsUrl,
-                            tag: parsedNews.tag
-                        });
                     }
 
                     console.log(`🔥 Haber ${batchIndex * batchSize + i + 1} Firebase'e eklendi! ID: ${newsId}`);

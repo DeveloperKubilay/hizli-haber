@@ -595,8 +595,8 @@ function NewsDetail() {
               <NewsHeader news={news} formatDate={formatDate} />
             </div>
 
-            {/* Manşet Görseli */}
-            {news?.image && news.image !== '/imgs/logo.png' && !news.image.includes('logo.png') && (
+            {/* Manşet Görseli (Eğer görsel yoksa veya logo ise detay sayfasında gösterilmez) */}
+            {news?.image && !news.image.includes('logo') && (
               <div className="mb-8 rounded-2xl overflow-hidden shadow-xl border border-secondary/20 bg-primaryBG max-h-[460px] flex items-center justify-center">
                 <img 
                   src={news.image} 

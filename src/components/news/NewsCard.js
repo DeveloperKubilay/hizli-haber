@@ -60,22 +60,24 @@ function NewsCard({ item, index, viewMode = 'grid' }) {
         } bg-primaryBG rounded-lg overflow-hidden flex items-center justify-center ${
           viewMode === 'grid' ? "mb-2 sm:mb-3" : ""
         }`}>
-          {item.image && !item.image.includes('logo.png') ? (
+          {item.image && !item.image.includes('logo') ? (
             <img 
               src={item.image} 
               alt={item.name} 
               className="w-full h-full object-cover"
               onError={(e) => {
-                e.target.onerror = null; 
-                e.target.parentElement.innerHTML = '<div class="flex flex-col items-center justify-center text-textPrimary"><span class="text-xs opacity-60">Görsel yok</span></div>';
+                e.target.onerror = null;
+                e.target.src = '/imgs/logos/logo192.png';
+                e.target.className = 'w-16 h-16 sm:w-20 sm:h-20 object-contain opacity-60 p-2';
               }} 
             />
           ) : (
-            <div className="flex flex-col items-center justify-center text-textPrimary">
-              <Image size={viewMode === 'grid' ? 30 : 24} className="opacity-40 mb-1 sm:mb-2" />
-              <span className={`${viewMode === 'grid' ? 'text-xs sm:text-sm' : 'text-xs'} opacity-60`}>
-                Görsel yok
-              </span>
+            <div className="w-full h-full flex items-center justify-center bg-primaryBG/50 p-2">
+              <img 
+                src="/imgs/logos/logo192.png" 
+                alt="Hızlı Haber" 
+                className="w-16 h-16 sm:w-20 sm:h-20 object-contain opacity-60" 
+              />
             </div>
           )}
         </div>

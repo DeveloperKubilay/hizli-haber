@@ -175,6 +175,12 @@ export async function onRequest(context) {
   // Head kapanışından önce dinamik tag'leri yerleştir
   html = html.replace("</head>", `${dynamicMeta}\n</head>`);
 
+  // Bingbot ve arama motorları için haber başlığını H1 olarak gövdeye yerleştir
+  html = html.replace(
+    /<h1 style="[^"]*">.*?<\/h1>/i,
+    `<h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">${escapeHtml(title)}</h1>`
+  );
+
   return new Response(html, {
     headers: {
       ...Object.fromEntries(response.headers),
