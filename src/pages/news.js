@@ -475,9 +475,9 @@ function Home() {
                 viewMode={viewMode}
               />
 
-              {/* Mobilde alt sayfalama - sadece haber varsa göster */}
+              {/* Sayfalama - Alt (Haberlerin Ortasında) */}
               {!loading && paginatedNews.length > 0 && totalPages > 1 && (
-                <div className="mt-6 sm:hidden">
+                <div className="mt-8 mb-4 flex justify-center">
                   <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
@@ -499,17 +499,6 @@ function Home() {
       <div style={{
         minHeight: paginatedNews.length < 5 ? '300px' : '30px'
       }} className="bg-tbackground"></div>
-
-      {/* Alt Sayfalama - Masaüstü için */}
-      {!loading && paginatedNews.length > 0 && totalPages > 1 && (
-        <div className="hidden sm:flex justify-center mb-6">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
-        </div>
-      )}
 
       {/* Footer */}
       <Footer />

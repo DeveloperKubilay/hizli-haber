@@ -255,11 +255,6 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
             </motion.p>
           )}
         </motion.div>
-
-        {/* Google Reader Revenue Manager - Satır İçi Bültene Kaydol Kutusu */}
-        <div className="mt-8 p-4 rounded-xl border border-secondary/20 bg-[#26292f] shadow-lg overflow-hidden">
-          <div rrm-inline-cta="c13c0026-3e2d-4d02-b144-e6987b399a96"></div>
-        </div>
       </motion.div>
     </motion.div>
   );
