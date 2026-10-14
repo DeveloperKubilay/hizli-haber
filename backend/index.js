@@ -34,7 +34,7 @@ function slugify(text) {
 async function main() {
     console.log("🚀 Haber getirme işlemi başlatılıyor...");
     let news = [];
-    if (process.env.DEPLOY_ENV !== "auto") {
+    if (process.env.DEPLOY_ENV && process.env.DEPLOY_ENV !== "auto") {
         news = [{ url: process.env.DEPLOY_ENV }];
     } else {
         const rawArticles = (await getNews()) || [];
