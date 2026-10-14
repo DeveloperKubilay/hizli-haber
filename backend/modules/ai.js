@@ -59,7 +59,8 @@ async function processSinglePrompt(models, promptText) {
                     }
                 ],
                 stream: false
-            })
+            }),
+            signal: AbortSignal.timeout(45000)
         });
 
         if (!response.ok) {

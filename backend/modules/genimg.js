@@ -32,7 +32,8 @@ async function callImageApi(model, promptText) {
             background: "auto",
             image_detail: "high",
             output_format: "png"
-        })
+        }),
+        signal: AbortSignal.timeout(60000)
     });
 
     if (!response.ok) {

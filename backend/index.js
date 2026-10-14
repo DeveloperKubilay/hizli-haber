@@ -164,7 +164,8 @@ async function main() {
 
 main()
 
+const maxTimeoutMs = (process.env.DEPLOY_ENV && process.env.DEPLOY_ENV !== "auto") ? 3 * 60 * 1000 : 12 * 60 * 1000;
 setTimeout(() => {
-    console.log("⏰ 12 dakika geçti, process sonlandırılıyor...");
+    console.log("⏰ Zaman aşımı süresi doldu, process sonlandırılıyor...");
     process.exit(0);
-}, process.env.DEPLOY_ENV !== "auto" ? 2 * 60 * 1000 : 12 * 60 * 1000);
+}, maxTimeoutMs);
