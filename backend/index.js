@@ -116,7 +116,8 @@ async function main() {
                         likeCount: 0,
                         dislikeCount: 0,
                         sourceUrl: batch[i]?.url || "",
-                        createdAt: batch[i].publishedAt || new Date().toISOString(),
+                        createdAt: new Date().toISOString(),
+                        originalPublishedAt: batch[i].publishedAt || new Date().toISOString(),
                         image: imageUrl
                     });
 
