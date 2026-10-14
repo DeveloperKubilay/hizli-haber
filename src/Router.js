@@ -27,9 +27,12 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/haberler" element={<News />} />
+          <Route path="/kategori/:category" element={<News />} />
           <Route path="/haberler/:id" element={<New />} />
+          <Route path="/haberler/:category/:slugAndId" element={<New />} />
           <Route path="/new/:id" element={<New />} /> {/* Eski URL'ler için redirect */}
           <Route path="/haber/:id" element={<New />} /> {/* Eski URL'ler için redirect */}
+          <Route path="/haber/:category/:slugAndId" element={<New />} />
           <Route path="/kaydettigim-haberler" element={<SavedNews />} />
           <Route path="/hizmet-sartlari" element={<Terms />} />
           <Route path="/gizlilik-politikasi" element={<Terms />} />

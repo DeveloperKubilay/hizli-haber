@@ -7,6 +7,7 @@ import {
   CATEGORY_ICONS, 
   translateTagsToTurkish 
 } from '../../services/categories';
+import { getNewsUrl } from '../../utils/url';
 
 function NewsCard({ item, index, viewMode = 'grid' }) {
   // Tarih ve saat formatını düzenlemek için yardımcı fonksiyon
@@ -35,7 +36,7 @@ function NewsCard({ item, index, viewMode = 'grid' }) {
   };
 
   return (
-    <Link to={`/haberler/${item.id}`} className="block">
+    <Link to={getNewsUrl(item)} className="block">
       <motion.div 
         className={`news-card-fixed-height bg-primary rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-primaryBG w-full cursor-pointer overflow-hidden ${
           viewMode === 'grid' ? "p-2 sm:p-3 md:p-3.5" : "p-2 sm:p-3"

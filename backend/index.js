@@ -108,16 +108,20 @@ async function main() {
                     }
 
                     const cleanSlug = parsedNews.slug ? slugify(parsedNews.slug) : slugify(parsedNews.name);
+                    const catSlug = parsedNews.tag?.[0] ? slugify(parsedNews.tag[0]) : 'gundem';
 
                     const newsId = await firebase.addWithAdmin('news', {
                         ...parsedNews,
                         slug: cleanSlug,
+                        likeCount: 0,
+                        dislikeCount: 0,
                         sourceUrl: batch[i]?.url || "",
                         createdAt: batch[i].publishedAt || new Date().toISOString(),
                         image: imageUrl
                     });
 
                     if (newsId) {
+                        addedUrls.push(`https://xn--hzl-haber-vpbc.com/haberler/${catSlug}/${cleanSlug}-${newsId}`);
                         addedUrls.push(`https://xn--hzl-haber-vpbc.com/haberler/${newsId}`);
                     }
 

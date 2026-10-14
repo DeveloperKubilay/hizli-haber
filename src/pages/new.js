@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db, auth } from '../services/firebase';
 import { doc, getDoc, collection, getDocs, query, where, orderBy, limit, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
+import { getNewsUrl } from '../utils/url';
 
 // Components
 import Navbar from '../components/Navbar';
@@ -27,7 +28,7 @@ function shuffleArray(array) {
 }
 
 function NewsDetail() {
-  const { id } = useParams();
+  const { id, category, slugAndId } = useParams();
   const navigate = useNavigate();
   const [news, setNews] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -42,16 +43,30 @@ function NewsDetail() {
   const [isLoadingNextNews, setIsLoadingNextNews] = useState(false);
   const [scrollCooldown, setScrollCooldown] = useState(false);
 
+  // URL'den aranacak parametreyi ve olası Firestore ID'sini ayrıştır
+  const rawParam = slugAndId || id;
+  const parsedTargetId = useMemo(() => {
+    if (!rawParam) return null;
+    if (rawParam.includes('-')) {
+      const parts = rawParam.split('-');
+      const lastPart = parts[parts.length - 1];
+      if (lastPart && lastPart.length >= 16) {
+        return lastPart;
+      }
+    }
+    return rawParam;
+  }, [rawParam]);
+
   const canonicalUrl = useMemo(() => {
     if (!news) return 'https://xn--hzl-haber-vpbc.com';
-    return `https://xn--hzl-haber-vpbc.com/haberler/${news.id}`;
+    return `https://xn--hzl-haber-vpbc.com${getNewsUrl(news)}`;
   }, [news]);
 
   // Haber detayını çek
   useEffect(() => {
     const fetchNewsDetail = async () => {
-      if (!id) {
-        setError('Haber ID\'si bulunamadı');
+      if (!rawParam) {
+        setError('Haber parametresi bulunamadı');
         setLoading(false);
         return;
       }
@@ -59,23 +74,25 @@ function NewsDetail() {
         setLoading(true);
         let newsData = null;
 
-        // Önce doğrudan doküman ID'si ile dene
-        try {
-          const newsDoc = doc(db, 'news', id);
-          const newsSnapshot = await getDoc(newsDoc);
-          if (newsSnapshot.exists()) {
-            newsData = {
-              id: newsSnapshot.id,
-              ...newsSnapshot.data()
-            };
+        // 1. Önce olası veya doğrudan doküman ID'si ile tekil O(1) çek
+        if (parsedTargetId) {
+          try {
+            const newsDoc = doc(db, 'news', parsedTargetId);
+            const newsSnapshot = await getDoc(newsDoc);
+            if (newsSnapshot.exists()) {
+              newsData = {
+                id: newsSnapshot.id,
+                ...newsSnapshot.data()
+              };
+            }
+          } catch (e) {
+            // ID geçersiz format ise slug'a devam et
           }
-        } catch (e) {
-          // ID formatı geçersiz olabilir (slug ise)
         }
 
-        // Eğer bulunamadıysa slug ile ara
+        // 2. Eğer bulunamadıysa slug ile ara
         if (!newsData) {
-          const slugQuery = query(collection(db, 'news'), where('slug', '==', id), limit(1));
+          const slugQuery = query(collection(db, 'news'), where('slug', '==', rawParam), limit(1));
           const querySnapshot = await getDocs(slugQuery);
           if (!querySnapshot.empty) {
             const firstDoc = querySnapshot.docs[0];
@@ -93,6 +110,8 @@ function NewsDetail() {
         }
 
         setNews(newsData);
+        setLikesCount(newsData.likeCount || 0);
+        setDislikesCount(newsData.dislikeCount || 0);
         setLoading(false);
         setRelatedLoading(true);
         fetchRelatedNews(newsData).then(() => {
@@ -105,7 +124,7 @@ function NewsDetail() {
       }
     };
     fetchNewsDetail();
-  }, [id]);
+  }, [rawParam, parsedTargetId]);
 
   // Benzer haberler değişince currentRelatedIndex'i güncelle
   useEffect(() => {
@@ -206,7 +225,7 @@ function NewsDetail() {
           const recentNewsQuery = query(
             newsCollection,
             orderBy('createdAt', 'desc'),
-            limit(10)
+            limit(5)
           );
           const recentNewsSnapshot = await getDocs(recentNewsQuery);
           const recentNews = shuffleArray(
@@ -220,13 +239,14 @@ function NewsDetail() {
           return;
         } catch (orderError) {
           console.log('⚠️ OrderBy hatası, fallback kullanılıyor:', orderError);
-          // Fallback: orderBy olmadan
-          const fallbackSnapshot = await getDocs(newsCollection);
-          const fallbackNews = fallbackSnapshot.docs
-            .map(doc => ({ id: doc.id, ...doc.data() }))
-            .filter(item => item.id !== currentNews.id)
-            .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
-            .slice(0, 4);
+          // Fallback: limitli sorgu
+          const fallbackSnapshot = await getDocs(query(newsCollection, limit(5)));
+          const fallbackNews = shuffleArray(
+            fallbackSnapshot.docs
+              .map(doc => ({ id: doc.id, ...doc.data() }))
+              .filter(item => item.id !== currentNews.id)
+              .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+              .slice(0, 4);
           
           console.log('✅ Fallback haberler:', fallbackNews.length);
           setRelatedNews(fallbackNews);
@@ -244,7 +264,7 @@ function NewsDetail() {
           newsCollection,
           where('tag', 'array-contains', firstTag),
           orderBy('createdAt', 'desc'),
-          limit(10)
+          limit(5)
         );
         
         const tagSnapshot = await getDocs(tagQuery);
@@ -259,7 +279,7 @@ function NewsDetail() {
       } catch (tagError) {
         console.log('⚠️ Tag query hatası, fallback kullanılıyor:', tagError);
         // Fallback: tag olmadan en son haberler
-        const fallbackSnapshot = await getDocs(query(newsCollection, limit(10)));
+        const fallbackSnapshot = await getDocs(query(newsCollection, limit(5)));
         const fallbackNews = shuffleArray(
           fallbackSnapshot.docs
             .map(doc => ({ id: doc.id, ...doc.data() }))
@@ -298,98 +318,31 @@ function NewsDetail() {
     }
   };
 
-  // Like/dislike sayıları ve user durumunu çek (her zaman çalışsın)
+  // Kullanıcı giriş yapmışsa kişisel beğeni/beğenmeme durumunu kontrol et
   useEffect(() => {
-    const loadLikeDislikeCounts = async () => {
-      if (!id) return;
+    const checkUserLikeStatus = async () => {
+      const activeId = news?.id || parsedTargetId;
+      if (!activeId) return;
 
       try {
-        // Önce haber dökümanından sayaçları kontrol et
-        const newsDoc = doc(db, 'news', id);
-        const newsSnapshot = await getDoc(newsDoc);
-        
-        if (newsSnapshot.exists()) {
-          // Haber dökümanında likeCount ve dislikeCount var mı kontrol et
-          const newsData = newsSnapshot.data();
-          
-          if (newsData.likeCount !== undefined) {
-            setLikesCount(newsData.likeCount);
-          } else {
-            // Yoksa koleksiyondan say
-            const likesRef = collection(db, 'news', id, 'likes');
-            const allLikesSnapshot = await getDocs(likesRef);
-            const likesCount = allLikesSnapshot.size;
-            setLikesCount(likesCount);
-            
-            // Ve dökümanı güncelle
-            try {
-              await updateDoc(newsDoc, {
-                likeCount: likesCount,
-                updatedAt: new Date()
-              });
-            } catch (updateError) {
-              console.error('Like sayacı güncellenirken hata:', updateError);
-            }
-          }
-          
-          if (newsData.dislikeCount !== undefined) {
-            setDislikesCount(newsData.dislikeCount);
-          } else {
-            // Yoksa koleksiyondan say
-            const dislikesRef = collection(db, 'news', id, 'dislikes');
-            const allDislikesSnapshot = await getDocs(dislikesRef);
-            const dislikesCount = allDislikesSnapshot.size;
-            setDislikesCount(dislikesCount);
-            
-            // Ve dökümanı güncelle
-            try {
-              await updateDoc(newsDoc, {
-                dislikeCount: dislikesCount,
-                updatedAt: new Date()
-              });
-            } catch (updateError) {
-              console.error('Dislike sayacı güncellenirken hata:', updateError);
-            }
-          }
-        } else {
-          // Eskisi gibi koleksiyonlardan say
-          const likesRef = collection(db, 'news', id, 'likes');
-          const allLikesSnapshot = await getDocs(likesRef);
-          setLikesCount(allLikesSnapshot.size);
-          
-          const dislikesRef = collection(db, 'news', id, 'dislikes');
-          const allDislikesSnapshot = await getDocs(dislikesRef);
-          setDislikesCount(allDislikesSnapshot.size);
-        }
-
-        // User login'se durumunu da kontrol et
         if (auth.currentUser) {
           const userId = auth.currentUser.uid;
-          
-          // User'ın like durumunu kontrol et
-          const likesRef = collection(db, 'news', id, 'likes');
-          const userLikeQuery = query(likesRef, where('__name__', '==', userId));
-          const likeSnapshot = await getDocs(userLikeQuery);
-          setLiked(!likeSnapshot.empty);
+          const userLikeDoc = await getDoc(doc(db, 'news', activeId, 'likes', userId));
+          setLiked(userLikeDoc.exists());
 
-          // User'ın dislike durumunu kontrol et
-          const dislikesRef = collection(db, 'news', id, 'dislikes');
-          const userDislikeQuery = query(dislikesRef, where('__name__', '==', userId));
-          const dislikeSnapshot = await getDocs(userDislikeQuery);
-          setDisliked(!dislikeSnapshot.empty);
+          const userDislikeDoc = await getDoc(doc(db, 'news', activeId, 'dislikes', userId));
+          setDisliked(userDislikeDoc.exists());
         } else {
-          // User login değilse false yap
           setLiked(false);
           setDisliked(false);
         }
-
       } catch (error) {
-        console.error('Like/dislike sayıları yüklenirken hata:', error);
+        console.error('Kullanıcı etkileşim durumu kontrol edilirken hata:', error);
       }
     };
 
-    loadLikeDislikeCounts();
-  }, [id]); // Sadece id değişince çalışsın
+    checkUserLikeStatus();
+  }, [news?.id, parsedTargetId]);
 
   // Memoized news object - re-render'ları önlemek için
   const newsWithCounts = useMemo(() => ({

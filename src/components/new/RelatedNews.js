@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Tag, FileText, Heart, ThumbsDown, Calendar, Newspaper, Megaphone } from 'lucide-react';
 import { CATEGORY_COLORS, CATEGORY_ICONS, translateTagsToTurkish, CATEGORIES } from '../../services/categories';
+import { getNewsUrl } from '../../utils/url';
 
 function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
   const navigate = useNavigate();
@@ -222,7 +223,7 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
                 whileTap={{ scale: 0.98 }}
               >
                 <Link
-                  to={`/haberler/${item.id}`}
+                  to={getNewsUrl(item)}
                   className="block group"
                 >
                   <div className="flex gap-3">

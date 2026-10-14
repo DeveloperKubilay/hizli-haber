@@ -2,17 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../../services/firebase';
 import { collection, getDocs, orderBy, query, limit } from 'firebase/firestore';
+import { getNewsUrl } from '../../utils/url';
 
-export function ProductTicker() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+export function ProductTicker({ items = null }) {
+  const [products, setProducts] = useState(items || []);
+  const [loading, setLoading] = useState(!items);
   const navigate = useNavigate();
 
-  const handleNewsClick = (newsId) => {
-    navigate(`/haberler/${newsId}`);
+  const handleNewsClick = (product) => {
+    navigate(getNewsUrl(product));
   };
 
   useEffect(() => {
+    if (items) {
+      setProducts(items);
+      setLoading(false);
+      return;
+    }
+
     const fetchNews = async () => {
       try {
         setLoading(true);
@@ -27,6 +34,8 @@ export function ProductTicker() {
           const data = doc.data();
           return {
             id: doc.id,
+            tag: data.tag,
+            slug: data.slug,
             image: data.image || '/favicon.ico',
             name: data.name || 'Haber Başlığı',
             description: data.minides ? 
@@ -50,7 +59,7 @@ export function ProductTicker() {
     };
 
     fetchNews();
-  }, []);
+  }, [items]);
 
   // Loading durumunda skeleton göster
   if (loading) {
@@ -247,16 +256,16 @@ export function ProductTicker() {
       <div style={containerStyle} className="ticker-container">
         <div style={tickerContainerStyle}>
           <div className="ticker" style={tickerStyle}>
-            {duplicatedProducts.map(({ id, image, name, description }, index) => (
+            {duplicatedProducts.map((prod, index) => (
               <div
-                key={`${id}-${index}`}
+                key={`${prod.id}-${index}`}
                 className="product-card"
                 style={productStyle}
-                onClick={() => handleNewsClick(id)}
+                onClick={() => handleNewsClick(prod)}
               >
                 <img
-                  src={image}
-                  alt={name}
+                  src={prod.image}
+                  alt={prod.name}
                   style={imageStyle}
                   onError={(e) => {
                     e.target.onerror = null;
@@ -264,11 +273,11 @@ export function ProductTicker() {
                   }}
                 />
                 <div style={textContainerStyle}>
-                  <div style={nameStyle} title={name}>
-                    {name.length > 18 ? name.slice(0, 18) + '…' : name}
+                  <div style={nameStyle} title={prod.name}>
+                    {prod.name && prod.name.length > 18 ? prod.name.slice(0, 18) + '…' : prod.name}
                   </div>
-                  <div style={descStyle} title={description}>
-                    {description.length > 25 ? description.slice(0, 25) + '…' : description}
+                  <div style={descStyle} title={prod.description}>
+                    {prod.description && prod.description.length > 25 ? prod.description.slice(0, 25) + '…' : prod.description}
                   </div>
                 </div>
               </div>
@@ -280,16 +289,22 @@ export function ProductTicker() {
   );
 }
 
-export function ProductTickerReverse() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+export function ProductTickerReverse({ items = null }) {
+  const [products, setProducts] = useState(items || []);
+  const [loading, setLoading] = useState(!items);
   const navigate = useNavigate();
 
-  const handleNewsClick = (newsId) => {
-    navigate(`/haberler/${newsId}`);
+  const handleNewsClick = (product) => {
+    navigate(getNewsUrl(product));
   };
 
   useEffect(() => {
+    if (items) {
+      setProducts(items);
+      setLoading(false);
+      return;
+    }
+
     const fetchNews = async () => {
       try {
         setLoading(true);
@@ -304,6 +319,8 @@ export function ProductTickerReverse() {
           const data = doc.data();
           return {
             id: doc.id,
+            tag: data.tag,
+            slug: data.slug,
             image: data.image || '/favicon.ico',
             name: data.name || 'Haber Başlığı',
             description: data.minides ? 
@@ -327,7 +344,7 @@ export function ProductTickerReverse() {
     };
 
     fetchNews();
-  }, []);
+  }, [items]);
 
   // Loading durumunda skeleton göster
   if (loading) {
@@ -527,16 +544,16 @@ export function ProductTickerReverse() {
       <div style={containerStyle} className="ticker-container">
       <div style={tickerContainerStyle}>
         <div className="ticker-reverse" style={tickerStyle}>
-          {duplicatedProducts.map(({ id, image, name, description }, index) => (
+          {duplicatedProducts.map((prod, index) => (
             <div
-              key={`${id}-${index}`}
+              key={`${prod.id}-${index}`}
               className="product-card"
               style={productStyle}
-              onClick={() => handleNewsClick(id)}
+              onClick={() => handleNewsClick(prod)}
             >
               <img
-                src={image}
-                alt={name}
+                src={prod.image}
+                alt={prod.name}
                 style={imageStyle}
                 onError={(e) => {
                   e.target.onerror = null;
@@ -544,11 +561,11 @@ export function ProductTickerReverse() {
                 }}
               />
               <div style={textContainerStyle}>
-                <div style={nameStyle} title={name}>
-                  {name.length > 18 ? name.slice(0, 18) + '…' : name}
+                <div style={nameStyle} title={prod.name}>
+                  {prod.name && prod.name.length > 18 ? prod.name.slice(0, 18) + '…' : prod.name}
                 </div>
-                <div style={descStyle} title={description}>
-                  {description.length > 25 ? description.slice(0, 25) + '…' : description}
+                <div style={descStyle} title={prod.description}>
+                  {prod.description && prod.description.length > 25 ? prod.description.slice(0, 25) + '…' : prod.description}
                 </div>
               </div>
             </div>
