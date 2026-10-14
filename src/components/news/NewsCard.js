@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Heart, ThumbsDown, Calendar, Image } from 'lucide-react';
+import { Heart, ThumbsDown, Calendar } from 'lucide-react';
 import { 
   CATEGORY_COLORS, 
   CATEGORY_ICONS, 

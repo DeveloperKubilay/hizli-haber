@@ -28,7 +28,7 @@ function shuffleArray(array) {
 }
 
 function NewsDetail() {
-  const { id, category, slugAndId } = useParams();
+  const { id, slugAndId } = useParams();
   const navigate = useNavigate();
   const [news, setNews] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -246,7 +246,8 @@ function NewsDetail() {
               .map(doc => ({ id: doc.id, ...doc.data() }))
               .filter(item => item.id !== currentNews.id)
               .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
-              .slice(0, 4);
+              .slice(0, 4)
+          );
           
           console.log('✅ Fallback haberler:', fallbackNews.length);
           setRelatedNews(fallbackNews);

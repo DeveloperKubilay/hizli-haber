@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Megaphone, Lightbulb } from 'lucide-react';
+import { Lightbulb } from 'lucide-react';
 
 
 /*

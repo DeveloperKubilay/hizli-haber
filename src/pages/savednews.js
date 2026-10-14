@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { 
   Heart, Calendar, Trash2, BookmarkCheck, Search, 
-  ThumbsDown, Image, ArrowLeft, SlidersHorizontal, Grid, List 
+  ThumbsDown, ArrowLeft, SlidersHorizontal, Grid, List 
 } from 'lucide-react';
 import { auth, db } from '../services/firebase';
 import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
