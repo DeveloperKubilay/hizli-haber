@@ -23,7 +23,7 @@
         "JSON şablonu tam olarak şu yapıda olmalıdır:",
         "{\"name\": string, \"slug\": string, \"minides\": string, \"summary\": string, \"des\": string, \"tag\": array}",
         "",
-        "- \"name\": Haberin can alıcı konusunu içeren, merak uyandıran, arama motorlarında (SEO) aranabilecek ve profesyonel gazetecilik standartlarına uygun başlık. En fazla 1-2 emoji içerebilir. Asla küfür, sokak ağzı veya yalan bilgi (clickbait) içermemelidir.",
+        "- \"name\": Haberin can alıcı konusunu içeren, merak uyandıran, arama motorlarında (SEO) aranabilecek ve profesyonel gazetecilik standartlarına uygun başlık. Arama motorları için ideal olarak 40-65 karakter uzunluğunda olmalıdır. En fazla 1-2 emoji içerebilir. Asla küfür, sokak ağzı veya yalan bilgi (clickbait) içermemelidir.",
         "- \"slug\": Başlığa uygun, Türkçe karakterlerden arındırılmış (ş->s, ı->i, ç->c vb.), küçük harfli, tire ile ayrılmış SEO URL slug (örnek: \"turkiye-ekonomi-yeni-adimlari\").",
         "- \"minides\": Arama motoru snippet'ları ve sosyal medya paylaşımları için 140-160 karakterlik, bilgilendirici ve merak uyandırıcı meta açıklama.",
         "- \"summary\": Hızlı okuma paneli için haberin en kritik 3-4 maddesini içeren hap özet (Madde işaretleri • kullanarak yaz).",
