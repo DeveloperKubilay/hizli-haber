@@ -255,6 +255,11 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
           )}
         </motion.div>
       </motion.div>
+
+      {/* Google Reader Revenue Manager Satır İçi (Inline) CTA */}
+      <div className="w-full overflow-hidden rounded-lg my-4">
+        <div rrm-inline-cta="c13c0026-3e2d-4d02-b144-e6987b399a96"></div>
+      </div>
     </motion.div>
   );
 }

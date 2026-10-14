@@ -3,6 +3,7 @@ const getNews = require("./modules/getNews");
 const ai = require("./modules/ai");
 const firebase = require("./modules/firebase");
 const { generateAndUploadImage } = require("./modules/genimg");
+const { notifySearchEngines } = require("./modules/indexer");
 const config = require("./config.json");
 //https://gnews.io/dashboard
 //https://newsapi.org/
@@ -61,6 +62,7 @@ async function main() {
     // 5'li gruplar halinde işle
     const batchSize = 5;
     const batches = [];
+    const addedUrls = [];
 
     for (let i = 0; i < news.length; i += batchSize) {
         batches.push(news.slice(i, i + batchSize));
@@ -115,6 +117,10 @@ async function main() {
                         image: imageUrl
                     });
 
+                    if (newsId) {
+                        addedUrls.push(`https://xn--hzl-haber-vpbc.com/haberler/${newsId}`);
+                    }
+
                     console.log(`🔥 Haber ${batchIndex * batchSize + i + 1} Firebase'e eklendi! ID: ${newsId}`);
                 } catch (parseError) {
                     console.error(`💥 ${batchIndex * batchSize + i + 1}. haber işlenirken hata:`, parseError);
@@ -130,6 +136,10 @@ async function main() {
         } catch (batchError) {
             console.error(`💥 Batch ${batchIndex + 1} işlenirken hata:`, batchError);
         }
+    }
+
+    if (addedUrls.length > 0) {
+        await notifySearchEngines(addedUrls);
     }
 
     await new Promise(resolve => setTimeout(resolve, 2000));
