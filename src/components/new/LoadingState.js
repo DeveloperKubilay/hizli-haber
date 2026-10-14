@@ -44,7 +44,7 @@ function LoadingState() {
           {/* Ana içerik skeleton */}
           <div className="lg:col-span-2">
             {/* Başlık skeleton */}
-            <div className="mb-8 space-y-4">
+            <div className="mb-6 md:mb-8 space-y-4">
               <SkeletonItem className="h-8 w-3/4" />
               <SkeletonItem className="h-6 w-1/2" />
               <div className="flex items-center space-x-4 mt-4">
@@ -52,6 +52,11 @@ function LoadingState() {
                 <SkeletonItem className="h-4 w-20" />
                 <SkeletonItem className="h-4 w-28" />
               </div>
+            </div>
+
+            {/* Manşet Görseli skeleton */}
+            <div className="mb-8">
+              <SkeletonItem className="w-full h-64 md:h-[400px] rounded-2xl" />
             </div>
 
             {/* İçerik paragrafları skeleton */}
@@ -117,49 +122,29 @@ function LoadingState() {
           {/* Yan panel skeleton */}
           <div className="lg:col-span-1">
             <div className="space-y-6">
-              {/* Haber Resmi ve Bilgiler kartı */}
-              <div className="bg-primary p-5 rounded-lg">
-                {/* Ana resim alanı - h-56 */}
-                <SkeletonItem className="w-full h-56 rounded-lg mb-6" />
-                
-                {/* Like/Dislike butonları */}
-                <div className="space-y-4 text-center">
-                  <div className="flex items-center justify-center gap-6">
-                    <SkeletonItem className="h-5 w-20" />
-                    <SkeletonItem className="h-5 w-24" />
-                  </div>
-                  
-                  {/* Tarih */}
-                  <SkeletonItem className="h-5 w-32 mx-auto" />
-                </div>
-              </div>
-
-              {/* Reklam Alanı kartı */}
-              <div className="bg-primary p-5 md:p-6 rounded-lg text-center w-full">
-                {/* Başlık */}
-                <div className="flex items-center gap-3 mb-4">
-                  <SkeletonItem className="h-6 w-6 rounded" />
-                  <SkeletonItem className="h-6 w-24" />
-                </div>
-                
-                {/* Reklam alanı - min-h-[280px] */}
-                <SkeletonItem className="w-full min-h-[280px] rounded-lg" />
-              </div>
-
-              {/* Etiketler kartı */}
+              {/* Bilgiler kartı */}
               <div className="bg-primary p-5 rounded-lg">
                 {/* Başlık */}
                 <div className="flex items-center gap-3 mb-6">
                   <SkeletonItem className="h-6 w-6 rounded" />
-                  <SkeletonItem className="h-6 w-20" />
+                  <SkeletonItem className="h-6 w-24" />
                 </div>
-                
-                {/* Etiket butonları */}
+
+                {/* Like/Dislike butonları ve Tarih */}
+                <div className="space-y-4 text-center mb-6">
+                  <div className="flex items-center justify-center gap-6">
+                    <SkeletonItem className="h-5 w-20" />
+                    <SkeletonItem className="h-5 w-24" />
+                  </div>
+                  <SkeletonItem className="h-5 w-32 mx-auto" />
+                </div>
+
+                {/* Etiketler */}
                 <div className="flex flex-wrap gap-3">
                   {[1, 2, 3, 4].map((index) => (
                     <SkeletonItem 
                       key={index}
-                      className="h-10 w-20 rounded-full" 
+                      className="h-9 w-20 rounded-full" 
                     />
                   ))}
                 </div>
