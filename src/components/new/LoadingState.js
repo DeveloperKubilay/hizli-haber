@@ -45,8 +45,8 @@ function LoadingState() {
           <div className="lg:col-span-2">
             {/* Başlık skeleton */}
             <div className="mb-6 md:mb-8 space-y-4">
-              <SkeletonItem className="h-8 w-3/4" />
-              <SkeletonItem className="h-6 w-1/2" />
+              <SkeletonItem className="h-9 w-4/5" />
+              <SkeletonItem className="h-6 w-3/5" />
               <div className="flex items-center space-x-4 mt-4">
                 <SkeletonItem className="h-4 w-24" />
                 <SkeletonItem className="h-4 w-20" />
@@ -54,9 +54,9 @@ function LoadingState() {
               </div>
             </div>
 
-            {/* Manşet Görseli skeleton */}
+            {/* Manşet Görseli skeleton (Gerçek manşet görseli boyutunda max-h-[460px]) */}
             <div className="mb-8">
-              <SkeletonItem className="w-full h-64 md:h-[400px] rounded-2xl" />
+              <SkeletonItem className="w-full h-64 sm:h-96 md:h-[460px] rounded-2xl" />
             </div>
 
             {/* İçerik paragrafları skeleton */}
@@ -122,53 +122,93 @@ function LoadingState() {
           {/* Yan panel skeleton */}
           <div className="lg:col-span-1">
             <div className="space-y-6">
-              {/* Bilgiler kartı */}
+              {/* 1. Bilgiler kartı (~240px gerçek yükseklik) */}
               <div className="bg-primary p-5 rounded-lg">
-                {/* Başlık */}
                 <div className="flex items-center gap-3 mb-6">
                   <SkeletonItem className="h-6 w-6 rounded" />
                   <SkeletonItem className="h-6 w-24" />
                 </div>
 
-                {/* Açıklama ve bilgi satırları (Özet gibi estetik ve akıcı) */}
-                <div className="space-y-3">
-                  <SkeletonItem className="h-4 w-full" />
-                  <SkeletonItem className="h-4 w-11/12" />
-                  <SkeletonItem className="h-4 w-4/5" />
+                {/* Like/Dislike ve Tarih */}
+                <div className="space-y-4 text-center mb-6">
+                  <div className="flex items-center justify-center gap-6">
+                    <SkeletonItem className="h-5 w-20" />
+                    <SkeletonItem className="h-5 w-24" />
+                  </div>
+                  <SkeletonItem className="h-5 w-32 mx-auto" />
+                </div>
+
+                {/* Etiketler (Dengeli 3 hap) */}
+                <div className="flex flex-wrap justify-center gap-3">
+                  {[1, 2, 3].map((index) => (
+                    <SkeletonItem 
+                      key={index}
+                      className="h-9 w-24 rounded-full" 
+                    />
+                  ))}
                 </div>
               </div>
 
-              {/* Özet kartı */}
+              {/* 2. Özet kartı (~500px gerçek yükseklik) */}
               <div className="bg-primary p-5 rounded-lg">
-                {/* Başlık */}
                 <div className="flex items-center gap-3 mb-6">
                   <SkeletonItem className="h-6 w-6 rounded" />
-                  <SkeletonItem className="h-6 w-16" />
+                  <SkeletonItem className="h-6 w-20" />
                 </div>
                 
-                {/* Özet paragrafları */}
-                <div className="space-y-3">
-                  <SkeletonItem className="h-4 w-full" />
-                  <SkeletonItem className="h-4 w-11/12" />
-                  <SkeletonItem className="h-4 w-4/5" />
+                {/* 3 blok halinde zengin özet satırları */}
+                <div className="space-y-5">
+                  <div className="space-y-2.5">
+                    <SkeletonItem className="h-4 w-full" />
+                    <SkeletonItem className="h-4 w-11/12" />
+                    <SkeletonItem className="h-4 w-full" />
+                    <SkeletonItem className="h-4 w-4/5" />
+                  </div>
+                  <div className="space-y-2.5">
+                    <SkeletonItem className="h-4 w-full" />
+                    <SkeletonItem className="h-4 w-10/12" />
+                    <SkeletonItem className="h-4 w-full" />
+                    <SkeletonItem className="h-4 w-3/4" />
+                  </div>
+                  <div className="space-y-2.5">
+                    <SkeletonItem className="h-4 w-11/12" />
+                    <SkeletonItem className="h-4 w-full" />
+                    <SkeletonItem className="h-4 w-2/3" />
+                  </div>
                 </div>
               </div>
 
-              {/* Benzer Haberler kartı */}
+              {/* 3. Yazar Bilgisi kartı (~170px gerçek yükseklik) */}
               <div className="bg-primary p-5 rounded-lg">
-                {/* Başlık */}
                 <div className="flex items-center gap-3 mb-6">
                   <SkeletonItem className="h-6 w-6 rounded" />
-                  <SkeletonItem className="h-6 w-28" />
+                  <SkeletonItem className="h-6 w-20" />
                 </div>
                 
-                {/* Benzer haberler listesi */}
+                <div className="flex items-center gap-4">
+                  <SkeletonItem className="w-16 h-16 rounded-full shrink-0" />
+                  <div className="space-y-2 flex-1">
+                    <SkeletonItem className="h-5 w-24" />
+                    <SkeletonItem className="h-4 w-36" />
+                  </div>
+                </div>
+              </div>
+
+              {/* 4. Benzer Haberler kartı (~420px gerçek yükseklik) */}
+              <div className="bg-primary p-5 rounded-lg">
+                <div className="flex items-center gap-3 mb-6">
+                  <SkeletonItem className="h-6 w-6 rounded" />
+                  <SkeletonItem className="h-6 w-36" />
+                </div>
+                
                 <div className="space-y-4">
                   {[1, 2, 3].map((index) => (
-                    <div key={index} className="space-y-2">
-                      {/* Başlık ve tarih */}
-                      <SkeletonItem className="h-4 w-full" />
-                      <SkeletonItem className="h-3 w-1/2" />
+                    <div key={index} className="flex gap-3 items-center">
+                      <SkeletonItem className="w-16 h-16 rounded-lg shrink-0" />
+                      <div className="flex-1 space-y-2">
+                        <SkeletonItem className="h-4 w-full" />
+                        <SkeletonItem className="h-3 w-1/2" />
+                      </div>
                     </div>
                   ))}
                 </div>
