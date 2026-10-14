@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { Tag, FileText, Heart, ThumbsDown, Calendar, Newspaper, Megaphone } from 'lucide-react';
+import { Info, Tag, FileText, Heart, ThumbsDown, Calendar, Newspaper, Megaphone } from 'lucide-react';
 import { CATEGORY_COLORS, CATEGORY_ICONS, translateTagsToTurkish, CATEGORIES } from '../../services/categories';
 
 function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
@@ -46,140 +46,66 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
       initial="hidden"
       animate="visible"
     >
-      {/* Haber Resmi ve Bilgiler */}
+      {/* Bilgiler (Tarih, Beğeni, Etiketler) */}
       <motion.div
         className="bg-primary p-5 rounded-lg"
         variants={itemVariants}
-        whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+        whileHover={{ scale: 1.01, transition: { duration: 0.2 } }}
       >
-        <motion.div
-          className="w-full h-50 bg-primaryBG rounded-lg overflow-hidden flex items-center justify-center mb-6"
-          initial={{ scale: 1.1 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 0.6 }}
-        >
-          {currentNews?.image ? (
-            <img
-              src={currentNews.image}
-              alt={currentNews.name}
-              className="max-w-full max-h-full object-contain"
-              style={{ width: '100%', height: '100%' }}
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = "/imgs/logo.png";
-              }}
-            />
-          ) : (
-            <motion.img
-              src="/imgs/logo.png"
-              alt="Site Logosu"
-              className="w-32 h-32 object-contain opacity-60"
-              animate={{
-                scale: [1, 1.05, 1],
-                rotate: [0, 2, -2, 0]
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
+        <div className="flex items-center gap-3 mb-4">
+          <Info className="text-secondary" size={22} />
+          <h3 className="text-xl font-bold text-textHeading">Bilgiler</h3>
+        </div>
+
+        <div className="space-y-3">
+          {/* Yayın Tarihi */}
+          <div className="flex items-center gap-3 text-textPrimary bg-primaryBG/60 p-3 rounded-lg border border-secondary/10">
+            <Calendar size={18} className="text-secondary shrink-0" />
+            <div>
+              <span className="text-xs text-textSecondary block">Yayınlanma Tarihi</span>
+              <span className="font-medium text-sm">{formatDate(currentNews?.createdAt)}</span>
+            </div>
+          </div>
+
+          {/* Beğeni / Reaksiyon */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="flex items-center gap-2 text-textPrimary bg-primaryBG/60 p-3 rounded-lg border border-secondary/10">
+              <Heart size={18} className="text-red-500 shrink-0" />
+              <div>
+                <span className="text-xs text-textSecondary block">Beğeni</span>
+                <span className="font-medium text-sm">{currentNews?.likes || 0}</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-textPrimary bg-primaryBG/60 p-3 rounded-lg border border-secondary/10">
+              <ThumbsDown size={18} className="text-blue-500 shrink-0" />
+              <div>
+                <span className="text-xs text-textSecondary block">Beğenmeme</span>
+                <span className="font-medium text-sm">{currentNews?.dislikes || 0}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Kategoriler / Etiketler */}
+          {currentNews?.tag && currentNews.tag.length > 0 && (
+            <div className="pt-2">
+              <span className="text-xs text-textSecondary block mb-2">Kategoriler</span>
+              <div className="flex flex-wrap gap-2">
+                {translateTagsToTurkish(currentNews.tag).map((category, index) => (
+                  <motion.button
+                    key={index}
+                    onClick={() => handleCategoryClick(category)}
+                    className={`text-xs px-3 py-1.5 rounded-full inline-flex items-center gap-1.5 cursor-pointer transition-all hover:shadow-md ${CATEGORY_COLORS[category] || 'bg-primaryBG text-textPrimary'}`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {CATEGORY_ICONS[category]} {category}
+                  </motion.button>
+                ))}
+              </div>
+            </div>
           )}
-        </motion.div>
-        {/* Like/Dislike ve Tarih */}
-        <div className="space-y-4 text-center">
-          {/* Like/Dislike Butonları */}
-          <div
-            className="flex items-center justify-center gap-6"
-          >
-            <div
-              className="flex items-center gap-3 text-textPrimary"
-            >
-              <Heart size={20} className="text-red-500" />
-              <span className="font-medium text-base">{currentNews?.likes || 0} Beğeni</span>
-            </div>
-            <div
-              className="flex items-center gap-3 text-textPrimary"
-            >
-              <ThumbsDown size={20} className="text-blue-500" />
-              <span className="font-medium text-base">{currentNews?.dislikes || 0} Beğenmeme</span>
-            </div>
-          </div>
-          {/* Tarih */}
-          <div
-            className="flex items-center justify-center gap-3 text-textPrimary"
-          >
-            <Calendar size={20} className="text-secondary" />
-            <span className="font-medium text-base">{formatDate(currentNews?.createdAt)}</span>
-          </div>
         </div>
       </motion.div>
-
-      {/* Reklam Alanı 
-      <motion.div 
-        className="bg-primary p-5 rounded-lg text-center w-full"
-        variants={itemVariants}
-        whileHover={{ 
-          scale: 1.02,
-          boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-          transition: { duration: 0.2 }
-        }}
-      >
-        <motion.div 
-          className="flex items-center gap-3 mb-4"
-          variants={itemVariants}
-        >
-          <Megaphone className="text-secondary" size={22} />
-          <h3 className="text-lg md:text-xl font-bold text-textHeading">
-            Reklam Alanı
-          </h3>
-        </motion.div>
-        <motion.div 
-          className="bg-primaryBG rounded-lg p-8 md:p-10 min-h-[220px] md:min-h-[280px] flex items-center justify-center w-full"
-          variants={itemVariants}
-        >
-          <p className="text-textPrimary text-base md:text-lg">
-            Bu alan reklam için ayrılmıştır
-          </p>
-        </motion.div>
-      </motion.div>
-      */}
-
-      {/* Etiketler */}
-      {currentNews?.tag && currentNews.tag.length > 0 && (
-        <motion.div
-          className="bg-primary p-5 rounded-lg"
-          variants={itemVariants}
-          whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-        >
-          <motion.div
-            className="flex items-center gap-3 mb-6"
-            variants={itemVariants}
-          >
-            <Tag className="text-secondary" size={22} />
-            <h3 className="text-xl font-bold text-textHeading">Etiketler</h3>
-          </motion.div>
-          <motion.div
-            className="flex flex-wrap gap-3"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {translateTagsToTurkish(currentNews.tag).map((category, index) => (
-              <motion.button
-                key={index}
-                onClick={() => handleCategoryClick(category)}
-                className={`text-sm px-4 py-3 rounded-full inline-flex items-center gap-2 cursor-pointer transition-all hover:shadow-lg ${CATEGORY_COLORS[category] || 'bg-primaryBG text-textPrimary'}`}
-                variants={itemVariants}
-                whileHover={{ scale: 1.1, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {CATEGORY_ICONS[category]} {category}
-              </motion.button>
-            ))}
-          </motion.div>
-        </motion.div>
-      )}
 
       {/* Özet */}
       {currentNews?.summary && (
