@@ -638,9 +638,25 @@ function NewsDetail() {
           {/* Ana içerik */}
           <div className="lg:col-span-2">
             {/* Başlık ve meta bilgiler */}
-            <div className="mb-8">
+            <div className="mb-6 md:mb-8">
               <NewsHeader news={news} formatDate={formatDate} />
             </div>
+
+            {/* Manşet Görseli */}
+            {news?.image && news.image !== '/imgs/logo.png' && (
+              <div className="mb-8 rounded-2xl overflow-hidden shadow-xl border border-secondary/20 bg-primaryBG max-h-[460px] flex items-center justify-center">
+                <img 
+                  src={news.image} 
+                  alt={news.name || 'Haber görseli'} 
+                  className="w-full h-auto object-cover max-h-[460px]"
+                  loading="eager"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.parentElement.style.display = 'none';
+                  }}
+                />
+              </div>
+            )}
 
             {/* İçerik */}
             <div className="mb-10">
