@@ -75,7 +75,7 @@ async function getConnectedChannels() {
 /**
  * Yeni haberi Buffer üzerinden bağlı tüm sosyal kanallara (Twitter, Threads vb.) paylaşır
  */
-async function shareNewsToBuffer({ title, url, imageUrl }) {
+async function shareNewsToBuffer({ title, description, url, imageUrl }) {
     const token = process.env.BUFFER_ACCESS_TOKEN;
     if (!token) {
         console.log("ℹ️ BUFFER_ACCESS_TOKEN tanımlı değil, sosyal medya paylaşımı atlanıyor.");
@@ -92,11 +92,52 @@ async function shareNewsToBuffer({ title, url, imageUrl }) {
         const shareMode = process.env.BUFFER_SHARE_MODE || "shareNow"; // shareNow veya addToQueue
 
         for (const channel of channels) {
-            // Twitter için 280 karakter sınırı kontrolü
-            let text = `${title}\n\nDetaylar: ${url}`;
-            if (channel.service === "twitter" && text.length > 275) {
-                const maxTitleLen = 270 - url.length - 15;
-                text = `${title.slice(0, maxTitleLen)}…\n\nDetaylar: ${url}`;
+            let text = "";
+            const cleanTitle = (title || "").trim();
+            const cleanDesc = (description || "").trim();
+
+            if (channel.service === "twitter") {
+                // Twitter karakter limiti: 280 karakter.
+                // Twitter tüm linkleri t.co ile 23 karakter sayar.
+                // Format:
+                // {Başlık}
+                //
+                // {Açıklama}
+                //
+                // {Link}
+                const urlCost = 23;
+                if (cleanDesc) {
+                    const separatorsCost = 4; // iki adet \n\n
+                    const maxAllowedText = 275 - urlCost - separatorsCost; // ~248 karakter
+
+                    if (cleanTitle.length + cleanDesc.length > maxAllowedText) {
+                        const availableForDesc = maxAllowedText - cleanTitle.length - 2;
+                        if (availableForDesc > 25) {
+                            const trimmedDesc = cleanDesc.slice(0, availableForDesc).trim() + "…";
+                            text = `${cleanTitle}\n\n${trimmedDesc}\n\n${url}`;
+                        } else {
+                            // Başlık çok uzunsa sadece başlığı sığdır
+                            const maxTitle = 270 - urlCost - 3;
+                            text = `${cleanTitle.slice(0, maxTitle).trim()}…\n\n${url}`;
+                        }
+                    } else {
+                        text = `${cleanTitle}\n\n${cleanDesc}\n\n${url}`;
+                    }
+                } else {
+                    if (cleanTitle.length + 2 + urlCost > 275) {
+                        const maxTitle = 270 - urlCost - 3;
+                        text = `${cleanTitle.slice(0, maxTitle).trim()}…\n\n${url}`;
+                    } else {
+                        text = `${cleanTitle}\n\n${url}`;
+                    }
+                }
+            } else {
+                // Threads (500 karakter sınırı) ve diğer kanallar
+                if (cleanDesc) {
+                    text = `${cleanTitle}\n\n${cleanDesc}\n\n${url}`;
+                } else {
+                    text = `${cleanTitle}\n\n${url}`;
+                }
             }
 
             const input = {

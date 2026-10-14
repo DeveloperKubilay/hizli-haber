@@ -130,23 +130,11 @@ function LoadingState() {
                   <SkeletonItem className="h-6 w-24" />
                 </div>
 
-                {/* Like/Dislike butonları ve Tarih */}
-                <div className="space-y-4 text-center mb-6">
-                  <div className="flex items-center justify-center gap-6">
-                    <SkeletonItem className="h-5 w-20" />
-                    <SkeletonItem className="h-5 w-24" />
-                  </div>
-                  <SkeletonItem className="h-5 w-32 mx-auto" />
-                </div>
-
-                {/* Etiketler */}
-                <div className="flex flex-wrap gap-3">
-                  {[1, 2, 3, 4].map((index) => (
-                    <SkeletonItem 
-                      key={index}
-                      className="h-9 w-20 rounded-full" 
-                    />
-                  ))}
+                {/* Açıklama ve bilgi satırları (Özet gibi estetik ve akıcı) */}
+                <div className="space-y-3">
+                  <SkeletonItem className="h-4 w-full" />
+                  <SkeletonItem className="h-4 w-11/12" />
+                  <SkeletonItem className="h-4 w-4/5" />
                 </div>
               </div>
 

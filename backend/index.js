@@ -129,7 +129,8 @@ async function main() {
 
                         // Buffer üzerinden otomatik sosyal medya paylaşımı (Twitter, Threads vb.)
                         await shareNewsToBuffer({
-                            title: aiNews.name,
+                            title: parsedNews.name,
+                            description: parsedNews.minides,
                             url: newsUrl,
                             imageUrl: imageUrl
                         });
