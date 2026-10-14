@@ -29,6 +29,12 @@ function getTwitterClient() {
  * @param {Object} news - { name, minides, url, tag }
  */
 async function postTweet(news) {
+  // Kredinin tükenmesini önlemek için varsayılan olarak kapalı tutuyoruz
+  if (process.env.ENABLE_TWITTER !== "true") {
+    console.log("ℹ️ [Twitter] ENABLE_TWITTER=true olmadığı için bakiye koruması devrede, tweet atılmadı.");
+    return null;
+  }
+
   const twitterClient = getTwitterClient();
   if (!twitterClient) {
     console.log("ℹ️ [Twitter] API anahtarları tanımlı değil, tweet atlanıyor.");
