@@ -32,6 +32,8 @@ function App() {
           <Route path="/haber/:id" element={<New />} /> {/* Eski URL'ler için redirect */}
           <Route path="/kaydettigim-haberler" element={<SavedNews />} />
           <Route path="/hizmet-sartlari" element={<Terms />} />
+          <Route path="/gizlilik-politikasi" element={<Terms />} />
+          <Route path="/terms" element={<Terms />} />
           <Route path="*" element={<NotFound />} /> {/* 404 sayfası - catch all route */}
         </Routes>
       </div>

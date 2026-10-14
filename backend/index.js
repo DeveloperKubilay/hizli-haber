@@ -32,7 +32,31 @@ function slugify(text) {
 
 async function main() {
     console.log("🚀 Haber getirme işlemi başlatılıyor...");
-    const news = process.env.DEPLOY_ENV !== "auto" ? [{url: process.env.DEPLOY_ENV}] : (await getNews()).slice(0, 25);
+    let news = [];
+    if (process.env.DEPLOY_ENV !== "auto") {
+        news = [{ url: process.env.DEPLOY_ENV }];
+    } else {
+        const rawArticles = (await getNews()) || [];
+        console.log(`🔍 Toplam ${rawArticles.length} ham haber çekildi, mükerrer kontrolü yapılıyor...`);
+        for (const article of rawArticles) {
+            if (!article.url) continue;
+            try {
+                const existing = await firebase.adminDb.collection('news').where('sourceUrl', '==', article.url).limit(1).get();
+                if (existing.empty) {
+                    news.push(article);
+                    if (news.length >= 10) break;
+                }
+            } catch (e) {
+                news.push(article);
+                if (news.length >= 10) break;
+            }
+        }
+    }
+
+    if (news.length === 0) {
+        console.log("✅ Eklenecek yeni haber bulunamadı (Tüm haberler güncel).");
+        process.exit(0);
+    }
 
     // 5'li gruplar halinde işle
     const batchSize = 5;

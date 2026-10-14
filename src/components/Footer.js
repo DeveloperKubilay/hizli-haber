@@ -38,6 +38,7 @@ function Footer() {
               <li><Link to="/" className="text-gray-400 hover:text-white transition-colors text-sm md:text-base">Ana Sayfa</Link></li>
               <li><Link to="/haberler" className="text-gray-400 hover:text-white transition-colors text-sm md:text-base">Haberler</Link></li>
               <li><Link to="/hizmet-sartlari" className="text-gray-400 hover:text-white transition-colors text-sm md:text-base">Hizmet Şartları</Link></li>
+              <li><Link to="/gizlilik-politikasi" className="text-gray-400 hover:text-white transition-colors text-sm md:text-base">Gizlilik Politikası</Link></li>
             </ul>
           </motion.div>
 

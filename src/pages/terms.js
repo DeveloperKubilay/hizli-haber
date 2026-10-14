@@ -34,14 +34,14 @@ function Terms() {
         <meta property="og:title" content="Hizmet Şartları ve Kullanım Koşulları - Hızlı Haber" />
         <meta property="og:description" content="Hızlı Haber platformunun kullanım şartları, gizlilik ve telif hakları hakkında detaylı bilgi alın." />
         <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://hızlı-haber.com/terms" />
-  <meta property="og:image" content="https://hızlı-haber.com/favicon.ico" />
+  <meta property="og:url" content="https://xn--hzl-haber-vpbc.com/hizmet-sartlari" />
+  <meta property="og:image" content="https://xn--hzl-haber-vpbc.com/imgs/logos/logo192.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Hizmet Şartları ve Kullanım Koşulları - Hızlı Haber" />
         <meta name="twitter:description" content="Hızlı Haber platformunun kullanım şartları, gizlilik ve telif hakları hakkında detaylı bilgi alın." />
-  <meta name="twitter:image" content="https://hızlı-haber.com/favicon.ico" />
+  <meta name="twitter:image" content="https://xn--hzl-haber-vpbc.com/imgs/logos/logo192.png" />
         <meta name="author" content="Hızlı Haber Ekibi" />
-  <link rel="canonical" href="https://hızlı-haber.com/terms" />
+  <link rel="canonical" href="https://xn--hzl-haber-vpbc.com/hizmet-sartlari" />
         <link rel="icon" href="/imgs/logos/logo64.png" sizes="64x64" type="image/png" />
         <link rel="icon" href="/imgs/logos/logo128.png" sizes="128x128" type="image/png" />
         <link rel="icon" href="/imgs/logos/logo180.png" sizes="180x180" type="image/png" />
