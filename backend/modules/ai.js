@@ -63,9 +63,13 @@ async function processSinglePrompt(models, promptText) {
             signal: AbortSignal.timeout(45000)
         });
 
-        if (!response.ok) {
+        const contentType = response.headers.get("content-type") || "";
+        if (!response.ok || !contentType.includes("application/json")) {
             const errText = await response.text();
-            throw new Error(`AI API hatası [${response.status}]: ${errText}`);
+            if (response.status === 302 || errText.includes("cloudflareaccess.com") || errText.includes("Cloudflare Access")) {
+                throw new Error("Cloudflare Access engeli: CF_ACCESS_CLIENT_ID veya CF_ACCESS_CLIENT_SECRET tanımlı değil veya geçersiz.");
+            }
+            throw new Error(`AI API hatası [${response.status}]: ${errText.slice(0, 200)}`);
         }
 
         const jsonRes = await response.json();

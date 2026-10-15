@@ -36,9 +36,13 @@ async function callImageApi(model, promptText) {
         signal: AbortSignal.timeout(60000)
     });
 
-    if (!response.ok) {
+    const contentType = response.headers.get("content-type") || "";
+    if (!response.ok || !contentType.includes("application/json")) {
         const errorText = await response.text();
-        throw new Error(`Görsel API hatası [${response.status}]: ${errorText}`);
+        if (response.status === 302 || errorText.includes("cloudflareaccess.com") || errorText.includes("Cloudflare Access")) {
+            throw new Error("Cloudflare Access engeli: CF_ACCESS_CLIENT_ID veya CF_ACCESS_CLIENT_SECRET tanımlı değil veya geçersiz.");
+        }
+        throw new Error(`Görsel API hatası [${response.status}]: ${errorText.slice(0, 200)}`);
     }
 
     const data = await response.json();
