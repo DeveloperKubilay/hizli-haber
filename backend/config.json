@@ -8,8 +8,7 @@
         "donanimhaber.com"
     ],
     "MODEL": [
-        "hizli-haber",
-        "mini"
+        "hizli-haber"
     ],
     "IMG_MODEL": [
         "ag/gemini-3.1-flash-image"

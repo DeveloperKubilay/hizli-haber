@@ -123,8 +123,8 @@ async function main() {
                     });
 
                     if (newsId) {
-                        const newsUrl = `https://xn--hzl-haber-vpbc.com/haberler/${catSlug}/${cleanSlug}-${newsId}`;
-                        addedUrls.push(newsUrl);
+                        const newsUrl = `https://hızlı-haber.com/haberler/${catSlug}/${cleanSlug}-${newsId}`;
+                        addedUrls.push(`https://xn--hzl-haber-vpbc.com/haberler/${catSlug}/${cleanSlug}-${newsId}`);
                         addedUrls.push(`https://xn--hzl-haber-vpbc.com/haberler/${newsId}`);
 
                         // Buffer üzerinden otomatik sosyal medya paylaşımı (Twitter, Threads vb.)

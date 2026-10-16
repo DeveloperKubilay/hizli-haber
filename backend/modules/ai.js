@@ -3,7 +3,7 @@ const config = require('../config.json');
 // Model fallback sistemi
 async function tryWithFallback(models, operation) {
     let lastError;
-    const modelList = Array.isArray(models) && models.length > 0 ? models : (config.MODEL || ['hizli-haber', 'mini']);
+    const modelList = Array.isArray(models) && models.length > 0 ? models : (config.MODEL || ['hizli-haber']);
     
     for (let i = 0; i < modelList.length; i++) {
         const model = modelList[i];
