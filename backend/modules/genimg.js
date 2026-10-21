@@ -33,7 +33,7 @@ async function callImageApi(model, promptText) {
             image_detail: "high",
             output_format: "png"
         }),
-        signal: AbortSignal.timeout(60000)
+        signal: AbortSignal.timeout(120000)
     });
 
     const contentType = response.headers.get("content-type") || "";
@@ -72,8 +72,8 @@ async function tryGenerateImage(model, promptText) {
         }
     } catch (error) {
         console.warn(`⚠️ ${model} görsel oluşturma hatası: ${error.message}`);
-        if (error.message.includes('429') || error.message.includes('rate limit')) {
-            console.log("💤 Rate limit! 10 saniye bekleniyor...");
+        if (error.message.includes('429') || error.message.includes('rate limit') || error.message.includes('502') || error.message.includes('524') || error.message.includes('timeout')) {
+            console.log("💤 Rate limit veya Gateway/Zaman aşımı! 10 saniye bekleniyor...");
             await new Promise(resolve => setTimeout(resolve, 10000));
         }
         return {
