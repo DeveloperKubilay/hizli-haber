@@ -62,12 +62,21 @@ export async function onRequest(context) {
         const image = fields.image?.stringValue || "";
         const createdAt = fields.createdAt?.stringValue || doc.createTime || new Date().toISOString();
         const pubDate = new Date(createdAt).toUTCString();
-        const link = `https://xn--hzl-haber-vpbc.com/haberler/${id}`;
         
         let tags = [];
         if (fields.tag?.arrayValue?.values) {
           tags = fields.tag.arrayValue.values.map(v => v.stringValue).filter(Boolean);
         }
+
+        const slug = fields.slug?.stringValue || "";
+        let catSlug = "gundem";
+        if (tags.length > 0) {
+          catSlug = String(tags[0]).toLowerCase();
+        }
+
+        const link = slug 
+          ? `https://xn--hzl-haber-vpbc.com/haberler/${catSlug}/${slug}-${id}`
+          : `https://xn--hzl-haber-vpbc.com/haberler/${id}`;
 
         itemsXml += `    <item>
       <title>${escapeXml(title)}</title>

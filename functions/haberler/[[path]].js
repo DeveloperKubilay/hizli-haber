@@ -98,7 +98,7 @@ export async function onRequest(context) {
   const docId = doc.name ? doc.name.split("/").pop() : id;
   const title = fields.name?.stringValue || "Hızlı Haber";
   const desc = fields.minides?.stringValue || fields.summary?.stringValue || "Yeni nesil haberler - En güncel son dakika gelişmeleri.";
-  const image = fields.image?.stringValue || "https://hızlı-haber.com/imgs/logos/logo192.png";
+  const image = fields.image?.stringValue || "https://xn--hzl-haber-vpbc.com/imgs/logos/logo192.png";
   const rawDate = fields.createdAt?.stringValue || doc.createTime;
   const publishedDate = rawDate ? new Date(rawDate).toISOString() : new Date().toISOString();
 
@@ -109,8 +109,8 @@ export async function onRequest(context) {
     catSlug = String(fields.tag.arrayValue.values[0].stringValue || "gundem").toLowerCase();
   }
   const canonicalUrl = slug
-    ? `https://hızlı-haber.com/haberler/${catSlug}/${slug}-${docId}`
-    : `https://hızlı-haber.com/haberler/${docId}`;
+    ? `https://xn--hzl-haber-vpbc.com/haberler/${catSlug}/${slug}-${docId}`
+    : `https://xn--hzl-haber-vpbc.com/haberler/${docId}`;
 
   // Structured Data (Schema.org NewsArticle)
   const schemaData = {
@@ -130,7 +130,7 @@ export async function onRequest(context) {
       "name": "Hızlı Haber",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://hızlı-haber.com/imgs/logos/logo192.png"
+        "url": "https://xn--hzl-haber-vpbc.com/imgs/logos/logo192.png"
       }
     }
   };

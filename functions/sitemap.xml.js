@@ -14,7 +14,7 @@ export async function onRequest(context) {
     const body = {
       structuredQuery: {
         from: [{ collectionId: "news" }],
-        select: { fields: [{ fieldPath: "name" }, { fieldPath: "createdAt" }, { fieldPath: "slug" }] },
+        select: { fields: [{ fieldPath: "name" }, { fieldPath: "createdAt" }, { fieldPath: "slug" }, { fieldPath: "tag" }] },
         orderBy: [{ field: { fieldPath: "createdAt" }, direction: "DESCENDING" }],
         limit: 1000
       }
@@ -51,10 +51,20 @@ export async function onRequest(context) {
         const createdTime = new Date(createdAt).getTime();
         const dateStr = createdAt.split("T")[0];
 
+        const slug = doc.fields?.slug?.stringValue || "";
+        let catSlug = "gundem";
+        if (doc.fields?.tag?.arrayValue?.values && doc.fields.tag.arrayValue.values.length > 0) {
+          catSlug = String(doc.fields.tag.arrayValue.values[0].stringValue || "gundem").toLowerCase();
+        }
+
+        const newsUrl = slug
+          ? `https://xn--hzl-haber-vpbc.com/haberler/${catSlug}/${slug}-${id}`
+          : `https://xn--hzl-haber-vpbc.com/haberler/${id}`;
+
         const isRecent = !isNaN(createdTime) && createdTime > twoDaysAgo;
 
         urlsXml += `  <url>
-    <loc>https://xn--hzl-haber-vpbc.com/haberler/${id}</loc>
+    <loc>${newsUrl}</loc>
     <lastmod>${dateStr}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>${isRecent ? `
