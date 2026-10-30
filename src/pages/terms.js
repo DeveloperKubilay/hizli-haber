@@ -125,7 +125,7 @@ function Terms() {
             </div>
             <div className="space-y-4 text-textPrimary leading-relaxed">
               <p>
-                <strong className="text-textHeading">1.1. İçerik Doğruluğu:</strong> Hızlı Haber, üçüncü taraf haber kaynaklarından ve kamuya açık veri akışlarından yapay zeka aracılığıyla derlenen haberlerin mutlak doğruluğunu, eksiksizliğini, güncelliğini veya belirli bir amaca uygunluğunu açık veya zımni olarak garanti etmez.
+                <strong className="text-textHeading">1.1. İçerik ve Görsel Sorumluluk Reddi:</strong> Hızlı Haber, 5651 sayılı Kanun kapsamında "yer sağlayıcı" ve derleyici niteliğindedir. Kamuya açık bağımsız kaynaklardan veya yapay zeka desteğiyle derlenen haber metinleri, manşetler ve yapay zeka tarafından oluşturulan illüstratif görseller bilgi amaçlıdır. Platformumuz, sitede yer alan hiçbir görsel veya metnin mutlak doğruluğundan, telif hakkından veya oluşturabileceği doğrudan/dolaylı zararlardan hukuki veya cezai olarak sorumlu tutulamaz.
               </p>
               <p>
                 <strong className="text-textHeading">1.2. Teknik İşleme ve Hatalar:</strong> Yapay zeka işleme sürecinde içeriklerde yapılabilecek çeviri, yeniden anlatım veya özetleme işlemlerinden kaynaklanabilecek yanlışlıklar tesadüfidir ve teknolojik sınırların bir sonucudur.
@@ -137,7 +137,7 @@ function Terms() {
                 <strong className="text-textHeading">1.4. Yatırım ve Sağlık Tavsiyesi Değildir:</strong> Sitemizde yer alan ekonomi, finans, borsa veya sağlık haberleri kesinlikle yatırım veya medikal tavsiye niteliği taşımamaktadır.
               </p>
               <p>
-                <strong className="text-textHeading">1.5. Telif Hakları ve Bildirim (Uyar-Kaldır):</strong> Kamuya açık kaynaklardan derlenen içeriklerde hak sahipliği iddiasında bulunan tüzel veya gerçek kişiler, iletişim kanallarımız üzerinden başvurarak ilgili içeriğin incelenmesini ve kaldırılmasını talep edebilir.
+                <strong className="text-textHeading">1.5. 5651 Sayılı Kanun Uyar-Kaldır (Take-Down) Prensibi:</strong> Sitemiz 5651 sayılı İnternet Ortamında Yapılan Yayınların Düzenlenmesi Kanunu'na tam uyumlu çalışmaktadır. Sitemizde yer alan herhangi bir haber metni, fotoğraf veya yapay zeka görselinin telif hakkınızı, kişilik haklarınızı ihlal ettiğini veya gerçeği yansıtmadığını düşünüyorsanız; hak sahibi olarak <a href="mailto:info@hizlihaber.com" className="text-secondary hover:underline font-medium">info@hizlihaber.com</a> adresine başvurmanız halinde ilgili içerik en geç <strong>24-48 saat içerisinde</strong> derhal incelenerek yayından kaldırılır.
               </p>
             </div>
           </motion.section>
