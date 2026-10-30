@@ -200,7 +200,8 @@ function Terms() {
 
           {/* Gizlilik */}
           <motion.section
-            className="bg-primary rounded-lg p-6"
+            id="kvkk"
+            className="bg-primary rounded-lg p-6 scroll-mt-24"
             variants={sectionVariants}
             initial="initial"
             animate="animate"
@@ -208,20 +209,24 @@ function Terms() {
           >
             <div className="flex items-center mb-4">
               <Eye className="text-secondary mr-3" size={24} />
-              <h2 className="text-2xl font-bold text-textHeading">4. Gizlilik ve Veri Koruma</h2>
+              <h2 className="text-2xl font-bold text-textHeading">4. Gizlilik ve KVKK Aydınlatma Metni</h2>
             </div>
-            <div className="space-y-4 text-textPrimary">
+            <div className="space-y-4 text-textPrimary leading-relaxed">
               <p>
-                <strong className="text-textHeading">4.1.</strong> Kullanıcı verilerinin korunması önceliğimizdir.
+                <strong className="text-textHeading">4.1. Veri Sorumlusu:</strong> 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca, Hızlı Haber ("Platform") veri sorumlusu sıfatıyla kişisel verilerinizi mevzuata uygun olarak işlemektedir.
               </p>
               <p>
-                <strong className="text-textHeading">4.2.</strong> Kişisel veriler KVKK kapsamında işlenir.
+                <strong className="text-textHeading">4.2. İşlenen Kişisel Veriler ve Amaç:</strong> Google ile giriş yapıldığında kullanıcı adı, e-posta adresi ve profil fotoğrafı; yorum yapma, favori haberleri kaydetme ve hesap güvenliğini sağlama amacıyla işlenir. Şifreler Google altyapısında kalır, platformumuzda tutulmaz.
               </p>
               <p>
-                <strong className="text-textHeading">4.3.</strong> Çerezler (cookies) kullanıcı deneyimini iyileştirmek için kullanılır.
+                <strong className="text-textHeading">4.3. Çerezler (Cookies):</strong> Platformumuzda oturum sürekliliği, Google Analytics ile anonim ziyaretçi istatistikleri ve Google AdSense altyapısıyla reklam politikalarına uyum için zorunlu ve analitik çerezler kullanılmaktadır. Tarayıcı ayarlarınızdan dilediğiniz an çerezleri engelleyebilirsiniz.
               </p>
               <p>
-                <strong className="text-textHeading">4.4.</strong> Üçüncü şahıslarla veri paylaşımı yapılmaz.
+                <strong className="text-textHeading">4.4. Üçüncü Kişilerle Paylaşım:</strong> Kişisel verileriniz ticari veya pazarlama amaçlı üçüncü şahıslara satılmaz ve aktarılmaz. Yalnızca yasal zorunluluk halinde yetkili adli/idari mercilerle paylaşılır.
+              </p>
+              <p>
+                <strong className="text-textHeading">4.5. KVKK Madde 11 Kapsamındaki Haklarınız:</strong> Kişisel verilerinizin işlenip işlenmediğini öğrenme, silinmesini isteme veya düzeltilmesini talep etme hakkına sahipsiniz. Başvurularınızı{' '}
+                <a href="mailto:info@hizlihaber.com" className="text-secondary hover:underline">info@hizlihaber.com</a> adresi üzerinden iletebilirsiniz.
               </p>
             </div>
           </motion.section>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { MessageCircle, User, Send, ThumbsUp, ThumbsDown, Trash2 } from 'lucide-react';
 import { auth, db } from '../../services/firebase';
 import { 
@@ -247,13 +248,22 @@ function CommentSection({ newsId }) {
         </motion.form>
       ) : (
         <motion.div 
-          className="mb-6 p-4 bg-primaryBG rounded-lg text-center"
+          className="mb-6 p-5 bg-primaryBG rounded-lg text-center border border-gray-800/60"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          whileHover={{ scale: 1.02 }}
+          whileHover={{ scale: 1.01 }}
         >
-          <p className="text-textPrimary">Yorum yapmak için giriş yapmalısınız.</p>
+          <p className="text-textPrimary text-sm md:text-base mb-2">
+            Haberlere yorum yapabilmek için giriş yapmalısınız.
+          </p>
+          <p className="text-xs text-textSecondary opacity-80">
+            Giriş yaparak{' '}
+            <Link to="/hizmet-sartlari" className="text-secondary hover:underline">
+              Hizmet Şartları ve KVKK Aydınlatma Metni
+            </Link>
+            'ni kabul etmiş sayılırsınız.
+          </p>
         </motion.div>
       )}
 
