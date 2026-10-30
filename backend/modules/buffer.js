@@ -131,8 +131,39 @@ async function shareNewsToBuffer({ title, description, url, imageUrl }) {
                         text = `${cleanTitle}\n\n${url}`;
                     }
                 }
+            } else if (channel.service === "threads") {
+                // Threads algoritması dış linklerden ve link spaminden nefret eder (erişimi %90 kısar).
+                // Keşfete düşmek için metinden dış linki kaldırıyoruz; etkileşim sorusu ve bio yönlendirmesi ekliyoruz.
+                const hookEmojis = ["⚡", "📌", "🚨", "📢", "👀"];
+                const randomHook = hookEmojis[Math.floor(Math.random() * hookEmojis.length)];
+
+                let threadContent = `${randomHook} ${cleanTitle}`;
+                if (cleanDesc) {
+                    threadContent += `\n\n${cleanDesc}`;
+                }
+
+                // Etkileşim ve profil yönlendirmesi (link olmadan)
+                threadContent += `\n\n💬 Sizce bu gelişme nasıl sonuçlanır? Yorumlarda buluşalım 👇\n🔗 Detaylar profildeki linkte.`;
+
+                if (threadContent.length > 490) {
+                    const maxAllowed = 490 - (cleanTitle.length + 30);
+                    if (maxAllowed > 30) {
+                        const trimmedDesc = cleanDesc.slice(0, maxAllowed).trim() + "…";
+                        threadContent = `${randomHook} ${cleanTitle}\n\n${trimmedDesc}\n\n💬 Sizce? Yorumlarda buluşalım 👇\n🔗 Detaylar profildeki linkte.`;
+                    } else {
+                        threadContent = `${randomHook} ${cleanTitle.slice(0, 400).trim()}…\n\n🔗 Detaylar profildeki linkte.`;
+                    }
+                }
+                text = threadContent;
+            } else if (channel.service === "instagram") {
+                let igContent = `📌 ${cleanTitle}`;
+                if (cleanDesc) {
+                    igContent += `\n\n${cleanDesc}`;
+                }
+                igContent += `\n\n🔗 Haberin detayları ve son gelişmeler profildeki linkte!\n.\n#haber #sondakika #gündem #hızlıhaber`;
+                text = igContent;
             } else {
-                // Threads (500 karakter sınırı) ve diğer kanallar
+                // Diğer kanallar
                 if (cleanDesc) {
                     text = `${cleanTitle}\n\n${cleanDesc}\n\n${url}`;
                 } else {
