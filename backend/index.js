@@ -130,7 +130,8 @@ async function main() {
                         addedUrls.push(`https://xn--hzl-haber-vpbc.com/haberler/${newsId}`);
 
                         // Buffer üzerinden otomatik sosyal medya paylaşımı (Twitter, Threads vb.)
-                        // Algoritma bot/spam cezalarını önlemek için cron başına sadece en güncel haber paylaşılır
+                        // 🛑 DURDURULDU: Hesap inceleme/ban sürecinde olduğu için otomatik paylaşım tamamen pasif.
+                        /*
                         if (sharedSocialCount < MAX_SOCIAL_PER_RUN) {
                             console.log(`📡 [Sosyal Medya] ${sharedSocialCount + 1}/${MAX_SOCIAL_PER_RUN} seçkin haber Buffer'a aktarılıyor...`);
                             await shareNewsToBuffer({
@@ -143,6 +144,7 @@ async function main() {
                         } else {
                             console.log(`ℹ️ [Sosyal Medya] Cron limiti (${MAX_SOCIAL_PER_RUN}) dolduğu için haber Buffer'a atlanıyor: ${parsedNews.name}`);
                         }
+                        */
                     }
 
                     console.log(`🔥 Haber ${batchIndex * batchSize + i + 1} Firebase'e eklendi! ID: ${newsId}`);

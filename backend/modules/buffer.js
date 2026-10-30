@@ -76,6 +76,13 @@ async function getConnectedChannels() {
  * Yeni haberi Buffer üzerinden bağlı tüm sosyal kanallara (Twitter, Threads vb.) paylaşır
  */
 async function shareNewsToBuffer({ title, description, url, imageUrl }) {
+    // 🛑 KULLANICI TALİMATI: Hesap inceleme/itiraz sürecinde olduğu için tüm otomatik paylaşımlar durduruldu!
+    // Tekrar açmak için process.env.BUFFER_ENABLED === "true" şartı aranır.
+    if (process.env.BUFFER_ENABLED !== "true") {
+        console.log("🛑 Sosyal medya paylaşımları manuel olarak durduruldu (BUFFER_ENABLED !== true). İşlem atlanıyor.");
+        return;
+    }
+
     const token = process.env.BUFFER_ACCESS_TOKEN;
     if (!token) {
         console.log("ℹ️ BUFFER_ACCESS_TOKEN tanımlı değil, sosyal medya paylaşımı atlanıyor.");
