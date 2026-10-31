@@ -12,6 +12,7 @@ import BackButton from '../components/new/BackButton';
 import NewsHeader from '../components/new/NewsHeader';
 import NewsContent from '../components/new/NewsContent';
 import InteractionButtons from '../components/new/InteractionButtons';
+// eslint-disable-next-line no-unused-vars
 import CommentSection from '../components/new/CommentSection';
 import RelatedNews from '../components/new/RelatedNews';
 import LoadingState from '../components/new/LoadingState';
@@ -621,10 +622,12 @@ function NewsDetail() {
               />
             </div>
 
-            {/* Yorum Sistemi */}
+            {/* Yorum Sistemi (Geçici olarak devre dışı - İstenildiğinde kolayca açılabilir) */}
+            {/*
             <div className="mb-8">
               <CommentSection newsId={news?.id} />
             </div>
+            */}
 
             {/* Ekstra boşluk */}
             <div className="hidden sm:block" style={{ height: '500px' }}></div>

@@ -187,13 +187,10 @@ function Terms() {
                 <strong className="text-textHeading">3.1.</strong> Kullanıcılar, platformu kendi sorumluluklarında kullanır.
               </p>
               <p>
-                {/* <strong className="text-textHeading">3.2.</strong> İçeriklerin yapay zeka işleme sürecinden geçtiğini belirtmeden paylaşılması kullanıcının sorumluluğundadır. */}
+                <strong className="text-textHeading">3.2.</strong> Üçüncü şahıslara verilecek zararlardan ve yasalara aykırı eylemlerden kullanıcı bizzat sorumludur.
               </p>
               <p>
-                <strong className="text-textHeading">3.3.</strong> Üçüncü şahıslara verilecek zararlardan kullanıcı sorumludur.
-              </p>
-              <p>
-                <strong className="text-textHeading">3.4.</strong> Hesap güvenliğinden kullanıcı sorumludur.
+                <strong className="text-textHeading">3.3.</strong> Hesap güvenliğinden ve yetkisiz erişimlerden kullanıcı sorumludur.
               </p>
             </div>
           </motion.section>
@@ -245,16 +242,10 @@ function Terms() {
             </div>
             <div className="space-y-4 text-textPrimary">
               <p>
-                {/* <strong className="text-textHeading">5.1.</strong> İçerikler gerçek kaynaklardan alınarak yapay zeka tarafından işlenmiştir. */}
+                <strong className="text-textHeading">5.1.</strong> Platform tasarımı, arayüzü ve kaynak kodları telif hakkı koruması altındadır.
               </p>
               <p>
-                <strong className="text-textHeading">5.2.</strong> Platform tasarımı ve kodları telif hakkı koruması altındadır.
-              </p>
-              <p>
-                {/* <strong className="text-textHeading">5.3.</strong> İşlenmiş içeriklerin ticari amaçlı kullanımı önceden izin alınarak yapılmalıdır. */}
-              </p>
-              <p>
-                <strong className="text-textHeading">5.4.</strong> Logo ve marka unsurları izinsiz kullanılamaz.
+                <strong className="text-textHeading">5.2.</strong> Hızlı Haber logo ve marka unsurları izinsiz kopyalanamaz veya ticari amaçla kullanılamaz.
               </p>
             </div>
           </motion.section>
