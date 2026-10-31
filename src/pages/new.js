@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db, auth } from '../services/firebase';
-import { doc, getDoc, collection, getDocs, query, where, orderBy, limit, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, query, where, orderBy, limit, updateDoc, deleteDoc, setDoc, increment } from 'firebase/firestore';
 import { getNewsUrl } from '../utils/url';
 
 // Components
@@ -400,56 +400,52 @@ function NewsDetail() {
       alert('Beğenmek için giriş yapmanız gerekmektedir.');
       return;
     }
-    if (!id) return;
+    const targetNewsId = news?.id || parsedTargetId || id;
+    if (!targetNewsId) return;
 
     const userId = auth.currentUser.uid;
-    const likesRef = collection(db, 'news', id, 'likes');
-    const dislikesRef = collection(db, 'news', id, 'dislikes');
+    const likesRef = collection(db, 'news', targetNewsId, 'likes');
+    const dislikesRef = collection(db, 'news', targetNewsId, 'dislikes');
     const userLikeDoc = doc(likesRef, userId);
     const userDislikeDoc = doc(dislikesRef, userId);
 
-    const userLikeQuery = query(likesRef, where('__name__', '==', userId));
-    const userDislikeQuery = query(dislikesRef, where('__name__', '==', userId));
+    try {
+      const userLikeSnapshot = await getDoc(userLikeDoc);
+      const userDislikeSnapshot = await getDoc(userDislikeDoc);
 
-    const likeSnapshot = await getDocs(userLikeQuery);
-    const dislikeSnapshot = await getDocs(userDislikeQuery);
+      if (!userLikeSnapshot.exists()) {
+        // Kullanıcı daha önce like yapmamış, ekle
+        setLiked(true);
+        setLikesCount((prev) => prev + 1);
 
-    if (likeSnapshot.empty) {
-      // Kullanıcı daha önce like yapmamış, ekle
-      setLiked(true);
-      setLikesCount((prev) => prev + 1);
-
-      // Eğer dislike varsa kaldır
-      if (!dislikeSnapshot.empty) {
-        setDisliked(false);
-        setDislikesCount((prev) => prev - 1);
-      }
-
-      // Firebase işlemleri arka planda yapılacak
-      updateDoc(doc(db, 'news', id), {
-        likeCount: likesCount + 1,
-        updatedAt: new Date()
-      });
-      setDoc(userLikeDoc, {});
-
-      if (!dislikeSnapshot.empty) {
-        updateDoc(doc(db, 'news', id), {
-          dislikeCount: dislikesCount - 1,
+        const updates = {
+          likeCount: increment(1),
           updatedAt: new Date()
-        });
-        deleteDoc(userDislikeDoc);
-      }
-    } else {
-      // Kullanıcı daha önce like yapmış, kaldır
-      setLiked(false);
-      setLikesCount((prev) => prev - 1);
+        };
 
-      // Firebase işlemleri arka planda yapılacak
-      updateDoc(doc(db, 'news', id), {
-        likeCount: likesCount - 1,
-        updatedAt: new Date()
-      });
-      deleteDoc(userLikeDoc);
+        // Eğer dislike varsa kaldır
+        if (userDislikeSnapshot.exists()) {
+          setDisliked(false);
+          setDislikesCount((prev) => Math.max(0, prev - 1));
+          updates.dislikeCount = increment(-1);
+          deleteDoc(userDislikeDoc).catch(console.error);
+        }
+
+        updateDoc(doc(db, 'news', targetNewsId), updates).catch(console.error);
+        setDoc(userLikeDoc, { createdAt: new Date() }).catch(console.error);
+      } else {
+        // Kullanıcı daha önce like yapmış, kaldır
+        setLiked(false);
+        setLikesCount((prev) => Math.max(0, prev - 1));
+
+        updateDoc(doc(db, 'news', targetNewsId), {
+          likeCount: increment(-1),
+          updatedAt: new Date()
+        }).catch(console.error);
+        deleteDoc(userLikeDoc).catch(console.error);
+      }
+    } catch (err) {
+      console.error('Like işlemi sırasında hata:', err);
     }
   };
 
@@ -458,56 +454,52 @@ function NewsDetail() {
       alert('Dislike için giriş yapmanız gerekmektedir.');
       return;
     }
-    if (!id) return;
+    const targetNewsId = news?.id || parsedTargetId || id;
+    if (!targetNewsId) return;
 
     const userId = auth.currentUser.uid;
-    const likesRef = collection(db, 'news', id, 'likes');
-    const dislikesRef = collection(db, 'news', id, 'dislikes');
+    const likesRef = collection(db, 'news', targetNewsId, 'likes');
+    const dislikesRef = collection(db, 'news', targetNewsId, 'dislikes');
     const userLikeDoc = doc(likesRef, userId);
     const userDislikeDoc = doc(dislikesRef, userId);
 
-    const userLikeQuery = query(likesRef, where('__name__', '==', userId));
-    const userDislikeQuery = query(dislikesRef, where('__name__', '==', userId));
+    try {
+      const userLikeSnapshot = await getDoc(userLikeDoc);
+      const userDislikeSnapshot = await getDoc(userDislikeDoc);
 
-    const likeSnapshot = await getDocs(userLikeQuery);
-    const dislikeSnapshot = await getDocs(userDislikeQuery);
+      if (!userDislikeSnapshot.exists()) {
+        // Kullanıcı daha önce dislike yapmamış, ekle
+        setDisliked(true);
+        setDislikesCount((prev) => prev + 1);
 
-    if (dislikeSnapshot.empty) {
-      // Kullanıcı daha önce dislike yapmamış, ekle
-      setDisliked(true);
-      setDislikesCount((prev) => prev + 1);
-
-      // Eğer like varsa kaldır
-      if (!likeSnapshot.empty) {
-        setLiked(false);
-        setLikesCount((prev) => prev - 1);
-      }
-
-      // Firebase işlemleri arka planda yapılacak
-      updateDoc(doc(db, 'news', id), {
-        dislikeCount: dislikesCount + 1,
-        updatedAt: new Date()
-      });
-      setDoc(userDislikeDoc, {});
-
-      if (!likeSnapshot.empty) {
-        updateDoc(doc(db, 'news', id), {
-          likeCount: likesCount - 1,
+        const updates = {
+          dislikeCount: increment(1),
           updatedAt: new Date()
-        });
-        deleteDoc(userLikeDoc);
-      }
-    } else {
-      // Kullanıcı daha önce dislike yapmış, kaldır
-      setDisliked(false);
-      setDislikesCount((prev) => prev - 1);
+        };
 
-      // Firebase işlemleri arka planda yapılacak
-      updateDoc(doc(db, 'news', id), {
-        dislikeCount: dislikesCount - 1,
-        updatedAt: new Date()
-      });
-      deleteDoc(userDislikeDoc);
+        // Eğer like varsa kaldır
+        if (userLikeSnapshot.exists()) {
+          setLiked(false);
+          setLikesCount((prev) => Math.max(0, prev - 1));
+          updates.likeCount = increment(-1);
+          deleteDoc(userLikeDoc).catch(console.error);
+        }
+
+        updateDoc(doc(db, 'news', targetNewsId), updates).catch(console.error);
+        setDoc(userDislikeDoc, { createdAt: new Date() }).catch(console.error);
+      } else {
+        // Kullanıcı daha önce dislike yapmış, kaldır
+        setDisliked(false);
+        setDislikesCount((prev) => Math.max(0, prev - 1));
+
+        updateDoc(doc(db, 'news', targetNewsId), {
+          dislikeCount: increment(-1),
+          updatedAt: new Date()
+        }).catch(console.error);
+        deleteDoc(userDislikeDoc).catch(console.error);
+      }
+    } catch (err) {
+      console.error('Dislike işlemi sırasında hata:', err);
     }
   };
 
