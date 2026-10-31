@@ -53,7 +53,9 @@ function Footer() {
             <div className="space-y-2 md:space-y-3">
               <p className="text-gray-400 flex items-center text-sm md:text-base">
                 <Mail size={16} className="mr-2" />
-                info@hizlihaber.com
+                <a href="mailto:info@hızlı-haber.com" className="hover:text-green-400 transition-colors">
+                  info@hızlı-haber.com
+                </a>
               </p>
             </div>
           </motion.div>

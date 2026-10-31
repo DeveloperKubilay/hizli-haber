@@ -137,7 +137,7 @@ function Terms() {
                 <strong className="text-textHeading">1.4. Yatırım ve Sağlık Tavsiyesi Değildir:</strong> Sitemizde yer alan ekonomi, finans, borsa veya sağlık haberleri kesinlikle yatırım veya medikal tavsiye niteliği taşımamaktadır.
               </p>
               <p>
-                <strong className="text-textHeading">1.5. 5651 Sayılı Kanun Uyar-Kaldır (Take-Down) Prensibi:</strong> Sitemiz 5651 sayılı İnternet Ortamında Yapılan Yayınların Düzenlenmesi Kanunu'na tam uyumlu çalışmaktadır. Sitemizde yer alan herhangi bir haber metni, fotoğraf veya yapay zeka görselinin telif hakkınızı, kişilik haklarınızı ihlal ettiğini veya gerçeği yansıtmadığını düşünüyorsanız; hak sahibi olarak <a href="mailto:info@hizlihaber.com" className="text-secondary hover:underline font-medium">info@hizlihaber.com</a> adresine başvurmanız halinde ilgili içerik en geç <strong>24-48 saat içerisinde</strong> derhal incelenerek yayından kaldırılır.
+                <strong className="text-textHeading">1.5. 5651 Sayılı Kanun Uyar-Kaldır (Take-Down) Prensibi:</strong> Sitemiz 5651 sayılı İnternet Ortamında Yapılan Yayınların Düzenlenmesi Kanunu'na tam uyumlu çalışmaktadır. Sitemizde yer alan herhangi bir haber metni, fotoğraf veya yapay zeka görselinin telif hakkınızı, kişilik haklarınızı ihlal ettiğini veya gerçeği yansıtmadığını düşünüyorsanız; hak sahibi olarak <a href="mailto:info@hızlı-haber.com" className="text-secondary hover:underline font-medium">info@hızlı-haber.com</a> adresine başvurmanız halinde ilgili içerik en geç <strong>24-48 saat içerisinde</strong> derhal incelenerek yayından kaldırılır.
               </p>
             </div>
           </motion.section>
@@ -223,7 +223,7 @@ function Terms() {
               </p>
               <p>
                 <strong className="text-textHeading">4.5. KVKK Madde 11 Kapsamındaki Haklarınız:</strong> Kişisel verilerinizin işlenip işlenmediğini öğrenme, silinmesini isteme veya düzeltilmesini talep etme hakkına sahipsiniz. Başvurularınızı{' '}
-                <a href="mailto:info@hizlihaber.com" className="text-secondary hover:underline">info@hizlihaber.com</a> adresi üzerinden iletebilirsiniz.
+                <a href="mailto:info@hızlı-haber.com" className="text-secondary hover:underline">info@hızlı-haber.com</a> adresi üzerinden iletebilirsiniz.
               </p>
             </div>
           </motion.section>
@@ -280,10 +280,10 @@ function Terms() {
               <p>
                 Bu şartlar hakkında sorularınız için:{' '}
                 <a
-                  href="mailto:info@hizlihaber.com"
+                  href="mailto:info@hızlı-haber.com"
                   className="text-secondary hover:text-secondaryHover transition-colors underline"
                 >
-                  info@hizlihaber.com
+                  info@hızlı-haber.com
                 </a>
               </p>
             </div>
