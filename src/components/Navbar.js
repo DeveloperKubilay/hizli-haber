@@ -6,6 +6,7 @@ import { auth } from '../services/firebase';
 import { LogIn, Newspaper, Search, BookMarked, User, Bookmark, LogOut, ChevronDown, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { CATEGORY_ICONS, NAVBAR_CATEGORIES } from '../services/categories';
+import AuthModal from './AuthModal';
 
 function Navbar() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -14,6 +15,7 @@ function Navbar() {
   const [showCategories, setShowCategories] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const dropdownRef = useRef(null);
   const userDropdownRef = useRef(null);
   const timeoutRef = useRef(null);
@@ -80,6 +82,7 @@ function Navbar() {
     try {
       setIsProcessing(true);
       await signInWithGoogle();
+      setIsAuthModalOpen(false);
     } catch (error) {
       console.error("Sign-in failed:", error);
     } finally {
@@ -310,8 +313,8 @@ function Navbar() {
           ) : (
             <div>
               <button
-                onClick={handleSignIn}
-                className="flex items-center gap-2 bg-secondary text-black rounded-lg shadow-sm px-4 md:px-6 py-2 md:py-3 hover:bg-secondaryHover font-bold text-sm md:text-base"
+                onClick={() => setIsAuthModalOpen(true)}
+                className="flex items-center gap-2 bg-secondary text-black rounded-lg shadow-sm px-4 md:px-6 py-2 md:py-3 hover:bg-secondaryHover font-bold text-sm md:text-base cursor-pointer"
               >
                 <LogIn size={window.innerWidth >= 768 ? 20 : 18} strokeWidth={2} />
                 Giriş yap
@@ -410,8 +413,11 @@ function Navbar() {
                 </>
               ) : (
                 <button
-                  onClick={handleSignIn}
-                  className="flex items-center justify-center gap-2 bg-secondary text-black rounded-lg shadow-sm px-4 py-3 hover:bg-secondaryHover font-bold text-sm w-full mt-2"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsAuthModalOpen(true);
+                  }}
+                  className="flex items-center justify-center gap-2 bg-secondary text-black rounded-lg shadow-sm px-4 py-3 hover:bg-secondaryHover font-bold text-sm w-full mt-2 cursor-pointer"
                 >
                   <LogIn size={18} strokeWidth={2} />
                   Giriş yap
@@ -421,6 +427,14 @@ function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* KVKK ve Hizmet Şartları Uyumlu Giriş Modalı */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onGoogleSignIn={handleSignIn}
+        isProcessing={isProcessing}
+      />
     </motion.header>
   );
 }
