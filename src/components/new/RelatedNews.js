@@ -154,8 +154,8 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
           variants={itemVariants}
         >
           <motion.img
-            src="https://avatars.githubusercontent.com/u/107062509?v=4"
-            alt="Kubilay"
+            src="/imgs/logos/logo192.png"
+            alt="Hızlı Haber Editör Masası"
             className="w-16 h-16 rounded-full object-cover border-2 border-secondary"
             whileHover={{ scale: 1.1 }}
             transition={{ duration: 0.2 }}
@@ -165,14 +165,14 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
               className="text-lg font-bold text-textHeading"
               whileHover={{ y: -1 }}
             >
-              Kubilay
+              Hızlı Haber Editör Masası
             </motion.h4>
             <motion.p
               className="text-sm text-textPrimary"
               initial={{ opacity: 0.7 }}
               whileHover={{ opacity: 1 }}
             >
-              Hızlı Haber Editörü
+              Yapay Zeka Destekli Haber Bülteni
             </motion.p>
           </div>
         </motion.div>
