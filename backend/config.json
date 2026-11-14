@@ -1,11 +1,11 @@
 {
     "urls": [
-        "hurriyet.com.tr",
+        "shiftdelete.net",
+        "webtekno.com",
+        "donanimhaber.com",
         "ntv.com.tr",
         "haberturk.com",
-        "haber7.com",
-        "shiftdelete.net",
-        "donanimhaber.com"
+        "hurriyet.com.tr"
     ],
     "MODEL": [
         "hizli-haber"
@@ -32,6 +32,7 @@
         "Ek Kurallar:",
         "- Metinde [1], [2] gibi kaynak numaraları bırakma.",
         "- Sadece ve sadece geçerli JSON döndür, kod bloğu veya ekstra açıklama yazma.",
+        "- Haberin konusu halkın ilgisini çeken gerçek bir teknoloji, bilim, ekonomi, spor, dünya veya güncel yaşam haberi olmalıdır. Asla resmi ilan, mahkeme kararı, soyut köşe yazısı veya sıkıcı bürokrasi metni üretme.",
         "",
         "{PROMT}"
     ]
