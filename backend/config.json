@@ -2,10 +2,7 @@
     "urls": [
         "shiftdelete.net",
         "webtekno.com",
-        "donanimhaber.com",
-        "ntv.com.tr",
-        "haberturk.com",
-        "hurriyet.com.tr"
+        "donanimhaber.com"
     ],
     "MODEL": [
         "hizli-haber"
@@ -27,7 +24,7 @@
         "- \"minides\": Arama motoru snippet'ları ve sosyal medya paylaşımları için 140-160 karakterlik, bilgilendirici ve merak uyandırıcı meta açıklama.",
         "- \"summary\": Hızlı okuma paneli için haberin en kritik 3-4 maddesini içeren hap özet (Madde işaretleri • kullanarak yaz).",
         "- \"des\": Olayı derinlemesine, tarafsız ve akıcı şekilde anlatan detaylı haber metni. **Markdown formatında** olmalı. Bölümler için '##' alt başlıkları, önemli kavramlar için **kalın** vurgulamalar ve açıklayıcı listeler kullan. İçerik Google E-E-A-T (yetkinlik, güvenilirlik) ilkelerine tam uyumlu, zengin ve sürükleyici olmalıdır.",
-        "- \"tag\": [\"Sports\",\"Technology\",\"Health\",\"Education\",\"Politics\",\"Economy\",\"Culture\",\"World\",\"Magazine\",\"Science\"] listesinden en uygun 1 veya 2 kategoriyi içeren dizi.",
+        "- \"tag\": [\"Technology\",\"Science\",\"Sports\",\"Health\",\"Education\",\"Economy\",\"Culture\",\"Magazine\"] listesinden en uygun 1 veya 2 kategoriyi içeren dizi.",
         "",
         "Ek Kurallar:",
         "- Metinde [1], [2] gibi kaynak numaraları bırakma.",

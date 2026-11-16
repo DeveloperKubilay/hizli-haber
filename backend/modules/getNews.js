@@ -7,13 +7,14 @@ function isInterestingNews(article) {
     
     const combined = `${article.title} ${article.description || ""} ${article.url}`.toLowerCase();
     
-    // Kesinlikle yasaklı kelimeler (Resmi ilanlar, mahkemeler, icra, ihale, köşe yazarları vb.)
+    // Kesinlikle yasaklı kelimeler (Siyaset, resmi ilanlar, mahkemeler, icra, ihale, köşe yazarları vb.)
     const blacklist = [
-        "resmi-ilan", "resmi ilan", "sulh hukuk", "asliye hukuk", "mahkeme", "mahkemesi",
-        "icra dairesi", "ihale", "ihalesi", "ihalesine", "tasinmaz", "taşınmaz",
-        "/yazarlar/", "yazarlar", "kose-yazisi", "köşe yazısı", "vefat", "taziye",
-        "nobetci-eczane", "nöbetçi eczane", "namaz vakitleri", "hava durumu",
-        "burc yorumlari", "burç yorumları", "astroloji", "resmi gazete"
+        "siyaset", "cumhurbaşkanı", "başbakan", "bakan", "milletvekili", "parti", "akp", "chp", "mhp", "iyi parti", "dem parti",
+        "meclis", "anayasa", "seçim", "oy", "koalisyon", "iktidar", "muhalefet", "darbe", "askeri", "tsK", "emniyet", "polis", "jandarma",
+        "mahkeme", "sulh hukuk", "asliye hukuk", "icra dairesi", "ihale", "ihalesi", "ihalesine", "taşınmaz", "tasinmaz",
+        "/yazarlar/", "yazarlar", "köşe yazısı", "kose-yazisi", "vefat", "taziye",
+        "nöbetçi eczane", "nobetci-eczane", "namaz vakitleri", "hava durumu",
+        "burç yorumları", "burc yorumlari", "astroloji", "resmi gazete", "resmi ilan", "resmi-ilan"
     ];
 
     for (const word of blacklist) {
