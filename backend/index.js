@@ -100,7 +100,7 @@ async function main() {
 
                     // Haber başlığından görsel oluştur ve S3'e yükle
                     console.log(`🎨 ${batchIndex * batchSize + i + 1}. haber için görsel oluşturuluyor...`);
-                    const imageResult = await generateAndUploadImage(parsedNews.name);
+                    const imageResult = await generateAndUploadImage(parsedNews.name, parsedNews.tag);
                     let imageUrl = "";
 
                     if (imageResult.success) {

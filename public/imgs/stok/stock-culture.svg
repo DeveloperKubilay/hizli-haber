@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="768" viewBox="0 0 1024 768">
+  <defs>
+    <linearGradient id="cultGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#161b22;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d1117;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="768" fill="url(#cultGrad)"/>
+  <ellipse cx="512" cy="384" rx="140" ry="100" fill="none" stroke="#ff7b72" stroke-width="2" opacity="0.3"/>
+  <path d="M372,384 Q442,284 512,384 Q582,284 652,384" fill="none" stroke="#ff7b72" stroke-width="3"/>
+  <circle cx="372" cy="384" r="20" fill="#ff7b72" opacity="0.4"/>
+  <circle cx="512" cy="320" r="25" fill="#ff7b72" opacity="0.6"/>
+  <circle cx="652" cy="384" r="20" fill="#ff7b72" opacity="0.4"/>
+  <text x="512" y="620" font-family="system-ui, sans-serif" font-size="32" fill="#8b949e" text-anchor="middle" font-weight="600">KÜLTÜR</text>
+  <text x="512" y="660" font-family="system-ui, sans-serif" font-size="18" fill="#484f58" text-anchor="middle">Hızlı Haber</text>
+</svg>

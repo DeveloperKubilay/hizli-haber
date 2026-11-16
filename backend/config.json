@@ -8,12 +8,14 @@
         "hizli-haber"
     ],
     "IMG_MODEL": [
-        "ag/gemini-3.1-flash-image"
+        "ag/gemini-3.1-flash-image",
+        "pollinations:flux",
+        "hf:stabilityai/stable-diffusion-xl-base-1.0"
     ],
     "IMG_promt": [
         "Editorial photojournalism press photo, high detail, realistic, authentic news coverage for: {DATA}. Cinematic lighting, 4K, realistic documentary news image."
     ],
-    "MaxImgTry": 2,
+    "MaxImgTry": 3,
     "promt": [
         "Senden verilen haber kaynağını inceleyip Türkçe olarak yalnızca geçerli bir JSON nesnesi formatında yanıt vermeni istiyorum.",
         "JSON şablonu tam olarak şu yapıda olmalıdır:",

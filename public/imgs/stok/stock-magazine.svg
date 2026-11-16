@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="768" viewBox="0 0 1024 768">
+  <defs>
+    <linearGradient id="magGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#161b22;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d1117;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="768" fill="url(#magGrad)"/>
+  <rect x="300" y="250" width="424" height="300" rx="15" fill="none" stroke="#79c0ff" stroke-width="2"/>
+  <rect x="320" y="270" width="384" height="60" rx="8" fill="#79c0ff" opacity="0.2"/>
+  <rect x="320" y="350" width="250" height="24" rx="4" fill="#8b949e" opacity="0.5"/>
+  <rect x="320" y="390" width="300" height="24" rx="4" fill="#8b949e" opacity="0.4"/>
+  <rect x="320" y="430" width="200" height="24" rx="4" fill="#8b949e" opacity="0.3"/>
+  <rect x="320" y="480" width="280" height="24" rx="4" fill="#8b949e" opacity="0.4"/>
+  <circle cx="600" cy="300" r="20" fill="#79c0ff" opacity="0.3"/>
+  <text x="512" y="620" font-family="system-ui, sans-serif" font-size="32" fill="#8b949e" text-anchor="middle" font-weight="600">MAGAZİN</text>
+  <text x="512" y="660" font-family="system-ui, sans-serif" font-size="18" fill="#484f58" text-anchor="middle">Hızlı Haber</text>
+</svg>

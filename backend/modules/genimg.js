@@ -1,8 +1,100 @@
 const config = require('../config.json');
 const uploadFile = require('./s3');
+const fs = require('fs');
+const path = require('path');
 
-// Yeni nesil yüksek kaliteli görsel üretim servisi
-async function callImageApi(model, promptText) {
+// Kategori bazlı yedek stok görseller (public/imgs/stok/ altında olacak)
+const STOCK_IMAGES = {
+    'Technology': 'stock-tech.svg',
+    'Science': 'stock-science.svg',
+    'Sports': 'stock-sports.svg',
+    'Health': 'stock-health.svg',
+    'Education': 'stock-education.svg',
+    'Economy': 'stock-economy.svg',
+    'Culture': 'stock-culture.svg',
+    'Magazine': 'stock-magazine.svg',
+    'default': 'stock-default.svg'
+};
+
+function getStockImage(tagArray) {
+    if (!tagArray || !Array.isArray(tagArray) || tagArray.length === 0) {
+        return STOCK_IMAGES.default;
+    }
+    // İlk kategoriye göre stok görsel bul
+    for (const tag of tagArray) {
+        if (STOCK_IMAGES[tag]) {
+            return STOCK_IMAGES[tag];
+        }
+    }
+    return STOCK_IMAGES.default;
+}
+
+// Model tipi tespiti
+function getModelType(model) {
+    if (model.startsWith('pollinations:')) return 'pollinations';
+    if (model.startsWith('hf:')) return 'huggingface';
+    return 'gemini'; // varsayılan: ai.randdcodes.com / Gemini
+}
+
+// Pollinations.ai (Tamamen ücretsiz, API key yok, Flux/Stable Diffusion)
+async function callPollinationsApi(model, promptText) {
+    const modelName = model.replace('pollinations:', '');
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?model=${modelName}&width=1024&height=768&nologo=true&private=true`;
+    
+    const response = await fetch(url, {
+        method: 'GET',
+        signal: AbortSignal.timeout(120000)
+    });
+    
+    if (!response.ok) {
+        throw new Error(`Pollinations API hatası [${response.status}]`);
+    }
+    
+    const imageBuffer = await response.arrayBuffer();
+    return Buffer.from(imageBuffer);
+}
+
+// Hugging Face Inference API (Ücretsiz katman: ayda 30.000 token, Stable Diffusion XL)
+async function callHuggingFaceApi(model, promptText) {
+    const modelName = model.replace('hf:', '');
+    const apiUrl = `https://api-inference.huggingface.co/models/${modelName}`;
+    const hfToken = process.env.HUGGINGFACE_API_KEY; // .env'e eklenirse kullanılır, yoksa public inference dener
+    
+    const headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'image/png'
+    };
+    
+    if (hfToken) {
+        headers['Authorization'] = `Bearer ${hfToken}`;
+    }
+    
+    const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+            inputs: promptText,
+            parameters: {
+                width: 1024,
+                height: 768,
+                num_inference_steps: 25,
+                guidance_scale: 7.5
+            }
+        }),
+        signal: AbortSignal.timeout(180000) // HF yavaş olabilir
+    });
+    
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Hugging Face API hatası [${response.status}]: ${errorText.slice(0, 200)}`);
+    }
+    
+    const imageBuffer = await response.arrayBuffer();
+    return Buffer.from(imageBuffer);
+}
+
+// Ana Gemini/ai.randdcodes.com API (Mevcut sistem)
+async function callGeminiApi(model, promptText) {
     const apiUrl = (process.env.AI_API_URL || "https://ai.randdcodes.com/v1").replace(/\/+$/, '');
     const apiKey = process.env.AI_API_KEY || process.env.GEMINI_API_KEY;
 
@@ -51,6 +143,21 @@ async function callImageApi(model, promptText) {
     }
 
     return Buffer.from(data.data[0].b64_json, "base64");
+}
+
+// Model tipine göre doğru API'yi çağır
+async function callImageApi(model, promptText) {
+    const type = getModelType(model);
+    
+    switch (type) {
+        case 'pollinations':
+            return await callPollinationsApi(model, promptText);
+        case 'huggingface':
+            return await callHuggingFaceApi(model, promptText);
+        case 'gemini':
+        default:
+            return await callGeminiApi(model, promptText);
+    }
 }
 
 // Belirli bir model ile görsel oluşturmayı dene
@@ -120,7 +227,7 @@ async function generateImage(promptData) {
 }
 
 // Görsel oluşturup Cloudflare R2 / S3'e yükleme
-async function generateAndUploadImage(newsTitle, maxAttempts = 1) {
+async function generateAndUploadImage(newsTitle, tags = [], maxAttempts = 1) {
     const cdnBase = process.env.CDN_URL || "https://cdn.xn--hzl-haber-vpbc.com";
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -158,8 +265,42 @@ async function generateAndUploadImage(newsTitle, maxAttempts = 1) {
     }
 }
 
-async function generateAndUploadImageFixNews(newsTitle, maxAttempts = 2) {
-    return await generateAndUploadImage(newsTitle, maxAttempts);
+// Son çare: Kategoriye göre stok görseli R2'ye yükle ve URL döndür
+async function useStockImage(tags = []) {
+    const stockFile = getStockImage(tags);
+    const localPath = path.join(__dirname, '..', '..', 'public', 'imgs', 'stok', stockFile);
+    
+    try {
+        if (fs.existsSync(localPath)) {
+            const fileData = fs.readFileSync(localPath);
+            const fileName = `stock_${Date.now()}_${stockFile}`;
+            await uploadFile(fileName, fileData, 'image/png');
+            const cdnBase = process.env.CDN_URL || "https://cdn.xn--hzl-haber-vpbc.com";
+            const imageUrl = `${cdnBase}/${encodeURIComponent(fileName)}`;
+            console.log(`📦 Stok görsel kullanıldı: ${stockFile} -> ${imageUrl}`);
+            return { success: true, fileName, imageUrl };
+        }
+    } catch (e) {
+        console.error('Stok görsel yükleme hatası:', e.message);
+    }
+    
+    // Hiçbir şey yoksa en azından default logo dön
+    const cdnBase = process.env.CDN_URL || "https://cdn.xn--hzl-haber-vpbc.com";
+    return { 
+        success: true, 
+        fileName: 'logo192.png', 
+        imageUrl: `${cdnBase}/imgs/logos/logo192.png` 
+    };
+}
+
+async function generateAndUploadImageFixNews(newsTitle, tags = [], maxAttempts = 2) {
+    // Önce AI modellerini dene
+    const result = await generateAndUploadImage(newsTitle, tags, maxAttempts);
+    if (result.success) return result;
+    
+    // Tüm AI modelleri başarısız olursa stok görseli kullan
+    console.log('🔄 Tüm AI modelleri başarısız, stok görsele geçiliyor...');
+    return await useStockImage(tags);
 }
 
 module.exports = {
