@@ -156,7 +156,7 @@ function RelatedNews({ relatedNews, relatedLoading, formatDate, currentNews }) {
           <motion.img
             src="/imgs/logos/logo192.png"
             alt="Hızlı Haber Editör Masası"
-            className="w-16 h-16 rounded-full object-cover border-2 border-secondary"
+            className="w-16 h-16 rounded-full object-cover"
             whileHover={{ scale: 1.1 }}
             transition={{ duration: 0.2 }}
           />
