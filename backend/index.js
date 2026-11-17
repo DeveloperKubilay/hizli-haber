@@ -60,8 +60,8 @@ async function main() {
         process.exit(0);
     }
 
-    // 5'li gruplar halinde işle
-    const batchSize = 5;
+    // 2'li gruplar halinde işle (API timeout riskini azaltmak için), ama TEK TEK işle
+    const batchSize = 2;
     const batches = [];
     const addedUrls = [];
     const MAX_SOCIAL_PER_RUN = parseInt(process.env.MAX_SOCIAL_PER_RUN || "1", 10);
@@ -71,94 +71,93 @@ async function main() {
         batches.push(news.slice(i, i + batchSize));
     }
 
-    console.log(`📊 Toplam ${news.length} haber, ${batches.length} batch halinde işlenecek`);
+    console.log(`📊 Toplam ${news.length} haber, ${batches.length} batch halinde işlenecek (tek tek sıralı)`);
 
     for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
         const batch = batches[batchIndex];
         console.log(`🔄 Batch ${batchIndex + 1}/${batches.length} işleniyor... (${batch.length} haber)`);
 
-        const prompts = batch.map(article =>
-            config.promt.join("\n").replace("{PROMT}", article.url)
-        );
+        // Haberleri TEK TEK (sıralı) işle - paralel değil, API boğulmasın
+        for (let i = 0; i < batch.length; i++) {
+            const article = batch[i];
+            const prompt = config.promt.join("\n").replace("{PROMT}", article.url);
+            
+            try {
+                console.log(`🤖 ${batchIndex * batchSize + i + 1}. haber AI işleniyor...`);
+                const response = await ai.processSingle(config.MODEL, prompt);
+                
+                console.log(`📝 ${batchIndex * batchSize + i + 1}. haberin AI cevabı işleniyor...`);
+                
+                let jsonStr = response.trim();
+                if(jsonStr === "undefined") continue;
+                if (!jsonStr.startsWith('{')) jsonStr = jsonStr.substring(jsonStr.indexOf('{'));
+                if (!jsonStr.endsWith('}')) jsonStr = jsonStr.substring(0, jsonStr.lastIndexOf('}') + 1);
 
-        try {
-            // 5 prompt'ı aynı anda gönder - artık model array'i kullanıyoruz
-            const responses = await ai.processMultiple(config.MODEL, prompts);
-            console.log(`✅ Batch ${batchIndex + 1} AI işlemi tamamlandı`);
+                const parsedNews = JSON.parse(jsonStr);
 
-            // Her bir cevabı işle ve Firebase'e kaydet
-            for (let i = 0; i < responses.length; i++) {
-                try {
-                    console.log(`📝 ${batchIndex * batchSize + i + 1}. haberin AI cevabı işleniyor...`);
-                    
-                    let jsonStr = responses[i].trim();
-                    if(jsonStr === "undefined") continue;
-                    if (!jsonStr.startsWith('{')) jsonStr = jsonStr.substring(jsonStr.indexOf('{'));
-                    if (!jsonStr.endsWith('}')) jsonStr = jsonStr.substring(0, jsonStr.lastIndexOf('}') + 1);
+                // Haber başlığından görsel oluştur ve S3'e yükle
+                console.log(`🎨 ${batchIndex * batchSize + i + 1}. haber için görsel oluşturuluyor...`);
+                const imageResult = await generateAndUploadImage(parsedNews.name, parsedNews.tag);
+                let imageUrl = "";
 
-                    const parsedNews = JSON.parse(jsonStr);
-
-                    // Haber başlığından görsel oluştur ve S3'e yükle
-                    console.log(`🎨 ${batchIndex * batchSize + i + 1}. haber için görsel oluşturuluyor...`);
-                    const imageResult = await generateAndUploadImage(parsedNews.name, parsedNews.tag);
-                    let imageUrl = "";
-
-                    if (imageResult.success) {
-                        imageUrl = imageResult.imageUrl;
-                        console.log(`✅ Görsel başarıyla oluşturuldu: ${imageResult.fileName}`);
-                    } else {
-                        console.warn(`⚠️ Görsel oluşturulamadı: ${imageResult.message}`);
-                    }
-
-                    const cleanSlug = parsedNews.slug ? slugify(parsedNews.slug) : slugify(parsedNews.name);
-                    const catSlug = parsedNews.tag?.[0] ? slugify(parsedNews.tag[0]) : 'gundem';
-
-                    const newsId = await firebase.addWithAdmin('news', {
-                        ...parsedNews,
-                        slug: cleanSlug,
-                        likeCount: 0,
-                        dislikeCount: 0,
-                        sourceUrl: batch[i]?.url || "",
-                        createdAt: new Date().toISOString(),
-                        originalPublishedAt: batch[i].publishedAt || new Date().toISOString(),
-                        image: imageUrl
-                    });
-
-                    if (newsId) {
-                        const newsUrl = `https://xn--hzl-haber-vpbc.com/haberler/${catSlug}/${cleanSlug}-${newsId}`;
-                        addedUrls.push(newsUrl);
-                        addedUrls.push(`https://xn--hzl-haber-vpbc.com/haberler/${newsId}`);
-
-                        // Buffer üzerinden otomatik sosyal medya paylaşımı (Twitter, Threads vb.)
-                        // Algoritma bot/spam cezalarını önlemek için cron başına sadece en güncel haber paylaşılır
-                        if (sharedSocialCount < MAX_SOCIAL_PER_RUN) {
-                            console.log(`📡 [Sosyal Medya] ${sharedSocialCount + 1}/${MAX_SOCIAL_PER_RUN} seçkin haber Buffer'a aktarılıyor...`);
-                            await shareNewsToBuffer({
-                                title: parsedNews.name,
-                                description: parsedNews.minides,
-                                url: newsUrl,
-                                imageUrl: imageUrl
-                            });
-                            sharedSocialCount++;
-                        } else {
-                            console.log(`ℹ️ [Sosyal Medya] Cron limiti (${MAX_SOCIAL_PER_RUN}) dolduğu için haber Buffer'a atlanıyor: ${parsedNews.name}`);
-                        }
-                    }
-
-                    console.log(`🔥 Haber ${batchIndex * batchSize + i + 1} Firebase'e eklendi! ID: ${newsId}`);
-                } catch (parseError) {
-                    console.error(`💥 ${batchIndex * batchSize + i + 1}. haber işlenirken hata:`, parseError);
-                    console.error("Ham veri:", responses[i]);
+                if (imageResult.success) {
+                    imageUrl = imageResult.imageUrl;
+                    console.log(`✅ Görsel başarıyla oluşturuldu: ${imageResult.fileName}`);
+                } else {
+                    console.warn(`⚠️ Görsel oluşturulamadı: ${imageResult.message}`);
                 }
-            }
 
-            if (batchIndex < batches.length - 1) {
-                console.log("⏳ Sonraki batch için 2 saniye bekleniyor...");
-                await new Promise(resolve => setTimeout(resolve, 2000));
-            }
+                const cleanSlug = parsedNews.slug ? slugify(parsedNews.slug) : slugify(parsedNews.name);
+                const catSlug = parsedNews.tag?.[0] ? slugify(parsedNews.tag[0]) : 'gundem';
 
-        } catch (batchError) {
-            console.error(`💥 Batch ${batchIndex + 1} işlenirken hata:`, batchError);
+                const newsId = await firebase.addWithAdmin('news', {
+                    ...parsedNews,
+                    slug: cleanSlug,
+                    likeCount: 0,
+                    dislikeCount: 0,
+                    sourceUrl: article.url || "",
+                    createdAt: new Date().toISOString(),
+                    originalPublishedAt: article.publishedAt || new Date().toISOString(),
+                    image: imageUrl
+                });
+
+                if (newsId) {
+                    const newsUrl = `https://xn--hzl-haber-vpbc.com/haberler/${catSlug}/${cleanSlug}-${newsId}`;
+                    addedUrls.push(newsUrl);
+                    addedUrls.push(`https://xn--hzl-haber-vpbc.com/haberler/${newsId}`);
+
+                    // Buffer üzerinden otomatik sosyal medya paylaşımı (Twitter, Threads vb.)
+                    // Algoritma bot/spam cezalarını önlemek için cron başına sadece en güncel haber paylaşılır
+                    if (sharedSocialCount < MAX_SOCIAL_PER_RUN) {
+                        console.log(`📡 [Sosyal Medya] ${sharedSocialCount + 1}/${MAX_SOCIAL_PER_RUN} seçkin haber Buffer'a aktarılıyor...`);
+                        await shareNewsToBuffer({
+                            title: parsedNews.name,
+                            description: parsedNews.minides,
+                            url: newsUrl,
+                            imageUrl: imageUrl
+                        });
+                        sharedSocialCount++;
+                    } else {
+                        console.log(`ℹ️ [Sosyal Medya] Cron limiti (${MAX_SOCIAL_PER_RUN}) dolduğu için haber Buffer'a atlanıyor: ${parsedNews.name}`);
+                    }
+                }
+
+                console.log(`🔥 Haber ${batchIndex * batchSize + i + 1} Firebase'e eklendi! ID: ${newsId}`);
+            } catch (err) {
+                console.error(`💥 ${batchIndex * batchSize + i + 1}. haber işlenirken hata:`, err.message);
+                // Hata olsa bile diğer habere geç
+            }
+            
+            // API nazikliği için aralarda küçük bekleme
+            if (i < batch.length - 1) {
+                await new Promise(resolve => setTimeout(resolve, 3000));
+            }
+        }
+        
+        // Batch'ler arası bekleme
+        if (batchIndex < batches.length - 1) {
+            console.log("⏳ Sonraki batch için 3 saniye bekleniyor...");
+            await new Promise(resolve => setTimeout(resolve, 3000));
         }
     }
 

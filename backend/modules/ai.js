@@ -60,7 +60,7 @@ async function processSinglePrompt(models, promptText) {
                 ],
                 stream: false
             }),
-            signal: AbortSignal.timeout(45000)
+            signal: AbortSignal.timeout(120000)
         });
 
         const contentType = response.headers.get("content-type") || "";
