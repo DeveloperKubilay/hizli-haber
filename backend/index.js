@@ -2,7 +2,7 @@ if (process.env.GITHUB_ACTIONS !== "true") require("dotenv").config();
 const getNews = require("./modules/getNews");
 const ai = require("./modules/ai");
 const firebase = require("./modules/firebase");
-const { generateAndUploadImage } = require("./modules/genimg");
+// const { generateAndUploadImage } = require("./modules/genimg"); // Görsel üretimi kapalı
 const { notifySearchEngines } = require("./modules/indexer");
 const { shareNewsToBuffer } = require("./modules/buffer");
 const config = require("./config.json");
@@ -95,17 +95,9 @@ async function main() {
 
                 const parsedNews = JSON.parse(jsonStr);
 
-                // Haber başlığından görsel oluştur ve S3'e yükle
-                console.log(`🎨 ${batchIndex * batchSize + i + 1}. haber için görsel oluşturuluyor...`);
-                const imageResult = await generateAndUploadImage(parsedNews.name, parsedNews.tag);
+                // Haber başlığından görsel oluştur ve S3'e yükle - GÖRSEL ÜRETİMİ KAPALI
                 let imageUrl = "";
-
-                if (imageResult.success) {
-                    imageUrl = imageResult.imageUrl;
-                    console.log(`✅ Görsel başarıyla oluşturuldu: ${imageResult.fileName}`);
-                } else {
-                    console.warn(`⚠️ Görsel oluşturulamadı: ${imageResult.message}`);
-                }
+                console.log(`🖼️ Görsel üretimi kapalı, görselsiz haber eklenecek`);
 
                 const cleanSlug = parsedNews.slug ? slugify(parsedNews.slug) : slugify(parsedNews.name);
                 const catSlug = parsedNews.tag?.[0] ? slugify(parsedNews.tag[0]) : 'gundem';
