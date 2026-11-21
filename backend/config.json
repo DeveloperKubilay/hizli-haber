@@ -8,9 +8,7 @@
         "hizli-haber"
     ],
     "IMG_MODEL": [
-        "gemini-3.1-flash-lite-image",
-        "pollinations:flux",
-        "hf:stabilityai/stable-diffusion-xl-base-1.0"
+        "gemini-3.1-flash-lite-image"
     ],
     "IMG_promt": [
         "Editorial photojournalism press photo, high detail, realistic, authentic news coverage for: {DATA}. Cinematic lighting, 4K, realistic documentary news image."
