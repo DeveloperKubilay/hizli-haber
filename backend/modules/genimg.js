@@ -1,58 +1,45 @@
 const config = require('../config.json');
 const uploadFile = require('./s3');
 
-// Sadece Gemini - tek model, fallback YOK
-async function callGeminiApi(model, promptText) {
-    const apiUrl = (process.env.AI_API_URL || "https://generativelanguage.googleapis.com/v1beta").replace(/\/+$/, '');
-    
-    const apiKey = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY || process.env.AI_API_KEY;
+// ai.randdcodes.com - OpenAI uyumlu /images/generations endpoint
+async function callRanddCodesImageApi(model, promptText) {
+    const apiUrl = (process.env.AI_API_URL || "https://ai.randdcodes.com/v1").replace(/\/+$/, '');
+    const apiKey = process.env.AI_API_KEY || process.env.GEMINI_API_KEY;
     
     if (!apiKey) {
-        throw new Error("GOOGLE_API_KEY / GEMINI_API_KEY / AI_API_KEY tanımlı değil");
+        throw new Error("AI_API_KEY / GEMINI_API_KEY tanımlı değil (ai.randdcodes.com için)");
     }
 
-    const fullModelName = model.startsWith('vertex:') ? model.replace('vertex:', '') : model;
-    
     const headers = {
         "Content-Type": "application/json",
-        "x-goog-api-key": apiKey
+        "Authorization": `Bearer ${apiKey}`
     };
 
-    const response = await fetch(`${apiUrl}/models/${fullModelName}:generateContent`, {
+    const response = await fetch(`${apiUrl}/images/generations`, {
         method: "POST",
         headers,
         body: JSON.stringify({
-            contents: [{
-                parts: [{ text: promptText }]
-            }],
-            generationConfig: {
-                responseModalities: ["IMAGE", "TEXT"],
-                temperature: 0.4,
-                topK: 32,
-                topP: 0.95
-            }
+            model: model,  // "hizli-haber-gorsel"
+            prompt: promptText,
+            n: 1,
+            size: "1024x768",
+            response_format: "b64_json"
         }),
         signal: AbortSignal.timeout(120000)
     });
 
     if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Gemini API hatası [${response.status}]: ${errorText.slice(0, 300)}`);
+        throw new Error(`ai.randdcodes.com görsel API hatası [${response.status}]: ${errorText.slice(0, 300)}`);
     }
 
     const data = await response.json();
     
-    const candidates = data.candidates || [];
-    for (const candidate of candidates) {
-        const parts = candidate.content?.parts || [];
-        for (const part of parts) {
-            if (part.inlineData && part.inlineData.data) {
-                return Buffer.from(part.inlineData.data, "base64");
-            }
-        }
+    if (!data.data || !data.data[0] || !data.data[0].b64_json) {
+        throw new Error("ai.randdcodes.com yanıtında b64_json verisi bulunamadı");
     }
-    
-    throw new Error("Gemini yanıtında görsel verisi (inlineData) bulunamadı");
+
+    return Buffer.from(data.data[0].b64_json, "base64");
 }
 
 async function generateImage(promptData) {
@@ -61,11 +48,12 @@ async function generateImage(promptData) {
         : "Editorial photojournalism press photo for: {DATA}. Realistic, 4k, natural lighting.";
     
     const optimizedPrompt = promptTemplate.replace("{DATA}", promptData);
-    const model = config.IMG_MODEL?.[0] || "gemini-3.1-flash-lite-image";
+    // config.json'dan model al: "hizli-haber-gorsel"
+    const model = config.IMG_MODEL?.[0] || "hizli-haber-gorsel";
     
     try {
-        console.log(`🤖 ${model} ile görsel oluşturuluyor...`);
-        const imageBuffer = await callGeminiApi(model, optimizedPrompt);
+        console.log(`🤖 ai.randdcodes.com (${model}) ile görsel oluşturuluyor...`);
+        const imageBuffer = await callRanddCodesImageApi(model, optimizedPrompt);
         
         if (imageBuffer && imageBuffer.length > 0) {
             const fileName = 'image_' + Date.now() + '.png';
@@ -77,7 +65,7 @@ async function generateImage(promptData) {
     }
     
     // Başarısız olursa boş dön - frontend placeholder/logo koyar
-    return { error: true, message: "Gemini görsel oluşturulamadı, frontend placeholder kullanacak" };
+    return { error: true, message: "ai.randdcodes.com görsel oluşturulamadı, frontend placeholder kullanacak" };
 }
 
 async function generateAndUploadImage(newsTitle, tags = [], maxAttempts = 1) {
